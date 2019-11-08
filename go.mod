@@ -3,11 +3,13 @@ module github.com/deviceplane/deviceplane
 go 1.12
 
 require (
-	github.com/DataDog/datadog-go v2.2.0+incompatible
+	github.com/DataDog/datadog-go v3.2.0+incompatible
 	github.com/Knetic/govaluate v3.0.0+incompatible // indirect
 	github.com/Microsoft/go-winio v0.4.13 // indirect
 	github.com/apex/log v1.1.0
+	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cobaugh/osrelease v0.0.0-20181218015638-a93a0a55a249
+	github.com/datadog/datadog-go v3.2.0+incompatible
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/docker v1.13.1
 	github.com/docker/go-connections v0.4.0
@@ -28,6 +30,8 @@ require (
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/prometheus/client_golang v1.2.1
+	github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4
+	github.com/prometheus/common v0.7.0
 	github.com/rakyll/statik v0.1.6
 	github.com/segmentio/conf v1.1.0
 	github.com/segmentio/ksuid v1.0.2
@@ -35,7 +39,11 @@ require (
 	github.com/sendgrid/sendgrid-go v3.4.1+incompatible
 	github.com/stretchr/testify v1.3.0
 	github.com/urfave/cli v1.20.0
+<<<<<<< HEAD
 	github.com/vishvananda/netns v0.0.0-20190625233234-7109fa855b0f
+=======
+	github.com/zorkian/go-datadog-api v2.24.0+incompatible // indirect
+>>>>>>> Get device-level metrics pushed to datadog.
 	golang.org/x/build v0.0.0-20190604154314-6c34d49dff48 // indirect
 	golang.org/x/crypto v0.0.0-20191002192127-34f69633bfdc
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58

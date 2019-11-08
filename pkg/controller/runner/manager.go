@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	repeatInverval = time.Minute
+	repeatInverval = time.Minute / 6
 )
 
 // Manager is responsible for running all background runners
@@ -34,10 +34,10 @@ func (m *Manager) Start() {
 
 			for _, runner := range m.runners {
 				wg.Add(1)
-				go func() {
+				go func(runner Runner) {
 					runner.Do(ctx)
 					wg.Done()
-				}()
+				}(runner)
 			}
 
 			wg.Wait()

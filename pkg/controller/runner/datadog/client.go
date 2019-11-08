@@ -15,10 +15,12 @@ type postMetricsRequest struct {
 type series []metric
 
 type metric struct {
-	Metric string    `json:"metric"`
-	Points [][]int64 `json:"points"`
-	Type   string    `json:"type"`
-	Tags   []string  `json:"tags"`
+	Metric   string       `json:"metric"`
+	Points   [][2]float32 `json:"points"`
+	Type     string       `json:"type"`
+	Interval *int64       `json:"interval,omitempty"`
+	Host     string       `json:"host,omitempty"`
+	Tags     []string     `json:"tags"`
 }
 
 type client struct {

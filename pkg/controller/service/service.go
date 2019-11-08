@@ -67,10 +67,10 @@ type Service struct {
 	cookieDomain               string
 	cookieSecure               bool
 	st                         *statsd.Client
+	connman                    *connman.ConnectionManager
 
 	router   *mux.Router
 	upgrader websocket.Upgrader
-	connman  *connman.ConnectionManager
 }
 
 func NewService(
@@ -103,6 +103,7 @@ func NewService(
 	cookieSecure bool,
 	fileSystem http.FileSystem,
 	st *statsd.Client,
+	connman *connman.ConnectionManager,
 ) *Service {
 	s := &Service{
 		users:                      users,
@@ -133,6 +134,7 @@ func NewService(
 		cookieDomain:               cookieDomain,
 		cookieSecure:               cookieSecure,
 		st:                         st,
+		connman:                    connman,
 
 		router: mux.NewRouter(),
 		upgrader: websocket.Upgrader{
@@ -144,7 +146,6 @@ func NewService(
 				return true
 			},
 		},
-		connman: connman.New(),
 	}
 
 	apiRouter := s.router.PathPrefix("/api").Subrouter()
