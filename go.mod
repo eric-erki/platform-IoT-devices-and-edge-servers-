@@ -7,9 +7,7 @@ require (
 	github.com/Knetic/govaluate v3.0.0+incompatible // indirect
 	github.com/Microsoft/go-winio v0.4.13 // indirect
 	github.com/apex/log v1.1.0
-	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cobaugh/osrelease v0.0.0-20181218015638-a93a0a55a249
-	github.com/datadog/datadog-go v3.2.0+incompatible
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/docker v1.13.1
 	github.com/docker/go-connections v0.4.0
@@ -40,10 +38,13 @@ require (
 	github.com/stretchr/testify v1.3.0
 	github.com/urfave/cli v1.20.0
 <<<<<<< HEAD
+<<<<<<< HEAD
 	github.com/vishvananda/netns v0.0.0-20190625233234-7109fa855b0f
 =======
 	github.com/zorkian/go-datadog-api v2.24.0+incompatible // indirect
 >>>>>>> Get device-level metrics pushed to datadog.
+=======
+>>>>>>> Acquiesce to DataDog's inane dependency casing that obviously goes against Go standards.
 	golang.org/x/build v0.0.0-20190604154314-6c34d49dff48 // indirect
 	golang.org/x/crypto v0.0.0-20191002192127-34f69633bfdc
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
