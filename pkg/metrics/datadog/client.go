@@ -8,13 +8,13 @@ import (
 	"net/http"
 )
 
-type postMetricsRequest struct {
-	Series series `json:"series"`
+type PostMetricsRequest struct {
+	Series Series `json:"series"`
 }
 
-type series []metric
+type Series []Metric
 
-type metric struct {
+type Metric struct {
 	Metric   string       `json:"metric"`
 	Points   [][2]float32 `json:"points"`
 	Type     string       `json:"type"`
@@ -23,17 +23,17 @@ type metric struct {
 	Tags     []string     `json:"tags"`
 }
 
-type client struct {
+type Client struct {
 	apiKey string
 }
 
-func newClient(apiKey string) *client {
-	return &client{
+func NewClient(apiKey string) *Client {
+	return &Client{
 		apiKey: apiKey,
 	}
 }
 
-func (c *client) postMetrics(ctx context.Context, req postMetricsRequest) error {
+func (c *Client) PostMetrics(ctx context.Context, req PostMetricsRequest) error {
 	reqBytes, err := json.Marshal(req)
 	if err != nil {
 		return err

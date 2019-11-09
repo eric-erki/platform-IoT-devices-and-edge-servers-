@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/DataDog/datadog-go/statsd"
 	"github.com/apex/log"
+	"github.com/datadog/datadog-go/statsd"
 	"github.com/deviceplane/deviceplane/pkg/controller/connman"
 	"github.com/deviceplane/deviceplane/pkg/controller/runner"
 	"github.com/deviceplane/deviceplane/pkg/controller/runner/datadog"
@@ -71,7 +71,7 @@ func main() {
 	connman := connman.New()
 
 	runnerManager := runner.NewManager([]runner.Runner{
-		datadog.NewRunner(sqlStore, sqlStore, connman),
+		datadog.NewRunner(sqlStore, sqlStore, st, connman),
 	})
 	runnerManager.Start()
 

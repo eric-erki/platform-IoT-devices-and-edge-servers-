@@ -8,21 +8,27 @@ import (
 	"time"
 
 	"github.com/apex/log"
+	"github.com/datadog/datadog-go/statsd"
 
 	"github.com/deviceplane/deviceplane/pkg/controller/connman"
 	"github.com/deviceplane/deviceplane/pkg/controller/store"
+	"github.com/deviceplane/deviceplane/pkg/metrics/datadog"
+	"github.com/deviceplane/deviceplane/pkg/metrics/datadog/translation"
+	"github.com/deviceplane/deviceplane/pkg/models"
 )
 
 type Runner struct {
 	projects store.Projects
 	devices  store.Devices
+	st       *statsd.Client
 	connman  *connman.ConnectionManager
 }
 
-func NewRunner(projects store.Projects, devices store.Devices, connman *connman.ConnectionManager) *Runner {
+func NewRunner(projects store.Projects, devices store.Devices, st *statsd.Client, connman *connman.ConnectionManager) *Runner {
 	return &Runner{
 		projects: projects,
 		devices:  devices,
+		st:       st,
 		connman:  connman,
 	}
 }
@@ -45,14 +51,14 @@ func (r *Runner) Do(ctx context.Context) {
 			continue
 		}
 
-		var req postMetricsRequest
+		var req datadog.PostMetricsRequest
 		for _, device := range devices {
 			addedTags := []string{
 				strings.Join([]string{"project", project.Name}, ":"),
-				strings.Join([]string{"name", device.Name}, ":"),
+				strings.Join([]string{"device", device.Name}, ":"),
 			}
 
-			req.Series = append(req.Series, metric{
+			req.Series = append(req.Series, datadog.Metric{
 				// Project level metrics get the
 				// "deviceplane.project." prefix.
 				Metric: "deviceplane.project.devices",
@@ -64,6 +70,12 @@ func (r *Runner) Do(ctx context.Context) {
 					strings.Join([]string{"status", string(device.Status)}, ":"),
 				}...),
 			})
+
+			// If the device is offline, we can't get any more
+			// metrics from it anyway
+			if device.Status == models.DeviceStatusOffline {
+				continue
+			}
 
 			// Get metrics from prometheus
 			getDeviceMetrics := func() (*http.Response, error) {
@@ -82,23 +94,13 @@ func (r *Runner) Do(ctx context.Context) {
 				return deviceMetricsResp, nil
 			}
 			deviceMetricsResp, err := getDeviceMetrics()
-			if err != nil {
-				log.WithField("project_id", project.ID).
-					WithField("device_id", device.ID).
-					WithError(err).Error("getting device metrics")
+			if err != nil || deviceMetricsResp.StatusCode != 200 {
 				continue // in the devices loop, so we still submit previously added metrics
 			}
-			if deviceMetricsResp.StatusCode != 200 {
-				log.WithField("project_id", project.ID).
-					WithField("device_id", device.ID).
-					WithField("status", deviceMetricsResp.Status).
-					WithField("status_code", deviceMetricsResp.StatusCode).
-					Error("non-200 device metric status code")
-				continue
-			}
+			r.st.Incr("runner.datadog.successful_device_metrics_pull", addedTags, 1)
 
 			// Convert request to DataDog format
-			metrics, err := convertOpenMetricsToDataDog(deviceMetricsResp.Body)
+			metrics, err := translation.ConvertOpenMetricsToDataDog(deviceMetricsResp.Body)
 			if err != nil {
 				log.WithField("project_id", project.ID).
 					WithField("device_id", device.ID).
@@ -115,9 +117,8 @@ func (r *Runner) Do(ctx context.Context) {
 			}
 		}
 
-		client := newClient(*project.DatadogAPIKey)
-
-		if err := client.postMetrics(ctx, req); err != nil {
+		client := datadog.NewClient(*project.DatadogAPIKey)
+		if err := client.PostMetrics(ctx, req); err != nil {
 			log.WithError(err).Error("post metrics")
 			continue
 		}

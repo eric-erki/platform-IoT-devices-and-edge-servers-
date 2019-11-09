@@ -1,4 +1,4 @@
-package datadog
+package translation
 
 import (
 	"strings"
@@ -7,7 +7,7 @@ import (
 
 func TestParsing(t *testing.T) {
 	reader := strings.NewReader(exampleMetrics)
-	_, err := convertOpenMetricsToDataDog(reader)
+	_, err := ConvertOpenMetricsToDataDog(reader)
 	if err != nil {
 		t.Fail()
 	}

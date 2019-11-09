@@ -1,22 +1,24 @@
-package datadog
+package translation
 
 import (
 	"io"
 	"strings"
 	"time"
 
+	"github.com/deviceplane/deviceplane/pkg/metrics/datadog"
+
 	prometheus "github.com/prometheus/client_model/go"
 	"github.com/prometheus/common/expfmt"
 )
 
-func convertOpenMetricsToDataDog(in io.Reader) ([]metric, error) {
+func ConvertOpenMetricsToDataDog(in io.Reader) ([]datadog.Metric, error) {
 	parser := expfmt.TextParser{}
 	promMetrics, err := parser.TextToMetricFamilies(in)
 	if err != nil {
 		return nil, err
 	}
 
-	ddMetrics := make([]metric, 0)
+	ddMetrics := make([]datadog.Metric, 0)
 	for _, promMetric := range promMetrics {
 		if promMetric.Type == nil {
 			continue
@@ -51,7 +53,7 @@ func convertOpenMetricsToDataDog(in io.Reader) ([]metric, error) {
 			}
 		}
 
-		m := metric{
+		m := datadog.Metric{
 			Metric: promMetric.GetName(),
 			Points: points,
 			Type:   "gauge",
