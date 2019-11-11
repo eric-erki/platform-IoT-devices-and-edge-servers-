@@ -15,19 +15,24 @@ import (
 	"github.com/deviceplane/deviceplane/pkg/metrics/datadog"
 	"github.com/deviceplane/deviceplane/pkg/metrics/datadog/translation"
 	"github.com/deviceplane/deviceplane/pkg/models"
+"gopkg.in/yaml.v2"
+	"github.com/deviceplane/deviceplane/pkg/spec"
+	"github.com/deviceplane/deviceplane/pkg/controller/query"
 )
 
 type Runner struct {
 	projects store.Projects
 	devices  store.Devices
+	releases store.Releases
 	st       *statsd.Client
 	connman  *connman.ConnectionManager
 }
 
-func NewRunner(projects store.Projects, devices store.Devices, st *statsd.Client, connman *connman.ConnectionManager) *Runner {
+func NewRunner(projects store.Projects, devices store.Devices, releases store.Releases, st *statsd.Client, connman *connman.ConnectionManager) *Runner {
 	return &Runner{
 		projects: projects,
 		devices:  devices,
+		releases: releases,
 		st:       st,
 		connman:  connman,
 	}
@@ -77,6 +82,9 @@ func (r *Runner) Do(ctx context.Context) {
 				continue
 			}
 
+			// Do the following for all applications
+			// Do the following for all services?
+
 			// Get metrics from prometheus
 			getDeviceMetrics := func() (*http.Response, error) {
 				deviceConn, err := r.connman.Dial(ctx, project.ID+device.ID)
@@ -123,4 +131,63 @@ func (r *Runner) Do(ctx context.Context) {
 			continue
 		}
 	}
+}
+
+func (r *Runner) getServicesToQuery(ctx context.Context, project *models.Project, device *models.Device, applications []*models.Application) error {
+	releasesToQuery := make([]*models.Release, 0)
+
+	for _, application := range applications {
+		match, err := query.DeviceMatchesQuery(*device, application.SchedulingRule)
+		if err != nil {
+			log.WithError(err).Error("evaluate application scheduling rule")
+			return err
+		}
+		if !match {
+			continue
+		}
+
+		release, err := r.releases.GetLatestRelease(ctx, project.ID, application.ID)
+		if err == store.ErrReleaseNotFound {
+			continue
+		} else if err != nil {
+			log.WithError(err).Error("get latest release")
+			return err
+		}
+
+		releasesToQuery := append(releasesToQuery, release)
+	}
+
+
+	for _, release := range releasesToQuery {
+		var applicationConfig map[string]spec.Service
+	if err := yaml.Unmarshal([]byte(release.Config), &applicationConfig); err != nil {
+		log.WithError(err).Error("unmarshal")
+		return err
+	}
+
+	s.reporter.SetDesiredApplication(release.ID, applicationConfig)
+
+	serviceNames := make(map[string]struct{})
+	for serviceName, service := range applicationConfig {
+		s.lock.Lock()
+		serviceSupervisor, ok := s.serviceSupervisors[serviceName]
+		if !ok {
+			serviceSupervisor = NewServiceSupervisor(
+				application.Application.ID,
+				serviceName,
+				s.engine,
+				s.reporter,
+				s.validators,
+			)
+			s.serviceSupervisors[serviceName] = serviceSupervisor
+		}
+		s.lock.Unlock()
+
+		serviceSupervisor.SetService(release.ID, service)
+
+		serviceNames[serviceName] = struct{}{}
+	}
+}
+
+	return nil
 }
