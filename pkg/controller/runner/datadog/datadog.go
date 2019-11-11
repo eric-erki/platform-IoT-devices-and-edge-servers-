@@ -11,13 +11,13 @@ import (
 	"github.com/apex/log"
 
 	"github.com/deviceplane/deviceplane/pkg/controller/connman"
+	"github.com/deviceplane/deviceplane/pkg/controller/query"
 	"github.com/deviceplane/deviceplane/pkg/controller/store"
 	"github.com/deviceplane/deviceplane/pkg/metrics/datadog"
 	"github.com/deviceplane/deviceplane/pkg/metrics/datadog/translation"
 	"github.com/deviceplane/deviceplane/pkg/models"
-"gopkg.in/yaml.v2"
 	"github.com/deviceplane/deviceplane/pkg/spec"
-	"github.com/deviceplane/deviceplane/pkg/controller/query"
+	"gopkg.in/yaml.v2"
 )
 
 type Runner struct {
@@ -157,37 +157,21 @@ func (r *Runner) getServicesToQuery(ctx context.Context, project *models.Project
 		releasesToQuery := append(releasesToQuery, release)
 	}
 
-
 	for _, release := range releasesToQuery {
 		var applicationConfig map[string]spec.Service
-	if err := yaml.Unmarshal([]byte(release.Config), &applicationConfig); err != nil {
-		log.WithError(err).Error("unmarshal")
-		return err
-	}
-
-	s.reporter.SetDesiredApplication(release.ID, applicationConfig)
-
-	serviceNames := make(map[string]struct{})
-	for serviceName, service := range applicationConfig {
-		s.lock.Lock()
-		serviceSupervisor, ok := s.serviceSupervisors[serviceName]
-		if !ok {
-			serviceSupervisor = NewServiceSupervisor(
-				application.Application.ID,
-				serviceName,
-				s.engine,
-				s.reporter,
-				s.validators,
-			)
-			s.serviceSupervisors[serviceName] = serviceSupervisor
+		if err := yaml.Unmarshal([]byte(release.Config), &applicationConfig); err != nil {
+			log.WithError(err).Error("unmarshal")
+			return err
 		}
-		s.lock.Unlock()
 
-		serviceSupervisor.SetService(release.ID, service)
+		serviceNames := make(map[string]struct{})
+		for serviceName, service := range applicationConfig {
+			service.
+				serviceSupervisor.SetService(release.ID, service)
 
-		serviceNames[serviceName] = struct{}{}
+			serviceNames[serviceName] = struct{}{}
+		}
 	}
-}
 
 	return nil
 }
