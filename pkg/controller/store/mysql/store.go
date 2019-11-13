@@ -1805,6 +1805,25 @@ func (s *Store) UpdateApplicationSchedulingRule(ctx context.Context, id, project
 	return s.GetApplication(ctx, id, projectID)
 }
 
+func (s *Store) UpdateApplicationServiceMetricConfigs(ctx context.Context, id, projectID string, metricConfigs []models.ServiceMetricConfig) (*models.Application, error) {
+	metricConfigsBytes, err := json.Marshal(metricConfigs)
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := s.db.ExecContext(
+		ctx,
+		updateApplicationServiceMetricConfigs,
+		string(metricConfigsBytes),
+		id,
+		projectID,
+	); err != nil {
+		return nil, err
+	}
+
+	return s.GetApplication(ctx, id, projectID)
+}
+
 func (s *Store) DeleteApplication(ctx context.Context, id, projectID string) error {
 	_, err := s.db.ExecContext(
 		ctx,
@@ -1817,24 +1836,25 @@ func (s *Store) DeleteApplication(ctx context.Context, id, projectID string) err
 
 func (s *Store) scanApplication(scanner scanner) (*models.Application, error) {
 	var application models.Application
-	var schedulingRuleString string
 	if err := scanner.Scan(
 		&application.ID,
 		&application.CreatedAt,
 		&application.ProjectID,
 		&application.Name,
 		&application.Description,
-		&schedulingRuleString,
+		&application.SchedulingRule,
+		&application.ServiceMetricConfigs,
 	); err != nil {
 		return nil, err
 	}
-	if schedulingRuleString != "" {
-		if err := json.Unmarshal([]byte(schedulingRuleString), &application.SchedulingRule); err != nil {
-			return nil, err
-		}
-	} else {
+
+	if application.SchedulingRule == nil {
 		application.SchedulingRule = make([]models.Filter, 0)
 	}
+	if application.ServiceMetricConfigs == nil {
+		application.ServiceMetricConfigs = make([]models.ServiceMetricConfig, 0)
+	}
+
 	return &application, nil
 }
 

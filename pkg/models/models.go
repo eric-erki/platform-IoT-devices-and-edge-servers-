@@ -153,12 +153,26 @@ type DeviceAccessKey struct {
 }
 
 type Application struct {
-	ID             string    `json:"id"`
-	CreatedAt      time.Time `json:"createdAt"`
-	ProjectID      string    `json:"projectId"`
-	Name           string    `json:"name"`
-	Description    string    `json:"description"`
-	SchedulingRule Query     `json:"schedulingRule"`
+	ID                   string                `json:"id"`
+	CreatedAt            time.Time             `json:"createdAt"`
+	ProjectID            string                `json:"projectId"`
+	Name                 string                `json:"name"`
+	Description          string                `json:"description"`
+	SchedulingRule       Query                 `json:"schedulingRule"`
+	ServiceMetricConfigs []ServiceMetricConfig `json:"serviceMetricConfigs"`
+}
+
+type ServiceMetricConfig struct {
+	ServiceName     string         `json:"serviceName"`
+	Path            string         `json:"path"`
+	Port            string         `json:"port"`
+	MetricWhitelist []MetricConfig `json:"whitelist"`
+}
+
+type MetricConfig struct {
+	MetricName string   `json:"metricName"`
+	Labels     []string `json:"labels"`
+	Tags       []string `json:"tags"`
 }
 
 type ApplicationDeviceCounts struct {
