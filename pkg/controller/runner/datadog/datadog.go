@@ -91,51 +91,51 @@ func (r *Runner) Do(ctx context.Context) {
 
 func addedTags(project *models.Project, device *models.Device) []string {
 	return []string{
-		strings.Join([]string{"project", project.Name}, ":"),
-		strings.Join([]string{"device", device.Name}, ":"),
+		"project:" + project.Name,
+		"device:" + device.Name,
 	}
 }
 
 func (r *Runner) getStateMetrics(project *models.Project, device *models.Device) datadog.Series {
 	addedTags := addedTags(project, device)
 
-	return []datadog.Metric{
+	stateMetrics := []datadog.Metric{
 		datadog.Metric{
-			// Project level metrics get the
-			// "deviceplane.project." prefix.
-			Metric: "deviceplane.project.devices",
+			Metric: "devices",
 			Points: [][2]float32{
-				[2]float32{float32(time.Now().Unix()), 1},
+				[2]float32{
+					float32(time.Now().Unix()),
+					1,
+				},
 			},
 			Type: "count",
-			Tags: append(addedTags, []string{
-				strings.Join([]string{"status", string(device.Status)}, ":"),
-			}...,
-			),
+			Tags: []string{"status:" + string(device.Status)},
 		},
 	}
+
+	for i := range stateMetrics {
+		// Project level metrics get the
+		// "deviceplane.project." prefix.
+		stateMetrics[i].Metric = "deviceplane.project." + stateMetrics[i].Metric
+		stateMetrics[i].Tags = append(
+			stateMetrics[i].Tags,
+			addedTags...,
+		)
+	}
+
+	return stateMetrics
 }
 
 func (r *Runner) getHostMetrics(ctx context.Context, project *models.Project, device *models.Device) datadog.Series {
 	addedTags := addedTags(project, device)
 
-	// Get metrics from prometheus
-	getDeviceMetrics := func() (*http.Response, error) {
-		deviceConn, err := r.connman.Dial(ctx, project.ID+device.ID)
-		if err != nil {
-			return nil, err
-		}
-		deviceMetricsReq, _ := http.NewRequest("GET", "/metrics", nil)
-		if err := deviceMetricsReq.Write(deviceConn); err != nil {
-			return nil, err
-		}
-		deviceMetricsResp, err := http.ReadResponse(bufio.NewReader(deviceConn), deviceMetricsReq)
-		if err != nil {
-			return nil, err
-		}
-		return deviceMetricsResp, nil
-	}
-	deviceMetricsResp, err := getDeviceMetrics()
+	// Get metrics from host
+	deviceMetricsResp, err := r.queryDevice(
+		ctx,
+		project,
+		device,
+		"/metrics",
+	)
 	if err != nil || deviceMetricsResp.StatusCode != 200 {
 		return nil
 	}
@@ -150,9 +150,9 @@ func (r *Runner) getHostMetrics(ctx context.Context, project *models.Project, de
 		return nil
 	}
 
-	// Append metrics
+	// Process metrics
 	for i := range metrics {
-		// Device level metrics get the "deviceplane.device." prefix.
+		// Host metrics get the "deviceplane.host." prefix.
 		metrics[i].Metric = "deviceplane.host." + metrics[i].Metric
 		metrics[i].Tags = append(addedTags, metrics[i].Tags...)
 	}
@@ -227,34 +227,15 @@ func (r *Runner) getServiceMetrics(ctx context.Context, project *models.Project)
 			}
 
 			// Get metrics from services
-			getServiceMetrics := func() (*http.Response, error) {
-				deviceConn, err := r.connman.Dial(ctx, project.ID+device.ID)
-				if err != nil {
-					return nil, err
-				}
-
-				req, _ := http.NewRequest(
-					"GET",
-					fmt.Sprintf(
-						"/applications/%s/services/%s/metrics",
-						asmc.Application.ID, asmc.ServiceMetricConfig.ServiceName,
-					),
-					nil,
-				)
-
-				if err := req.Write(deviceConn); err != nil {
-					return nil, err
-				}
-
-				resp, err := http.ReadResponse(bufio.NewReader(deviceConn), req)
-				if err != nil {
-					return nil, err
-				}
-
-				return resp, nil
-			}
-
-			deviceMetricsResp, err := getServiceMetrics()
+			deviceMetricsResp, err := r.queryDevice(
+				ctx,
+				project,
+				&device,
+				fmt.Sprintf(
+					"/applications/%s/services/%s/metrics",
+					asmc.Application.ID, asmc.ServiceMetricConfig.ServiceName,
+				),
+			)
 			if err != nil || deviceMetricsResp.StatusCode != 200 {
 				r.st.Incr("runner.datadog.unsuccessful_service_metrics_pull", addedTags(project, &device), 1)
 				// TODO: we want to present to the user a list
@@ -323,4 +304,28 @@ func (r *Runner) getServiceMetrics(ctx context.Context, project *models.Project)
 	}
 
 	return metrics
+}
+
+func (r *Runner) queryDevice(ctx context.Context, project *models.Project, device *models.Device, url string) (*http.Response, error) {
+	deviceConn, err := r.connman.Dial(ctx, project.ID+device.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	req, _ := http.NewRequest(
+		"GET",
+		url,
+		nil,
+	)
+
+	if err := req.Write(deviceConn); err != nil {
+		return nil, err
+	}
+
+	resp, err := http.ReadResponse(bufio.NewReader(deviceConn), req)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
 }
