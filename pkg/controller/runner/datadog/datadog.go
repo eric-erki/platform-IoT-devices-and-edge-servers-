@@ -1,10 +1,9 @@
 package datadog
 
 import (
-	"bufio"
 	"context"
+	"encoding/json"
 	"fmt"
-	"net/http"
 	"strings"
 	"time"
 
@@ -38,6 +37,25 @@ func NewRunner(projects store.Projects, applications store.Applications, release
 		connman:      connman,
 	}
 }
+
+// [
+//     {
+//         "service": "prometheus",
+//         "path": "/metrics",
+//         "port": "2112",
+//         "whitelist": [
+//             {
+//                 "metric": "go_threads",
+//                 "labels": [
+//                     "metrics"
+//                 ],
+//                 "tags": [
+// 			"yeet"
+// 		   ]
+//             }
+//         ]
+//     }
+// ]
 
 func (r *Runner) Do(ctx context.Context) {
 	projects, err := r.projects.ListProjects(ctx)
@@ -76,10 +94,17 @@ func (r *Runner) Do(ctx context.Context) {
 			)
 		}
 
+		m := r.getServiceMetrics(ctx, &project)
 		req.Series = append(
 			req.Series,
-			r.getServiceMetrics(ctx, &project)...,
+			m...,
 		)
+
+		fmt.Println("GOT METRICS")
+		fmt.Println("SERVICE METRICS!")
+		j, err := json.MarshalIndent(m, ">>>", "    ")
+		fmt.Println(err)
+		fmt.Println(string(j))
 
 		client := datadog.NewClient(*project.DatadogAPIKey)
 		if err := client.PostMetrics(ctx, req); err != nil {
@@ -159,46 +184,10 @@ func (r *Runner) getHostMetrics(ctx context.Context, project *models.Project, de
 	return metrics
 }
 
-type applicationServiceMetricConfig struct {
-	Application         *models.Application
-	ServiceMetricConfig *models.ServiceMetricConfig
-}
-
 func (r *Runner) getServiceMetrics(ctx context.Context, project *models.Project) (metrics datadog.Series) {
-	applications, err := r.applications.ListApplications(ctx, project.ID)
-	if err != nil {
-		log.WithField("project", project.ID).WithError(err).Error("listing applications")
+	appServiceConfigs := r.getAppServiceConfigs(ctx, project)
+	if len(appServiceConfigs) == 0 {
 		return nil
-	}
-
-	asmcs := []applicationServiceMetricConfig{}
-	// Get the application+service metric configs
-	for i, application := range applications {
-		release, err := r.releases.GetLatestRelease(ctx, project.ID, application.ID)
-		if err == store.ErrReleaseNotFound {
-			continue
-		} else if err != nil {
-			log.WithField("application", application.ID).
-				WithError(err).Error("get latest release")
-			return nil
-		}
-
-		serviceMetricConfigs := application.ServiceMetricConfigs
-		for j, serviceMetricConfig := range serviceMetricConfigs {
-			config := applicationServiceMetricConfig{
-				&applications[i],
-				&serviceMetricConfigs[j],
-			}
-
-			_, ok := release.Config[serviceMetricConfig.ServiceName]
-			if ok {
-				asmcs = append(asmcs, config)
-			} else {
-				// we don't do anything here, but we should
-				// TODO: we want to present to the user a list
-				// of mistyped applications that don't exist
-			}
-		}
 	}
 
 	devices, err := r.devices.ListDevices(ctx, project.ID)
@@ -210,122 +199,115 @@ func (r *Runner) getServiceMetrics(ctx context.Context, project *models.Project)
 	// GET the metrics endpoint
 	// ON ALL DEVICES that match this application
 	//
-	// This backwards-matching O(m*n) approach is unfortunately what we're
-	// stuck doing unless we store the list of scheduled applications on the
-	// device table
+	// TODO: if things start getting slow, the runtime of this function, and
+	// specifically this following section should probably be optimized
 	for _, device := range devices {
-		for _, asmc := range asmcs {
-			match, err := query.DeviceMatchesQuery(device, asmc.Application.SchedulingRule)
+		// Add metrics for all services, in all apps, on all devices
+		// O(s*a*d)
+		for app, serviceConfigs := range appServiceConfigs {
+			appIsScheduled, err := query.DeviceMatchesQuery(device, app.SchedulingRule)
 			if err != nil {
-				log.WithField("application", asmc.Application.ID).
+				log.WithField("application", app.ID).
 					WithField("device", device.ID).
 					WithError(err).Error("evaluate application scheduling rule")
 				continue
 			}
-			if !match {
+			if !appIsScheduled {
 				continue
 			}
 
-			// Get metrics from services
-			deviceMetricsResp, err := r.queryDevice(
-				ctx,
-				project,
-				&device,
-				fmt.Sprintf(
-					"/applications/%s/services/%s/metrics",
-					asmc.Application.ID, asmc.ServiceMetricConfig.ServiceName,
-				),
-			)
-			if err != nil || deviceMetricsResp.StatusCode != 200 {
-				r.st.Incr("runner.datadog.unsuccessful_service_metrics_pull", addedTags(project, &device), 1)
-				// TODO: we want to present to the user a list
-				// of applications that don't have functioning
-				// endpoints
-				continue
-			}
-			r.st.Incr("runner.datadog.successful_service_metrics_pull", addedTags(project, &device), 1)
+			for _, config := range serviceConfigs {
+				// Get metrics from services
+				deviceMetricsResp, err := r.queryDevice(
+					ctx,
+					project,
+					&device,
+					fmt.Sprintf(
+						"/applications/%s/services/%s/metrics",
+						app.ID, config.Service,
+					),
+				)
+				if err != nil || deviceMetricsResp.StatusCode != 200 {
+					r.st.Incr("runner.datadog.unsuccessful_service_metrics_pull", addedTags(project, &device), 1)
+					// TODO: we want to present to the user a list
+					// of applications that don't have functioning
+					// endpoints
+					if deviceMetricsResp != nil {
+						fmt.Println(deviceMetricsResp.Status)
+						fmt.Println(deviceMetricsResp.StatusCode)
+					}
+					continue
+				}
+				r.st.Incr("runner.datadog.successful_service_metrics_pull", addedTags(project, &device), 1)
 
-			// Convert request to DataDog format
-			serviceMetrics, err := translation.ConvertOpenMetricsToDataDog(deviceMetricsResp.Body)
-			if err != nil {
-				log.WithField("project_id", project.ID).
-					WithField("device_id", device.ID).
-					WithError(err).Error("parsing openmetrics")
-				continue
-			}
+				// Convert request to DataDog format
+				serviceMetrics, err := translation.ConvertOpenMetricsToDataDog(deviceMetricsResp.Body)
+				if err != nil {
+					log.WithField("project_id", project.ID).
+						WithField("device_id", device.ID).
+						WithError(err).Error("parsing openmetrics")
+					continue
+				}
 
-			allowedMetrics := []datadog.Metric{}
-			for _, whitelistedMetric := range asmc.ServiceMetricConfig.MetricWhitelist {
-				for _, serviceMetric := range serviceMetrics {
-					if strings.HasPrefix(serviceMetric.Metric, whitelistedMetric.MetricName) {
-						allowedMetric := serviceMetric
-
-						// Service level metrics get the "deviceplane.service." prefix.
-						allowedMetric.Metric = "deviceplane.service." + allowedMetric.Metric
-
-						// Optional labels
-						for _, label := range whitelistedMetric.Labels {
-							labelValue, ok := device.Labels[label]
-							if ok {
-								allowedMetric.Tags = append(
-									allowedMetric.Tags,
-									"label."+label+":"+labelValue,
-								)
-							}
+				addedMetrics := make(map[string]bool, len(serviceMetrics))
+				allowedMetrics := []datadog.Metric{}
+				for _, whitelistedMetric := range config.MetricWhitelist {
+					for _, serviceMetric := range serviceMetrics {
+						if addedMetrics[serviceMetric.Metric] {
+							continue
 						}
 
-						// Optional tags
-						for _, tag := range whitelistedMetric.Tags {
-							if tag == "deviceID" {
+						// Add the tag if it's in the metrics list
+						if strings.HasPrefix(serviceMetric.Metric, whitelistedMetric.Metric) {
+							addedMetrics[serviceMetric.Metric] = true
+							allowedMetric := serviceMetric
+
+							// Service level metrics get the "deviceplane.service." prefix.
+							allowedMetric.Metric = "deviceplane.service." + allowedMetric.Metric
+
+							// Optional labels
+							for _, label := range whitelistedMetric.Labels {
+								labelValue, ok := device.Labels[label]
+								if ok {
+									allowedMetric.Tags = append(
+										allowedMetric.Tags,
+										"label."+label+":"+labelValue,
+									)
+								}
+							}
+
+							// Optional tags
+							// kinda jank implementation
+							addTag := func(tag string, value string) {
 								allowedMetric.Tags = append(
 									allowedMetric.Tags,
-									"tag."+tag+":"+device.ID,
+									fmt.Sprintf("tag.%s:%s", tag, value),
 								)
 							}
+							for _, tag := range whitelistedMetric.Tags {
+								switch tag {
+								case "device":
+									addTag(tag, device.Name)
+								case "application":
+									addTag(tag, app.Name)
+								}
+							}
+
+							// Guaranteed tags
+							allowedMetric.Tags = append(
+								allowedMetric.Tags,
+								"tag.project:"+project.Name,
+							)
+
+							allowedMetrics = append(allowedMetrics, allowedMetric)
 						}
-
-						// Guaranteed tags
-						allowedMetric.Tags = append(
-							allowedMetric.Tags,
-							"tag.projectID:"+project.ID,
-						)
-						allowedMetric.Tags = append(
-							allowedMetric.Tags,
-							"tag.applicationID:"+asmc.Application.ID,
-						)
-
-						allowedMetrics = append(allowedMetrics, allowedMetric)
 					}
 				}
-			}
 
-			metrics = append(metrics, allowedMetrics...)
+				metrics = append(metrics, allowedMetrics...)
+			}
 		}
 	}
 
 	return metrics
-}
-
-func (r *Runner) queryDevice(ctx context.Context, project *models.Project, device *models.Device, url string) (*http.Response, error) {
-	deviceConn, err := r.connman.Dial(ctx, project.ID+device.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	req, _ := http.NewRequest(
-		"GET",
-		url,
-		nil,
-	)
-
-	if err := req.Write(deviceConn); err != nil {
-		return nil, err
-	}
-
-	resp, err := http.ReadResponse(bufio.NewReader(deviceConn), req)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp, nil
 }

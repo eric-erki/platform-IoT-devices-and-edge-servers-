@@ -1920,9 +1920,10 @@ func (s *Service) updateApplication(w http.ResponseWriter, r *http.Request,
 	applicationID string,
 ) {
 	var updateApplicationRequest struct {
-		Name           *string       `json:"name" validate:"name"`
-		Description    *string       `json:"description" validate:"description"`
-		SchedulingRule *models.Query `json:"schedulingRule"`
+		Name                 *string                       `json:"name" validate:"omitempty,name"`
+		Description          *string                       `json:"description" validate:"omitempty,description"`
+		SchedulingRule       *models.Query                 `json:"schedulingRule"`
+		ServiceMetricConfigs *[]models.ServiceMetricConfig `json:"serviceMetricConfigs"`
 	}
 	if err := read(r, &updateApplicationRequest); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -1964,6 +1965,13 @@ func (s *Service) updateApplication(w http.ResponseWriter, r *http.Request,
 
 		if application, err = s.applications.UpdateApplicationSchedulingRule(r.Context(), applicationID, projectID, *updateApplicationRequest.SchedulingRule); err != nil {
 			log.WithError(err).Error("update application scheduling rule")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	}
+	if updateApplicationRequest.ServiceMetricConfigs != nil {
+		if application, err = s.applications.UpdateApplicationServiceMetricConfigs(r.Context(), applicationID, projectID, *updateApplicationRequest.ServiceMetricConfigs); err != nil {
+			log.WithError(err).Error("update application service metric configs")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}

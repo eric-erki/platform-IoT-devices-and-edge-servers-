@@ -71,7 +71,7 @@ func main() {
 	connman := connman.New()
 
 	runnerManager := runner.NewManager([]runner.Runner{
-		datadog.NewRunner(sqlStore, sqlStore, sqlStore, st, connman),
+		datadog.NewRunner(sqlStore, sqlStore, sqlStore, sqlStore, st, connman),
 	})
 	runnerManager.Start()
 

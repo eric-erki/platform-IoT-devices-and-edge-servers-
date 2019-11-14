@@ -163,16 +163,16 @@ type Application struct {
 }
 
 type ServiceMetricConfig struct {
-	ServiceName     string         `json:"serviceName"`
+	Service         string         `json:"service"`
 	Path            string         `json:"path"`
 	Port            string         `json:"port"`
 	MetricWhitelist []MetricConfig `json:"whitelist"`
 }
 
 type MetricConfig struct {
-	MetricName string   `json:"metricName"`
-	Labels     []string `json:"labels"`
-	Tags       []string `json:"tags"`
+	Metric string   `json:"metric"`
+	Labels []string `json:"labels"`
+	Tags   []string `json:"tags"`
 }
 
 type ApplicationDeviceCounts struct {
