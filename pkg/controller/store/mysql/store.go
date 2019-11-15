@@ -1805,25 +1805,6 @@ func (s *Store) UpdateApplicationSchedulingRule(ctx context.Context, id, project
 	return s.GetApplication(ctx, id, projectID)
 }
 
-func (s *Store) UpdateApplicationServiceMetricConfigs(ctx context.Context, id, projectID string, metricConfigs []models.ServiceMetricConfig) (*models.Application, error) {
-	metricConfigsBytes, err := json.Marshal(metricConfigs)
-	if err != nil {
-		return nil, err
-	}
-
-	if _, err := s.db.ExecContext(
-		ctx,
-		updateApplicationServiceMetricConfigs,
-		string(metricConfigsBytes),
-		id,
-		projectID,
-	); err != nil {
-		return nil, err
-	}
-
-	return s.GetApplication(ctx, id, projectID)
-}
-
 func (s *Store) DeleteApplication(ctx context.Context, id, projectID string) error {
 	_, err := s.db.ExecContext(
 		ctx,
@@ -1835,7 +1816,7 @@ func (s *Store) DeleteApplication(ctx context.Context, id, projectID string) err
 }
 
 func (s *Store) scanApplication(scanner scanner) (*models.Application, error) {
-	var schedulingRuleStr, serviceMetricConfigsStr string
+	var schedulingRuleStr string
 	var application models.Application
 	if err := scanner.Scan(
 		&application.ID,
@@ -1844,7 +1825,6 @@ func (s *Store) scanApplication(scanner scanner) (*models.Application, error) {
 		&application.Name,
 		&application.Description,
 		&schedulingRuleStr,
-		&serviceMetricConfigsStr,
 	); err != nil {
 		return nil, err
 	}
@@ -1853,14 +1833,6 @@ func (s *Store) scanApplication(scanner scanner) (*models.Application, error) {
 		application.SchedulingRule = make([]models.Filter, 0)
 	} else {
 		err := json.Unmarshal([]byte(schedulingRuleStr), &application.SchedulingRule)
-		if err != nil {
-			return nil, err
-		}
-	}
-	if serviceMetricConfigsStr == "" {
-		application.ServiceMetricConfigs = make([]models.ServiceMetricConfig, 0)
-	} else {
-		err := json.Unmarshal([]byte(serviceMetricConfigsStr), &application.ServiceMetricConfigs)
 		if err != nil {
 			return nil, err
 		}
@@ -2194,4 +2166,94 @@ func (s *Store) scanDeviceServiceStatus(scanner scanner) (*models.DeviceServiceS
 		return nil, err
 	}
 	return &deviceServiceStatus, nil
+}
+
+func (s *Store) scanMetricTargetConfig(scanner scanner) (*models.MetricTargetConfig, error) {
+	var configsString string
+	var mtConfig models.MetricTargetConfig
+	if err := scanner.Scan(
+		&mtConfig.ID,
+		&mtConfig.CreatedAt,
+		&mtConfig.ProjectID,
+		&mtConfig.Type,
+		&configsString,
+	); err != nil {
+		return nil, err
+	}
+
+	if configsString != "" {
+		if err := json.Unmarshal([]byte(configsString), &mtConfig.Configs); err != nil {
+			return nil, err
+		}
+	} else {
+		mtConfig.Configs = make([]models.MetricConfig, 0)
+	}
+
+	return &mtConfig, nil
+}
+
+func (s *Store) GetMetricTargetConfig(ctx context.Context, id, projectID string) (*models.MetricTargetConfig, error) {
+	configRow := s.db.QueryRowContext(ctx, getMetricTargetConfig, id, projectID)
+
+	config, err := s.scanMetricTargetConfig(configRow)
+	if err == sql.ErrNoRows {
+		return nil, store.ErrMetricTargetConfigNotFound
+	} else if err != nil {
+		return nil, err
+	}
+
+	return config, nil
+}
+
+func (s *Store) LookupMetricTargetConfig(ctx context.Context, configType, projectID string) (*models.MetricTargetConfig, error) {
+	configRow := s.db.QueryRowContext(ctx, lookupMetricTargetConfig, configType, projectID)
+
+	config, err := s.scanMetricTargetConfig(configRow)
+	if err == sql.ErrNoRows {
+		return nil, store.ErrMetricTargetConfigNotFound
+	} else if err != nil {
+		return nil, err
+	}
+
+	return config, nil
+}
+
+func (s *Store) CreateMetricTargetConfig(ctx context.Context, id, projectID string, metricTargetConfig *models.MetricTargetConfig) (*models.MetricTargetConfig, error) {
+	metricTargetConfigsBytes, err := json.Marshal(metricTargetConfig.Configs)
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := s.db.ExecContext(
+		ctx,
+		createMetricTargetConfig,
+		id,
+		projectID,
+		metricTargetConfig.Type,
+		string(metricTargetConfigsBytes),
+	); err != nil {
+		return nil, err
+	}
+
+	return s.GetMetricTargetConfig(ctx, id, projectID)
+}
+
+func (s *Store) UpdateMetricTargetConfig(ctx context.Context, id, projectID string, metricTargetConfig *models.MetricTargetConfig) (*models.MetricTargetConfig, error) {
+	metricTargetConfigsBytes, err := json.Marshal(metricTargetConfig.Configs)
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := s.db.ExecContext(
+		ctx,
+		updateMetricTargetConfig,
+		id,
+		projectID,
+		metricTargetConfig.Type,
+		string(metricTargetConfigsBytes),
+	); err != nil {
+		return nil, err
+	}
+
+	return s.GetMetricTargetConfig(ctx, id, projectID)
 }

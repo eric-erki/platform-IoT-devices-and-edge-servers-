@@ -523,17 +523,17 @@ const createApplication = `
 `
 
 const getApplication = `
-  select id, created_at, project_id, name, description, scheduling_rule, service_metric_configs from applications
+  select id, created_at, project_id, name, description, scheduling_rule from applications
   where id = ? and project_id = ?
 `
 
 const lookupApplication = `
-  select id, created_at, project_id, name, description, scheduling_rule, service_metric_configs from applications
+  select id, created_at, project_id, name, description, scheduling_rule from applications
   where name = ? and project_id = ?
 `
 
 const listApplications = `
-  select id, created_at, project_id, name, description, scheduling_rule, service_metric_configs from applications
+  select id, created_at, project_id, name, description, scheduling_rule from applications
   where project_id = ?
 `
 
@@ -552,12 +552,6 @@ const updateApplicationDescription = `
 const updateApplicationSchedulingRule = `
   update applications
   set scheduling_rule = ?
-  where id = ? and project_id = ?
-`
-
-const updateApplicationServiceMetricConfigs = `
-  update applications
-  set service_metric_configs = ?
   where id = ? and project_id = ?
 `
 
@@ -668,4 +662,30 @@ const listDeviceServiceStatuses = `
 const deleteDeviceServiceStatus = `
   delete from device_service_statuses
   where project_id = ? and device_id = ? and application_id = ? and service = ?
+`
+
+const createMetricTargetConfig = `
+  insert into metric_target_configs (
+    id,
+    project_id,
+    type,
+    configs
+  )
+  values (?, ?, ?, ?)
+`
+
+const updateMetricTargetConfig = `
+  update metric_target_configs
+  set type = ?, configs = ?
+  where id = ? and project_id = ?
+`
+
+const getMetricTargetConfig = `
+  select id, created_at, project_id, type, configs from metric_target_configs
+  where id = ? and project_id = ?
+`
+
+const lookupMetricTargetConfig = `
+  select id, created_at, project_id, type, configs from metric_target_configs
+  where type = ? and project_id = ?
 `

@@ -1920,10 +1920,9 @@ func (s *Service) updateApplication(w http.ResponseWriter, r *http.Request,
 	applicationID string,
 ) {
 	var updateApplicationRequest struct {
-		Name                 *string                       `json:"name" validate:"omitempty,name"`
-		Description          *string                       `json:"description" validate:"omitempty,description"`
-		SchedulingRule       *models.Query                 `json:"schedulingRule"`
-		ServiceMetricConfigs *[]models.ServiceMetricConfig `json:"serviceMetricConfigs"`
+		Name           *string       `json:"name" validate:"omitempty,name"`
+		Description    *string       `json:"description" validate:"omitempty,description"`
+		SchedulingRule *models.Query `json:"schedulingRule"`
 	}
 	if err := read(r, &updateApplicationRequest); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

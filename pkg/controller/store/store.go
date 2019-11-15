@@ -189,7 +189,6 @@ type Applications interface {
 	UpdateApplicationName(ctx context.Context, id, projectID, name string) (*models.Application, error)
 	UpdateApplicationDescription(ctx context.Context, id, projectID, description string) (*models.Application, error)
 	UpdateApplicationSchedulingRule(ctx context.Context, id, projectID string, schedulingRule models.Query) (*models.Application, error)
-	UpdateApplicationServiceMetricConfigs(ctx context.Context, id, projectID string, metricConfigs []models.ServiceMetricConfig) (*models.Application, error)
 	DeleteApplication(ctx context.Context, id, projectID string) error
 }
 
@@ -231,3 +230,12 @@ type DeviceServiceStatuses interface {
 }
 
 var ErrDeviceServiceStatusNotFound = errors.New("device service status not found")
+
+type MetricTargetConfigs interface {
+	CreateMetricTargetConfig(ctx context.Context, id, projectID string, metricTargetConfig *models.MetricTargetConfig) (*models.MetricTargetConfig, error)
+	GetMetricTargetConfig(ctx context.Context, id, projectID string) (*models.MetricTargetConfig, error)
+	LookupMetricTargetConfig(ctx context.Context, configType, projectID string) (*models.MetricTargetConfig, error)
+	UpdateMetricTargetConfig(ctx context.Context, id, projectID string, metricTargetConfig *models.MetricTargetConfig) (*models.MetricTargetConfig, error)
+}
+
+var ErrMetricTargetConfigNotFound = errors.New("metric target config not found")

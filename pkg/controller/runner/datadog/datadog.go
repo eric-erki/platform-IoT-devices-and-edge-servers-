@@ -2,7 +2,6 @@ package datadog
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -37,25 +36,6 @@ func NewRunner(projects store.Projects, applications store.Applications, release
 		connman:      connman,
 	}
 }
-
-// [
-//     {
-//         "service": "prometheus",
-//         "path": "/metrics",
-//         "port": "2112",
-//         "whitelist": [
-//             {
-//                 "metric": "go_threads",
-//                 "labels": [
-//                     "metrics"
-//                 ],
-//                 "tags": [
-// 			"yeet"
-// 		   ]
-//             }
-//         ]
-//     }
-// ]
 
 func (r *Runner) Do(ctx context.Context) {
 	projects, err := r.projects.ListProjects(ctx)
@@ -92,19 +72,13 @@ func (r *Runner) Do(ctx context.Context) {
 				req.Series,
 				r.getHostMetrics(ctx, &project, &device)...,
 			)
+
 		}
 
-		m := r.getServiceMetrics(ctx, &project)
 		req.Series = append(
 			req.Series,
-			m...,
+			r.getServiceMetrics(ctx, &project)...,
 		)
-
-		fmt.Println("GOT METRICS")
-		fmt.Println("SERVICE METRICS!")
-		j, err := json.MarshalIndent(m, ">>>", "    ")
-		fmt.Println(err)
-		fmt.Println(string(j))
 
 		client := datadog.NewClient(*project.DatadogAPIKey)
 		if err := client.PostMetrics(ctx, req); err != nil {

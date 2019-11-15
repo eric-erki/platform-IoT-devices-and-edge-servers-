@@ -153,26 +153,12 @@ type DeviceAccessKey struct {
 }
 
 type Application struct {
-	ID                   string                `json:"id"`
-	CreatedAt            time.Time             `json:"createdAt"`
-	ProjectID            string                `json:"projectId"`
-	Name                 string                `json:"name"`
-	Description          string                `json:"description"`
-	SchedulingRule       Query                 `json:"schedulingRule"`
-	ServiceMetricConfigs []ServiceMetricConfig `json:"serviceMetricConfigs"`
-}
-
-type ServiceMetricConfig struct {
-	Service         string         `json:"service"`
-	Path            string         `json:"path"`
-	Port            string         `json:"port"`
-	MetricWhitelist []MetricConfig `json:"whitelist"`
-}
-
-type MetricConfig struct {
-	Metric string   `json:"metric"`
-	Labels []string `json:"labels"`
-	Tags   []string `json:"tags"`
+	ID             string    `json:"id"`
+	CreatedAt      time.Time `json:"createdAt"`
+	ProjectID      string    `json:"projectId"`
+	Name           string    `json:"name"`
+	Description    string    `json:"description"`
+	SchedulingRule Query     `json:"schedulingRule"`
 }
 
 type ApplicationDeviceCounts struct {
@@ -207,6 +193,32 @@ type DeviceServiceStatus struct {
 	ApplicationID    string `json:"applicationId"`
 	Service          string `json:"service"`
 	CurrentReleaseID string `json:"currentReleaseId"`
+}
+
+type MetricTargetConfig struct {
+	ID        string         `json:"id"`
+	CreatedAt time.Time      `json:"createdAt"`
+	ProjectID string         `json:"projectId"`
+	Type      string         `json:"type"`
+	Configs   []MetricConfig `json:"configs"`
+}
+
+type MetricConfig struct {
+	Params  *ServiceMetricParams `json:"omitempty,params"`
+	Metrics []MetricTags         `json:"metrics"`
+}
+
+type ServiceMetricParams struct {
+	ApplicationID string `json:"applicationId"`
+	Service       string `json:"service"`
+	// TODO: Path          string `json:"path"`
+	// TODO: Port          string `json:"port"`
+}
+
+type MetricTags struct {
+	Metric string   `json:"metric"`
+	Labels []string `json:"labels"`
+	Tags   []string `json:"tags"`
 }
 
 type MembershipFull1 struct {
