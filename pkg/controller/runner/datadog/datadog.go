@@ -3,7 +3,6 @@ package datadog
 import (
 	"context"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/DataDog/datadog-go/statsd"
@@ -18,22 +17,24 @@ import (
 )
 
 type Runner struct {
-	projects     store.Projects
-	applications store.Applications
-	devices      store.Devices
-	releases     store.Releases
-	st           *statsd.Client
-	connman      *connman.ConnectionManager
+	projects            store.Projects
+	applications        store.Applications
+	devices             store.Devices
+	releases            store.Releases
+	metricTargetConfigs store.MetricTargetConfigs
+	st                  *statsd.Client
+	connman             *connman.ConnectionManager
 }
 
-func NewRunner(projects store.Projects, applications store.Applications, releases store.Releases, devices store.Devices, st *statsd.Client, connman *connman.ConnectionManager) *Runner {
+func NewRunner(projects store.Projects, applications store.Applications, releases store.Releases, devices store.Devices, metricTargetConfigs store.MetricTargetConfigs, st *statsd.Client, connman *connman.ConnectionManager) *Runner {
 	return &Runner{
-		projects:     projects,
-		applications: applications,
-		devices:      devices,
-		releases:     releases,
-		st:           st,
-		connman:      connman,
+		projects:            projects,
+		applications:        applications,
+		devices:             devices,
+		releases:            releases,
+		metricTargetConfigs: metricTargetConfigs,
+		st:                  st,
+		connman:             connman,
 	}
 }
 
@@ -59,12 +60,12 @@ func (r *Runner) Do(ctx context.Context) {
 		for _, device := range devices {
 			req.Series = append(
 				req.Series,
-				r.getStateMetrics(&project, &device)...,
+				r.getStateMetrics(ctx, &project, &device)...,
 			)
 
 			// If the device is offline, we can't get any more
 			// metrics from it anyway
-			if device.Status == models.DeviceStatusOffline {
+			if device.Status != models.DeviceStatusOnline {
 				continue
 			}
 
@@ -95,9 +96,77 @@ func addedTags(project *models.Project, device *models.Device) []string {
 	}
 }
 
-func (r *Runner) getStateMetrics(project *models.Project, device *models.Device) datadog.Series {
-	addedTags := addedTags(project, device)
+func getFilteredMetrics(
+	project *models.Project,
+	app *models.Application,
+	device *models.Device,
+	targetType models.MetricTargetType,
+	config models.MetricConfig,
+	metrics []datadog.Metric,
+) []datadog.Metric {
+	var metricPrefix = "deviceplane."
+	switch targetType {
+	case models.MetricHostTargetType:
+		metricPrefix = "deviceplane.host."
+	case models.MetricServiceTargetType:
+		metricPrefix = "deviceplane.service."
+	case models.MetricStateTargetType:
+		metricPrefix = "deviceplane.host."
+	default:
+		metricPrefix += "unknown"
+	}
+	metricPrefix += "."
 
+	returnedMetrics := make([]datadog.Metric, 0)
+	returnedMetricsLookup := make(map[string]bool, len(metrics))
+
+	for _, metricConfig := range config.Metrics {
+		for _, m := range metrics {
+			if returnedMetricsLookup[m.Metric] {
+				continue
+			}
+			if m.Metric == metricConfig.Metric {
+				returnedMetricsLookup[m.Metric] = true
+
+				m.Metric = metricPrefix + m.Metric
+
+				addTag := func(prefix string, tag string, value string) {
+					m.Tags = append(
+						m.Tags,
+						fmt.Sprintf("%s.%s:%s", prefix, tag, value),
+					)
+				}
+
+				// Optional labels
+				for _, label := range metricConfig.Labels {
+					labelValue, ok := device.Labels[label]
+					if ok {
+						addTag("label", label, labelValue)
+					}
+				}
+
+				// Optional tags
+				// implementation could be less manual
+				for _, tag := range metricConfig.Tags {
+					switch tag {
+					case "device":
+						addTag("tag", tag, device.Name)
+					case "application":
+						addTag("tag", tag, app.Name)
+					}
+				}
+
+				// Guaranteed tags
+				addTag("tag", "project", project.Name)
+				returnedMetrics = append(returnedMetrics, m)
+			}
+		}
+	}
+
+	return returnedMetrics
+}
+
+func (r *Runner) getStateMetrics(ctx context.Context, project *models.Project, device *models.Device) datadog.Series {
 	stateMetrics := []datadog.Metric{
 		datadog.Metric{
 			Metric: "devices",
@@ -112,17 +181,19 @@ func (r *Runner) getStateMetrics(project *models.Project, device *models.Device)
 		},
 	}
 
-	for i := range stateMetrics {
-		// Project level metrics get the
-		// "deviceplane.project." prefix.
-		stateMetrics[i].Metric = "deviceplane.project." + stateMetrics[i].Metric
-		stateMetrics[i].Tags = append(
-			stateMetrics[i].Tags,
-			addedTags...,
-		)
+	metricConfig, err := r.metricTargetConfigs.LookupMetricTargetConfig(ctx, project.ID, string(models.MetricStateTargetType))
+	if err != nil || metricConfig == nil {
+		log.WithField("project_id", project.ID).
+			WithError(err).Error("getting state metric config")
+		return nil
 	}
 
-	return stateMetrics
+	if len(metricConfig.Configs) == 0 {
+		return nil
+	}
+
+	config := metricConfig.Configs[0]
+	return getFilteredMetrics(project, nil, device, metricConfig.Type, config, stateMetrics)
 }
 
 func (r *Runner) getHostMetrics(ctx context.Context, project *models.Project, device *models.Device) datadog.Series {
@@ -149,19 +220,57 @@ func (r *Runner) getHostMetrics(ctx context.Context, project *models.Project, de
 		return nil
 	}
 
-	// Process metrics
-	for i := range metrics {
-		// Host metrics get the "deviceplane.host." prefix.
-		metrics[i].Metric = "deviceplane.host." + metrics[i].Metric
-		metrics[i].Tags = append(addedTags, metrics[i].Tags...)
+	// Get metrics config
+	metricConfig, err := r.metricTargetConfigs.LookupMetricTargetConfig(ctx, project.ID, string(models.MetricHostTargetType))
+	if err != nil || metricConfig == nil {
+		log.WithField("project_id", project.ID).
+			WithError(err).Error("getting host metric config")
+		return nil
 	}
-	return metrics
+
+	if len(metricConfig.Configs) == 0 {
+		return nil
+	}
+
+	config := metricConfig.Configs[0]
+	return getFilteredMetrics(project, nil, device, metricConfig.Type, config, metrics)
 }
 
 func (r *Runner) getServiceMetrics(ctx context.Context, project *models.Project) (metrics datadog.Series) {
-	appServiceConfigs := r.getAppServiceConfigs(ctx, project)
-	if len(appServiceConfigs) == 0 {
+	// Get metrics config
+	metricConfig, err := r.metricTargetConfigs.LookupMetricTargetConfig(ctx, project.ID, string(models.MetricServiceTargetType))
+	if err != nil || metricConfig == nil {
+		log.WithField("project_id", project.ID).
+			WithError(err).Error("getting service metric config")
 		return nil
+	}
+
+	if len(metricConfig.Configs) == 0 {
+		return nil
+	}
+
+	// Add apps to map by ID
+	// Add services to map by name
+	apps, err := r.applications.ListApplications(ctx, project.ID)
+	if err != nil {
+		log.WithField("project", project.ID).WithError(err).Error("listing applications")
+		return nil
+	}
+	appsByID := make(map[string]*models.Application, len(apps))
+	latestAppReleaseByAppID := make(map[string]*models.Release, len(apps))
+	for i, app := range apps {
+		appsByID[app.ID] = &apps[i]
+
+		release, err := r.releases.GetLatestRelease(ctx, project.ID, app.ID)
+		if err == store.ErrReleaseNotFound {
+			continue
+		} else if err != nil {
+			log.WithField("application", app.ID).
+				WithError(err).Error("get latest release")
+			continue
+		}
+
+		latestAppReleaseByAppID[app.ID] = release
 	}
 
 	devices, err := r.devices.ListDevices(ctx, project.ID)
@@ -176,110 +285,83 @@ func (r *Runner) getServiceMetrics(ctx context.Context, project *models.Project)
 	// TODO: if things start getting slow, the runtime of this function, and
 	// specifically this following section should probably be optimized
 	for _, device := range devices {
-		// Add metrics for all services, in all apps, on all devices
-		// O(s*a*d)
-		for app, serviceConfigs := range appServiceConfigs {
-			appIsScheduled, err := query.DeviceMatchesQuery(device, app.SchedulingRule)
-			if err != nil {
-				log.WithField("application", app.ID).
-					WithField("device", device.ID).
-					WithError(err).Error("evaluate application scheduling rule")
-				continue
-			}
-			if !appIsScheduled {
+		if device.Status != models.DeviceStatusOnline {
+			continue
+		}
+
+		appIsScheduled := map[string]bool{} // we have denormalized (app, serv), (app, serv2) tuples in metricConfig.Configs
+		for _, config := range metricConfig.Configs {
+			if config.Params == nil {
 				continue
 			}
 
-			for _, config := range serviceConfigs {
-				// Get metrics from services
-				deviceMetricsResp, err := r.queryDevice(
-					ctx,
-					project,
-					&device,
-					fmt.Sprintf(
-						"/applications/%s/services/%s/metrics",
-						app.ID, config.Service,
-					),
-				)
-				if err != nil || deviceMetricsResp.StatusCode != 200 {
-					r.st.Incr("runner.datadog.unsuccessful_service_metrics_pull", addedTags(project, &device), 1)
-					// TODO: we want to present to the user a list
-					// of applications that don't have functioning
-					// endpoints
-					if deviceMetricsResp != nil {
-						fmt.Println(deviceMetricsResp.Status)
-						fmt.Println(deviceMetricsResp.StatusCode)
-					}
-					continue
-				}
-				r.st.Incr("runner.datadog.successful_service_metrics_pull", addedTags(project, &device), 1)
+			app, exists := appsByID[config.Params.ApplicationID]
+			if !exists {
+				continue
+			}
 
-				// Convert request to DataDog format
-				serviceMetrics, err := translation.ConvertOpenMetricsToDataDog(deviceMetricsResp.Body)
+			scheduled, exists := appIsScheduled[app.ID]
+			if !exists {
+				var err error
+				scheduled, err = query.DeviceMatchesQuery(device, app.SchedulingRule)
 				if err != nil {
-					log.WithField("project_id", project.ID).
-						WithField("device_id", device.ID).
-						WithError(err).Error("parsing openmetrics")
-					continue
+					log.WithField("application", app.ID).
+						WithField("device", device.ID).
+						WithError(err).Error("evaluate application scheduling rule")
+					scheduled = false
 				}
-
-				addedMetrics := make(map[string]bool, len(serviceMetrics))
-				allowedMetrics := []datadog.Metric{}
-				for _, whitelistedMetric := range config.MetricWhitelist {
-					for _, serviceMetric := range serviceMetrics {
-						if addedMetrics[serviceMetric.Metric] {
-							continue
-						}
-
-						// Add the tag if it's in the metrics list
-						if strings.HasPrefix(serviceMetric.Metric, whitelistedMetric.Metric) {
-							addedMetrics[serviceMetric.Metric] = true
-							allowedMetric := serviceMetric
-
-							// Service level metrics get the "deviceplane.service." prefix.
-							allowedMetric.Metric = "deviceplane.service." + allowedMetric.Metric
-
-							// Optional labels
-							for _, label := range whitelistedMetric.Labels {
-								labelValue, ok := device.Labels[label]
-								if ok {
-									allowedMetric.Tags = append(
-										allowedMetric.Tags,
-										"label."+label+":"+labelValue,
-									)
-								}
-							}
-
-							// Optional tags
-							// kinda jank implementation
-							addTag := func(tag string, value string) {
-								allowedMetric.Tags = append(
-									allowedMetric.Tags,
-									fmt.Sprintf("tag.%s:%s", tag, value),
-								)
-							}
-							for _, tag := range whitelistedMetric.Tags {
-								switch tag {
-								case "device":
-									addTag(tag, device.Name)
-								case "application":
-									addTag(tag, app.Name)
-								}
-							}
-
-							// Guaranteed tags
-							allowedMetric.Tags = append(
-								allowedMetric.Tags,
-								"tag.project:"+project.Name,
-							)
-
-							allowedMetrics = append(allowedMetrics, allowedMetric)
-						}
-					}
-				}
-
-				metrics = append(metrics, allowedMetrics...)
+				appIsScheduled[app.ID] = scheduled
 			}
+			if !scheduled {
+				continue
+			}
+
+			release, exists := latestAppReleaseByAppID[app.ID]
+			if !exists {
+				continue
+			}
+
+			_, exists = release.Config[config.Params.Service]
+			if !exists {
+				continue
+			}
+
+			// Get metrics from services
+			deviceMetricsResp, err := r.queryDevice(
+				ctx,
+				project,
+				&device,
+				fmt.Sprintf(
+					"/applications/%s/services/%s/metrics",
+					app.ID, config.Params.Service,
+				),
+			)
+			if err != nil || deviceMetricsResp.StatusCode != 200 {
+				r.st.Incr("runner.datadog.unsuccessful_service_metrics_pull", addedTags(project, &device), 1)
+				// TODO: we want to present to the user a list
+				// of applications that don't have functioning
+				// endpoints
+				if deviceMetricsResp != nil {
+					fmt.Println(deviceMetricsResp.Status)
+					fmt.Println(deviceMetricsResp.StatusCode)
+				}
+				continue
+			}
+			r.st.Incr("runner.datadog.successful_service_metrics_pull", addedTags(project, &device), 1)
+
+			// Convert request to DataDog format
+			serviceMetrics, err := translation.ConvertOpenMetricsToDataDog(deviceMetricsResp.Body)
+			if err != nil {
+				log.WithField("project_id", project.ID).
+					WithField("device_id", device.ID).
+					WithError(err).Error("parsing openmetrics")
+				continue
+			}
+
+			metrics = append(
+				metrics,
+				getFilteredMetrics(project, app, &device, metricConfig.Type, config, serviceMetrics)...,
+			)
 		}
 	}
 
