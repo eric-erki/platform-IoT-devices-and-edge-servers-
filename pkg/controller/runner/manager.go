@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	repeatInverval = time.Minute / 6
+	repeatInverval = time.Minute
 )
 
 // Manager is responsible for running all background runners
