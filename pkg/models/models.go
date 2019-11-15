@@ -196,12 +196,20 @@ type DeviceServiceStatus struct {
 }
 
 type MetricTargetConfig struct {
-	ID        string         `json:"id"`
-	CreatedAt time.Time      `json:"createdAt"`
-	ProjectID string         `json:"projectId"`
-	Type      string         `json:"type"`
-	Configs   []MetricConfig `json:"configs"`
+	ID        string           `json:"id"`
+	CreatedAt time.Time        `json:"createdAt"`
+	ProjectID string           `json:"projectId"`
+	Type      MetricTargetType `json:"type"`
+	Configs   []MetricConfig   `json:"configs"`
 }
+
+type MetricTargetType string
+
+const (
+	MetricServiceTargetType MetricTargetType = "service"
+	MetricHostTargetType    MetricTargetType = "host"
+	MetricStateTargetType   MetricTargetType = "state"
+)
 
 type MetricConfig struct {
 	Params  *ServiceMetricParams `json:"omitempty,params"`

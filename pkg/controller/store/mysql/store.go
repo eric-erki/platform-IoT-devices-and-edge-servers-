@@ -34,6 +34,7 @@ const (
 	deviceAccessKeyPrefix         = "dak"
 	applicationPrefix             = "app"
 	releasePrefix                 = "rel"
+	metricTargetConfigPrefix      = "mtc"
 )
 
 func newUserID() string {
@@ -90,6 +91,10 @@ func newApplicationID() string {
 
 func newReleaseID() string {
 	return fmt.Sprintf("%s_%s", releasePrefix, ksuid.New().String())
+}
+
+func newMetricTargetConfigID() string {
+	return fmt.Sprintf("%s_%s", metricTargetConfigPrefix, ksuid.New().String())
 }
 
 var (
@@ -2192,7 +2197,7 @@ func (s *Store) scanMetricTargetConfig(scanner scanner) (*models.MetricTargetCon
 	return &mtConfig, nil
 }
 
-func (s *Store) GetMetricTargetConfig(ctx context.Context, id, projectID string) (*models.MetricTargetConfig, error) {
+func (s *Store) GetMetricTargetConfig(ctx context.Context, projectID, id string) (*models.MetricTargetConfig, error) {
 	configRow := s.db.QueryRowContext(ctx, getMetricTargetConfig, id, projectID)
 
 	config, err := s.scanMetricTargetConfig(configRow)
@@ -2205,7 +2210,7 @@ func (s *Store) GetMetricTargetConfig(ctx context.Context, id, projectID string)
 	return config, nil
 }
 
-func (s *Store) LookupMetricTargetConfig(ctx context.Context, configType, projectID string) (*models.MetricTargetConfig, error) {
+func (s *Store) LookupMetricTargetConfig(ctx context.Context, projectID, configType string) (*models.MetricTargetConfig, error) {
 	configRow := s.db.QueryRowContext(ctx, lookupMetricTargetConfig, configType, projectID)
 
 	config, err := s.scanMetricTargetConfig(configRow)
@@ -2218,19 +2223,21 @@ func (s *Store) LookupMetricTargetConfig(ctx context.Context, configType, projec
 	return config, nil
 }
 
-func (s *Store) CreateMetricTargetConfig(ctx context.Context, id, projectID string, metricTargetConfig *models.MetricTargetConfig) (*models.MetricTargetConfig, error) {
-	metricTargetConfigsBytes, err := json.Marshal(metricTargetConfig.Configs)
+func (s *Store) CreateMetricTargetConfig(ctx context.Context, projectID, configType string, configs []models.MetricConfig) (*models.MetricTargetConfig, error) {
+	configsBytes, err := json.Marshal(configs)
 	if err != nil {
 		return nil, err
 	}
+
+	id := newMetricTargetConfigID()
 
 	if _, err := s.db.ExecContext(
 		ctx,
 		createMetricTargetConfig,
 		id,
 		projectID,
-		metricTargetConfig.Type,
-		string(metricTargetConfigsBytes),
+		configType,
+		string(configsBytes),
 	); err != nil {
 		return nil, err
 	}
@@ -2238,8 +2245,8 @@ func (s *Store) CreateMetricTargetConfig(ctx context.Context, id, projectID stri
 	return s.GetMetricTargetConfig(ctx, id, projectID)
 }
 
-func (s *Store) UpdateMetricTargetConfig(ctx context.Context, id, projectID string, metricTargetConfig *models.MetricTargetConfig) (*models.MetricTargetConfig, error) {
-	metricTargetConfigsBytes, err := json.Marshal(metricTargetConfig.Configs)
+func (s *Store) UpdateMetricTargetConfig(ctx context.Context, projectID, id string, configs []models.MetricConfig) (*models.MetricTargetConfig, error) {
+	metricTargetConfigsBytes, err := json.Marshal(configs)
 	if err != nil {
 		return nil, err
 	}
@@ -2247,10 +2254,9 @@ func (s *Store) UpdateMetricTargetConfig(ctx context.Context, id, projectID stri
 	if _, err := s.db.ExecContext(
 		ctx,
 		updateMetricTargetConfig,
+		string(metricTargetConfigsBytes),
 		id,
 		projectID,
-		metricTargetConfig.Type,
-		string(metricTargetConfigsBytes),
 	); err != nil {
 		return nil, err
 	}

@@ -676,7 +676,7 @@ const createMetricTargetConfig = `
 
 const updateMetricTargetConfig = `
   update metric_target_configs
-  set type = ?, configs = ?
+  set configs = ?
   where id = ? and project_id = ?
 `
 

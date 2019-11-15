@@ -63,6 +63,7 @@ type Service struct {
 	releaseDeviceCounts        store.ReleaseDeviceCounts
 	deviceApplicationStatuses  store.DeviceApplicationStatuses
 	deviceServiceStatuses      store.DeviceServiceStatuses
+	metricTargetConfigs        store.MetricTargetConfigs
 	email                      email.Interface
 	cookieDomain               string
 	cookieSecure               bool
@@ -98,6 +99,7 @@ func NewService(
 	releasesDeviceCounts store.ReleaseDeviceCounts,
 	deviceApplicationStatuses store.DeviceApplicationStatuses,
 	deviceServiceStatuses store.DeviceServiceStatuses,
+	metricTargetConfigs store.MetricTargetConfigs,
 	email email.Interface,
 	cookieDomain string,
 	cookieSecure bool,
@@ -130,6 +132,7 @@ func NewService(
 		releaseDeviceCounts:        releasesDeviceCounts,
 		deviceApplicationStatuses:  deviceApplicationStatuses,
 		deviceServiceStatuses:      deviceServiceStatuses,
+		metricTargetConfigs:        metricTargetConfigs,
 		email:                      email,
 		cookieDomain:               cookieDomain,
 		cookieSecure:               cookieSecure,
@@ -196,6 +199,9 @@ func NewService(
 	apiRouter.HandleFunc("/projects/{project}/serviceaccounts", s.validateAuthorization("serviceaccounts", "ListServiceAccounts", s.listServiceAccounts)).Methods("GET")
 	apiRouter.HandleFunc("/projects/{project}/serviceaccounts/{serviceaccount}", s.validateAuthorization("serviceaccounts", "UpdateServiceAccount", s.withServiceAccount(s.updateServiceAccount))).Methods("PUT")
 	apiRouter.HandleFunc("/projects/{project}/serviceaccounts/{serviceaccount}", s.validateAuthorization("serviceaccounts", "DeleteServiceAccount", s.withServiceAccount(s.deleteServiceAccount))).Methods("DELETE")
+
+	apiRouter.HandleFunc("/projects/{project}/metrictargetconfig/{metrictargetconfigtype}", s.validateAuthorization("metrictargetconfig", "GetMetricTargetConfig", s.getMetricTargetConfig)).Methods("GET")
+	apiRouter.HandleFunc("/projects/{project}/metrictargetconfig/{metrictargetconfigtype}", s.validateAuthorization("metrictargetconfig", "UpdateMetricTargetConfig", s.updateMetricTargetConfig)).Methods("PUT")
 
 	apiRouter.HandleFunc("/projects/{project}/serviceaccounts/{serviceaccount}/serviceaccountaccesskeys", s.validateAuthorization("serviceaccountaccesskeys", "CreateServiceAccountAccessKey", s.createServiceAccountAccessKey)).Methods("POST")
 	apiRouter.HandleFunc("/projects/{project}/serviceaccounts/{serviceaccount}/serviceaccountaccesskeys/{serviceaccountaccesskey}", s.validateAuthorization("serviceaccountaccesskeys", "GetServiceAccountAccessKey", s.getServiceAccountAccessKey)).Methods("GET")
@@ -1091,6 +1097,26 @@ func (s *Service) createProject(w http.ResponseWriter, r *http.Request, authenti
 		return
 	}
 
+	// Create default metrics configs
+	types := []string{
+		string(models.MetricHostTargetType),
+		string(models.MetricServiceTargetType),
+		string(models.MetricStateTargetType),
+	}
+	for _, configType := range types {
+		_, err := s.metricTargetConfigs.CreateMetricTargetConfig(
+			r.Context(),
+			project.ID,
+			configType,
+			nil,
+		)
+		if err != nil {
+			log.WithError(err).Error("create default metrics type " + configType)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	}
+
 	utils.Respond(w, project)
 }
 
@@ -1968,13 +1994,6 @@ func (s *Service) updateApplication(w http.ResponseWriter, r *http.Request,
 			return
 		}
 	}
-	if updateApplicationRequest.ServiceMetricConfigs != nil {
-		if application, err = s.applications.UpdateApplicationServiceMetricConfigs(r.Context(), applicationID, projectID, *updateApplicationRequest.ServiceMetricConfigs); err != nil {
-			log.WithError(err).Error("update application service metric configs")
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-	}
 
 	utils.Respond(w, application)
 }
@@ -2725,4 +2744,69 @@ func (s *Service) deleteDeviceServiceStatus(w http.ResponseWriter, r *http.Reque
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+}
+
+func (s *Service) getMetricTargetConfig(w http.ResponseWriter, r *http.Request,
+	projectID, authenticatedUserID, authenticatedServiceAccountID string,
+) {
+	vars := mux.Vars(r)
+	configType := vars["metrictargetconfigtype"]
+
+	if configType != string(models.MetricHostTargetType) &&
+		configType != string(models.MetricServiceTargetType) &&
+		configType != string(models.MetricStateTargetType) {
+		http.Error(w, store.ErrInvalidMetricTargetType.Error(), http.StatusBadRequest)
+		return
+	}
+
+	metricTargetConfig, err := s.metricTargetConfigs.LookupMetricTargetConfig(r.Context(), projectID, configType)
+	if err == store.ErrMetricTargetConfigNotFound {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	} else if err != nil {
+		log.WithError(err).Error("get metric target config")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	utils.Respond(w, metricTargetConfig)
+}
+
+func (s *Service) updateMetricTargetConfig(w http.ResponseWriter, r *http.Request,
+	projectID, authenticatedUserID, authenticatedServiceAccountID string,
+) {
+	vars := mux.Vars(r)
+	configType := vars["metrictargetconfigtype"]
+
+	if configType != string(models.MetricHostTargetType) &&
+		configType != string(models.MetricServiceTargetType) &&
+		configType != string(models.MetricStateTargetType) {
+		http.Error(w, store.ErrInvalidMetricTargetType.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var updateMetricTargetConfigRequest []models.MetricConfig
+	if err := read(r, &updateMetricTargetConfigRequest); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	metricTargetConfig, err := s.metricTargetConfigs.LookupMetricTargetConfig(
+		r.Context(), projectID, configType,
+	)
+	if err != nil {
+		log.WithError(err).Error("lookup metric target config")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	updatedMetricTargetConfig, err := s.metricTargetConfigs.UpdateMetricTargetConfig(
+		r.Context(), projectID, metricTargetConfig.ID, updateMetricTargetConfigRequest,
+	)
+	if err != nil {
+		log.WithError(err).Error("update metric target config")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	utils.Respond(w, updatedMetricTargetConfig)
 }
