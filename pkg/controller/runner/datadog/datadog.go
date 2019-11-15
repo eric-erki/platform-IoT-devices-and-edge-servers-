@@ -2,6 +2,7 @@ package datadog
 
 import (
 	"context"
+	"sync"
 
 	"github.com/DataDog/datadog-go/statsd"
 	"github.com/apex/log"
@@ -108,28 +109,35 @@ func (r *Runner) Do(ctx context.Context) {
 		}
 
 		var req datadog.PostMetricsRequest
-		for _, device := range devices {
-			req.Series = append(
-				req.Series,
-				r.getStateMetrics(ctx, &project, &device, stateMetricConfig)...,
-			)
+		var wg sync.WaitGroup
+		for i := range devices {
+			wg.Add(1)
+			go func(device models.Device) {
+				defer wg.Done()
 
-			// If the device is offline can't get non-state metrics
-			// from it
-			if device.Status != models.DeviceStatusOnline {
-				continue
-			}
+				req.Series = append(
+					req.Series,
+					r.getStateMetrics(ctx, &project, &device, stateMetricConfig)...,
+				)
 
-			req.Series = append(
-				req.Series,
-				r.getHostMetrics(ctx, &project, &device, hostMetricConfig)...,
-			)
+				// If the device is offline can't get non-state metrics
+				// from it
+				if device.Status != models.DeviceStatusOnline {
+					return
+				}
 
-			req.Series = append(
-				req.Series,
-				r.getServiceMetrics(ctx, &project, &device, serviceMetricConfig, apps, appsByID, latestAppReleaseByAppID)...,
-			)
+				req.Series = append(
+					req.Series,
+					r.getHostMetrics(ctx, &project, &device, hostMetricConfig)...,
+				)
+
+				req.Series = append(
+					req.Series,
+					r.getServiceMetrics(ctx, &project, &device, serviceMetricConfig, apps, appsByID, latestAppReleaseByAppID)...,
+				)
+			}(devices[i])
 		}
+		wg.Wait()
 
 		client := datadog.NewClient(*project.DatadogAPIKey)
 		if err := client.PostMetrics(ctx, req); err != nil {
