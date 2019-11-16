@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, { Component, Fragment } from 'react';
 import {
   Pane,
@@ -16,14 +15,6 @@ import CustomSpinner from '../../components/CustomSpinner';
 import { EditableLabelTable } from "../../components/EditableLabelTable";
 
 export default class DeviceOverview extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      metrics: undefined,
-    }
-  }
-
   renderDeviceOs(device) {
     var innerText = '-';
     if (
@@ -33,27 +24,6 @@ export default class DeviceOverview extends Component {
       innerText = device.info.osRelease.prettyName;
     }
     return <Pane>{innerText}</Pane>;
-  }
-
-  componentDidMount() {
-    axios
-      .get(
-        `${config.endpoint}/projects/${this.props.projectName}/devices/${this.props.device.name}/metrics`,
-        {
-          withCredentials: true
-        }
-      )
-      .then(response => {
-        this.setState({
-          metrics: response.data
-        });
-      })
-      .catch(error => {
-        console.log(error);
-        this.setState({
-          metrics: 'Error loading metrics ' + error,
-        })
-      });
   }
 
   render() {
@@ -86,16 +56,16 @@ export default class DeviceOverview extends Component {
                       alignItems="center"
                       paddingRight="0"
                     >
-                      {device.status === "offline" ? (
-                        <Badge color="red">offline</Badge>
+                      {device.status === 'offline' ? (
+                        <Badge color='red'>offline</Badge>
                       ) : (
-                        <Badge color="green">online</Badge>
+                        <Badge color='green'>online</Badge>
                       )}
                     </Table.TextCell>
                     <Table.TextCell>
-                      {device.info.hasOwnProperty("ipAddress")
+                      {device.info.hasOwnProperty('ipAddress')
                         ? device.info.ipAddress
-                        : ""}
+                        : ''}
                     </Table.TextCell>
                     <Table.TextCell>
                       {this.renderDeviceOs(device)}
@@ -119,22 +89,6 @@ export default class DeviceOverview extends Component {
                 device={device}
                 history={history}
               />
-            </InnerCard>
-            <InnerCard>
-              <Heading padding={majorScale(2)}>Metrics</Heading>
-              <Text padding={majorScale(2)}>
-                {this.state.metrics
-                  ? this.state.metrics.split('\n').map((line, i) => {
-                    if (line.startsWith('#')) {
-                      return <p  key={i} style={{
-                        'color': 'gray',
-                        'margin': 0,
-                      }}>{line}</p>
-                    }
-                    return <p key={i}>{line}</p>
-                  })
-                  : 'Loading Metrics...'}
-              </Text>
             </InnerCard>
           </Fragment>
         ) : (
