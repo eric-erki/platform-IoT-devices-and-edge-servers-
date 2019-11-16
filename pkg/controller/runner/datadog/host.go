@@ -11,7 +11,7 @@ import (
 
 func (r *Runner) getHostMetrics(ctx context.Context, project *models.Project, device *models.Device, metricConfig *models.MetricTargetConfig) datadog.Series {
 	// Get metrics from host
-	deviceMetricsResp, err := r.queryDevice(
+	deviceMetricsResp, err := r.agentClient.QueryDevice(
 		ctx,
 		project,
 		device,

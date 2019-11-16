@@ -68,7 +68,7 @@ func (r *Runner) getServiceMetrics(
 		}
 
 		// Get metrics from services
-		deviceMetricsResp, err := r.queryDevice(
+		deviceMetricsResp, err := r.agentClient.QueryDevice(
 			ctx,
 			project,
 			device,

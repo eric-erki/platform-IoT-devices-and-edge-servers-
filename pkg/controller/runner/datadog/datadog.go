@@ -7,6 +7,7 @@ import (
 	"github.com/DataDog/datadog-go/statsd"
 	"github.com/apex/log"
 
+	"github.com/deviceplane/deviceplane/pkg/agent/service/client"
 	"github.com/deviceplane/deviceplane/pkg/controller/connman"
 	"github.com/deviceplane/deviceplane/pkg/controller/store"
 	"github.com/deviceplane/deviceplane/pkg/metrics/datadog"
@@ -20,7 +21,7 @@ type Runner struct {
 	releases            store.Releases
 	metricTargetConfigs store.MetricTargetConfigs
 	st                  *statsd.Client
-	connman             *connman.ConnectionManager
+	agentClient         *client.Client
 }
 
 func NewRunner(projects store.Projects, applications store.Applications, releases store.Releases, devices store.Devices, metricTargetConfigs store.MetricTargetConfigs, st *statsd.Client, connman *connman.ConnectionManager) *Runner {
@@ -31,7 +32,7 @@ func NewRunner(projects store.Projects, applications store.Applications, release
 		releases:            releases,
 		metricTargetConfigs: metricTargetConfigs,
 		st:                  st,
-		connman:             connman,
+		agentClient:         client.NewClient(connman),
 	}
 }
 
