@@ -4,7 +4,6 @@ import {
   Table,
   majorScale,
   Button,
-  Text,
   Heading,
   Badge,
 } from 'evergreen-ui';
@@ -57,9 +56,9 @@ export default class DeviceOverview extends Component {
                       paddingRight="0"
                     >
                       {device.status === 'offline' ? (
-                        <Badge color='red'>offline</Badge>
+                        <Badge color="red">offline</Badge>
                       ) : (
-                        <Badge color='green'>online</Badge>
+                        <Badge color="green">online</Badge>
                       )}
                     </Table.TextCell>
                     <Table.TextCell>
