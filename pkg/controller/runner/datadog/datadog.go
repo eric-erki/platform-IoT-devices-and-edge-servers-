@@ -7,7 +7,6 @@ import (
 	"github.com/DataDog/datadog-go/statsd"
 	"github.com/apex/log"
 
-	"github.com/deviceplane/deviceplane/pkg/agent/service/client"
 	"github.com/deviceplane/deviceplane/pkg/controller/connman"
 	"github.com/deviceplane/deviceplane/pkg/controller/store"
 	"github.com/deviceplane/deviceplane/pkg/metrics/datadog"
@@ -21,7 +20,7 @@ type Runner struct {
 	releases            store.Releases
 	metricTargetConfigs store.MetricTargetConfigs
 	st                  *statsd.Client
-	agentClient         *client.Client
+	connman             *connman.ConnectionManager
 }
 
 func NewRunner(projects store.Projects, applications store.Applications, releases store.Releases, devices store.Devices, metricTargetConfigs store.MetricTargetConfigs, st *statsd.Client, connman *connman.ConnectionManager) *Runner {
@@ -32,7 +31,7 @@ func NewRunner(projects store.Projects, applications store.Applications, release
 		releases:            releases,
 		metricTargetConfigs: metricTargetConfigs,
 		st:                  st,
-		agentClient:         client.NewClient(connman),
+		connman:             connman,
 	}
 }
 
@@ -109,6 +108,7 @@ func (r *Runner) Do(ctx context.Context) {
 			latestAppReleaseByAppID[app.ID] = release
 		}
 
+		var lock sync.Mutex
 		var req datadog.PostMetricsRequest
 		var wg sync.WaitGroup
 		for i := range devices {
@@ -116,10 +116,12 @@ func (r *Runner) Do(ctx context.Context) {
 			go func(device models.Device) {
 				defer wg.Done()
 
-				req.Series = append(
-					req.Series,
-					r.getStateMetrics(ctx, &project, &device, stateMetricConfig)...,
-				)
+				stateMetrics := r.getStateMetrics(ctx, &project, &device, stateMetricConfig)
+				if len(stateMetrics) != 0 {
+					lock.Lock()
+					req.Series = append(req.Series, stateMetrics...)
+					lock.Unlock()
+				}
 
 				// If the device is offline can't get non-state metrics
 				// from it
@@ -127,15 +129,24 @@ func (r *Runner) Do(ctx context.Context) {
 					return
 				}
 
-				req.Series = append(
-					req.Series,
-					r.getHostMetrics(ctx, &project, &device, hostMetricConfig)...,
-				)
+				deviceConn, err := r.connman.Dial(ctx, project.ID+device.ID)
+				if err != nil {
+					return
+				}
 
-				req.Series = append(
-					req.Series,
-					r.getServiceMetrics(ctx, &project, &device, serviceMetricConfig, apps, appsByID, latestAppReleaseByAppID)...,
-				)
+				hostMetrics := r.getHostMetrics(deviceConn, &project, &device, hostMetricConfig)
+				if len(hostMetrics) != 0 {
+					lock.Lock()
+					req.Series = append(req.Series, hostMetrics...)
+					lock.Unlock()
+				}
+
+				serviceMetrics := r.getServiceMetrics(deviceConn, &project, &device, serviceMetricConfig, apps, appsByID, latestAppReleaseByAppID)
+				if len(serviceMetrics) != 0 {
+					lock.Lock()
+					req.Series = append(req.Series, serviceMetrics...)
+					lock.Unlock()
+				}
 			}(devices[i])
 		}
 		wg.Wait()

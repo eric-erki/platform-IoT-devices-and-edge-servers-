@@ -1,22 +1,19 @@
 package datadog
 
 import (
-	"context"
+	"net"
 
 	"github.com/apex/log"
+
+	"github.com/deviceplane/deviceplane/pkg/agent/service/client"
 	"github.com/deviceplane/deviceplane/pkg/metrics/datadog"
 	"github.com/deviceplane/deviceplane/pkg/metrics/datadog/translation"
 	"github.com/deviceplane/deviceplane/pkg/models"
 )
 
-func (r *Runner) getHostMetrics(ctx context.Context, project *models.Project, device *models.Device, metricConfig *models.MetricTargetConfig) datadog.Series {
+func (r *Runner) getHostMetrics(deviceConn net.Conn, project *models.Project, device *models.Device, metricConfig *models.MetricTargetConfig) datadog.Series {
 	// Get metrics from host
-	deviceMetricsResp, err := r.agentClient.QueryDevice(
-		ctx,
-		project,
-		device,
-		"/metrics",
-	)
+	deviceMetricsResp, err := client.GetDeviceMetrics(deviceConn)
 	if err != nil || deviceMetricsResp.StatusCode != 200 {
 		return nil
 	}

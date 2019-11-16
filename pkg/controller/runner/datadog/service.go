@@ -1,11 +1,11 @@
 package datadog
 
 import (
-	"context"
-	"fmt"
+	"net"
 
 	"github.com/apex/log"
 
+	"github.com/deviceplane/deviceplane/pkg/agent/service/client"
 	"github.com/deviceplane/deviceplane/pkg/controller/query"
 	"github.com/deviceplane/deviceplane/pkg/metrics/datadog"
 	"github.com/deviceplane/deviceplane/pkg/metrics/datadog/translation"
@@ -13,7 +13,7 @@ import (
 )
 
 func (r *Runner) getServiceMetrics(
-	ctx context.Context,
+	deviceConn net.Conn,
 	project *models.Project,
 	device *models.Device,
 	metricConfig *models.MetricTargetConfig,
@@ -68,24 +68,12 @@ func (r *Runner) getServiceMetrics(
 		}
 
 		// Get metrics from services
-		deviceMetricsResp, err := r.agentClient.QueryDevice(
-			ctx,
-			project,
-			device,
-			fmt.Sprintf(
-				"/applications/%s/services/%s/metrics",
-				app.ID, config.Params.Service,
-			),
-		)
+		deviceMetricsResp, err := client.GetServiceMetrics(deviceConn, app.ID, config.Params.Service)
 		if err != nil || deviceMetricsResp.StatusCode != 200 {
 			r.st.Incr("runner.datadog.unsuccessful_service_metrics_pull", addedInternalTags(project, device), 1)
 			// TODO: we want to present to the user a list
 			// of applications that don't have functioning
 			// endpoints
-			if deviceMetricsResp != nil {
-				fmt.Println(deviceMetricsResp.Status)
-				fmt.Println(deviceMetricsResp.StatusCode)
-			}
 			continue
 		}
 		r.st.Incr("runner.datadog.successful_service_metrics_pull", addedInternalTags(project, device), 1)
