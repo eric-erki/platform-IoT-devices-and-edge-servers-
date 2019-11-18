@@ -60,9 +60,6 @@ func (r *Runner) Do(ctx context.Context) {
 				WithError(err).Error("getting state metric config")
 			continue
 		}
-		if len(stateMetricConfig.Configs) == 0 {
-			continue
-		}
 
 		hostMetricConfig, err := r.metricTargetConfigs.LookupMetricTargetConfig(ctx, project.ID, string(models.MetricHostTargetType))
 		if err != nil {
@@ -70,17 +67,11 @@ func (r *Runner) Do(ctx context.Context) {
 				WithError(err).Error("getting host metric config")
 			continue
 		}
-		if len(hostMetricConfig.Configs) == 0 {
-			continue
-		}
 
 		serviceMetricConfig, err := r.metricTargetConfigs.LookupMetricTargetConfig(ctx, project.ID, string(models.MetricServiceTargetType))
 		if err != nil {
 			log.WithField("project_id", project.ID).
 				WithError(err).Error("getting service metric config")
-			continue
-		}
-		if len(serviceMetricConfig.Configs) == 0 {
 			continue
 		}
 
@@ -93,19 +84,21 @@ func (r *Runner) Do(ctx context.Context) {
 		}
 		appsByID := make(map[string]*models.Application, len(apps))
 		latestAppReleaseByAppID := make(map[string]*models.Release, len(apps))
-		for i, app := range apps {
-			appsByID[app.ID] = &apps[i]
+		if len(serviceMetricConfig.Configs) != 0 {
+			for i, app := range apps {
+				appsByID[app.ID] = &apps[i]
 
-			release, err := r.releases.GetLatestRelease(ctx, project.ID, app.ID)
-			if err == store.ErrReleaseNotFound {
-				continue
-			} else if err != nil {
-				log.WithField("application", app.ID).
-					WithError(err).Error("get latest release")
-				continue
+				release, err := r.releases.GetLatestRelease(ctx, project.ID, app.ID)
+				if err == store.ErrReleaseNotFound {
+					continue
+				} else if err != nil {
+					log.WithField("application", app.ID).
+						WithError(err).Error("get latest release")
+					continue
+				}
+
+				latestAppReleaseByAppID[app.ID] = release
 			}
-
-			latestAppReleaseByAppID[app.ID] = release
 		}
 
 		var lock sync.Mutex
@@ -116,11 +109,13 @@ func (r *Runner) Do(ctx context.Context) {
 			go func(device models.Device) {
 				defer wg.Done()
 
-				stateMetrics := r.getStateMetrics(ctx, &project, &device, stateMetricConfig)
-				if len(stateMetrics) != 0 {
-					lock.Lock()
-					req.Series = append(req.Series, stateMetrics...)
-					lock.Unlock()
+				if len(stateMetricConfig.Configs) != 0 {
+					stateMetrics := r.getStateMetrics(ctx, &project, &device, stateMetricConfig)
+					if len(stateMetrics) != 0 {
+						lock.Lock()
+						req.Series = append(req.Series, stateMetrics...)
+						lock.Unlock()
+					}
 				}
 
 				// If the device is offline can't get non-state metrics
@@ -134,22 +129,30 @@ func (r *Runner) Do(ctx context.Context) {
 					return
 				}
 
-				hostMetrics := r.getHostMetrics(deviceConn, &project, &device, hostMetricConfig)
-				if len(hostMetrics) != 0 {
-					lock.Lock()
-					req.Series = append(req.Series, hostMetrics...)
-					lock.Unlock()
+				if len(hostMetricConfig.Configs) != 0 {
+					hostMetrics := r.getHostMetrics(deviceConn, &project, &device, hostMetricConfig)
+					if len(hostMetrics) != 0 {
+						lock.Lock()
+						req.Series = append(req.Series, hostMetrics...)
+						lock.Unlock()
+					}
 				}
 
-				serviceMetrics := r.getServiceMetrics(deviceConn, &project, &device, serviceMetricConfig, apps, appsByID, latestAppReleaseByAppID)
-				if len(serviceMetrics) != 0 {
-					lock.Lock()
-					req.Series = append(req.Series, serviceMetrics...)
-					lock.Unlock()
+				if len(serviceMetricConfig.Configs) != 0 {
+					serviceMetrics := r.getServiceMetrics(deviceConn, &project, &device, serviceMetricConfig, apps, appsByID, latestAppReleaseByAppID)
+					if len(serviceMetrics) != 0 {
+						lock.Lock()
+						req.Series = append(req.Series, serviceMetrics...)
+						lock.Unlock()
+					}
 				}
 			}(devices[i])
 		}
 		wg.Wait()
+
+		if len(req.Series) == 0 {
+			continue
+		}
 
 		client := datadog.NewClient(*project.DatadogAPIKey)
 		if err := client.PostMetrics(ctx, req); err != nil {

@@ -212,7 +212,7 @@ const (
 )
 
 type MetricConfig struct {
-	Params  *ServiceMetricParams `json:"omitempty,params"`
+	Params  *ServiceMetricParams `json:"params,omitempty"`
 	Metrics []Metric             `json:"metrics"`
 }
 

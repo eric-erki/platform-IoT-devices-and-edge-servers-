@@ -1098,20 +1098,37 @@ func (s *Service) createProject(w http.ResponseWriter, r *http.Request, authenti
 	}
 
 	// Create default metrics configs
-	types := []string{
-		string(models.MetricHostTargetType),
-		string(models.MetricServiceTargetType),
-		string(models.MetricStateTargetType),
+	defaultConfigs := []models.MetricTargetConfig{
+		{
+			Type: models.MetricHostTargetType,
+			Configs: []models.MetricConfig{
+				{
+					Metrics: []models.Metric{},
+				},
+			},
+		},
+		{
+			Type:    models.MetricServiceTargetType,
+			Configs: []models.MetricConfig{},
+		},
+		{
+			Type: models.MetricStateTargetType,
+			Configs: []models.MetricConfig{
+				{
+					Metrics: []models.Metric{},
+				},
+			},
+		},
 	}
-	for _, configType := range types {
+	for _, config := range defaultConfigs {
 		_, err := s.metricTargetConfigs.CreateMetricTargetConfig(
 			r.Context(),
 			project.ID,
-			configType,
-			nil,
+			string(config.Type),
+			config.Configs,
 		)
 		if err != nil {
-			log.WithError(err).Error("create default metrics type " + configType)
+			log.WithError(err).Error("create default metrics type " + string(config.Type))
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -2785,7 +2802,9 @@ func (s *Service) updateMetricTargetConfig(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	var updateMetricTargetConfigRequest []models.MetricConfig
+	var updateMetricTargetConfigRequest struct {
+		Configs []models.MetricConfig `json:"configs"`
+	}
 	if err := read(r, &updateMetricTargetConfigRequest); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -2800,7 +2819,7 @@ func (s *Service) updateMetricTargetConfig(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	updatedMetricTargetConfig, err := s.metricTargetConfigs.UpdateMetricTargetConfig(
-		r.Context(), projectID, metricTargetConfig.ID, updateMetricTargetConfigRequest,
+		r.Context(), projectID, metricTargetConfig.ID, updateMetricTargetConfigRequest.Configs,
 	)
 	if err != nil {
 		log.WithError(err).Error("update metric target config")

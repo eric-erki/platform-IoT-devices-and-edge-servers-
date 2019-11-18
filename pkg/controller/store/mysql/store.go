@@ -2242,7 +2242,7 @@ func (s *Store) CreateMetricTargetConfig(ctx context.Context, projectID, configT
 		return nil, err
 	}
 
-	return s.GetMetricTargetConfig(ctx, id, projectID)
+	return s.GetMetricTargetConfig(ctx, projectID, id)
 }
 
 func (s *Store) UpdateMetricTargetConfig(ctx context.Context, projectID, id string, configs []models.MetricConfig) (*models.MetricTargetConfig, error) {
@@ -2261,5 +2261,5 @@ func (s *Store) UpdateMetricTargetConfig(ctx context.Context, projectID, id stri
 		return nil, err
 	}
 
-	return s.GetMetricTargetConfig(ctx, id, projectID)
+	return s.GetMetricTargetConfig(ctx, projectID, id)
 }

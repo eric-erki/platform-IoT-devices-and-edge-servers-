@@ -68,6 +68,9 @@ func getFilteredMetrics(
 							fmt.Sprintf("%s:%s", tag, device.Name),
 						)
 					case "application":
+						if app == nil {
+							continue
+						}
 						m.Tags = append(
 							m.Tags,
 							fmt.Sprintf("%s:%s", tag, app.Name),
