@@ -213,17 +213,15 @@ const (
 
 type MetricConfig struct {
 	Params  *ServiceMetricParams `json:"omitempty,params"`
-	Metrics []MetricTags         `json:"metrics"`
+	Metrics []Metric             `json:"metrics"`
 }
 
 type ServiceMetricParams struct {
 	ApplicationID string `json:"applicationId"`
 	Service       string `json:"service"`
-	// TODO: Path          string `json:"path"`
-	// TODO: Port          string `json:"port"`
 }
 
-type MetricTags struct {
+type Metric struct {
 	Metric string   `json:"metric"`
 	Labels []string `json:"labels"`
 	Tags   []string `json:"tags"`

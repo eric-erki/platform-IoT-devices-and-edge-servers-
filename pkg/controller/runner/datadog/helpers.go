@@ -25,11 +25,11 @@ func getFilteredMetrics(
 	var metricPrefix string
 	switch targetType {
 	case models.MetricHostTargetType:
-		metricPrefix = "deviceplane.host."
+		metricPrefix = "deviceplane.host"
 	case models.MetricServiceTargetType:
-		metricPrefix = "deviceplane.service."
+		metricPrefix = "deviceplane.service"
 	case models.MetricStateTargetType:
-		metricPrefix = "deviceplane.state."
+		metricPrefix = "deviceplane.state"
 	default:
 		return nil
 	}
@@ -45,20 +45,16 @@ func getFilteredMetrics(
 			if m.Metric == metricConfig.Metric {
 				returnedMetricsLookup[m.Metric] = true
 
-				m.Metric = metricPrefix + m.Metric
-
-				addTag := func(prefix string, tag string, value string) {
-					m.Tags = append(
-						m.Tags,
-						fmt.Sprintf("%s.%s:%s", prefix, tag, value),
-					)
-				}
+				m.Metric = fmt.Sprintf("%s.%s", metricPrefix, m.Metric)
 
 				// Optional labels
 				for _, label := range metricConfig.Labels {
 					labelValue, ok := device.Labels[label]
 					if ok {
-						addTag("label", label, labelValue)
+						m.Tags = append(
+							m.Tags,
+							fmt.Sprintf("%s.%s:%s", "label", label, labelValue),
+						)
 					}
 				}
 
@@ -80,7 +76,11 @@ func getFilteredMetrics(
 				}
 
 				// Guaranteed tags
-				addTag("tag", "project", project.Name)
+				m.Tags = append(
+					m.Tags,
+					fmt.Sprintf("%s:%s", "project", project.Name),
+				)
+
 				returnedMetrics = append(returnedMetrics, m)
 			}
 		}
