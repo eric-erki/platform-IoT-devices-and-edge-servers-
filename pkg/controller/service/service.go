@@ -1963,8 +1963,8 @@ func (s *Service) updateApplication(w http.ResponseWriter, r *http.Request,
 	applicationID string,
 ) {
 	var updateApplicationRequest struct {
-		Name           *string       `json:"name" validate:"omitempty,name"`
-		Description    *string       `json:"description" validate:"omitempty,description"`
+		Name           *string       `json:"name" validate:"name,omitempty"`
+		Description    *string       `json:"description" validate:"description,omitempty"`
 		SchedulingRule *models.Query `json:"schedulingRule"`
 	}
 	if err := read(r, &updateApplicationRequest); err != nil {
