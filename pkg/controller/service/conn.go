@@ -1,8 +1,6 @@
 package service
 
 import (
-	"bufio"
-	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -47,22 +45,7 @@ func (s *Service) imagePullProgress(w http.ResponseWriter, r *http.Request,
 	service := vars["service"]
 
 	s.withDeviceConnection(w, r, projectID, deviceID, func(deviceConn net.Conn) {
-		// TODO: build a proper client for this API
-		req, _ := http.NewRequest(
-			"GET",
-			fmt.Sprintf(
-				"/applications/%s/services/%s/imagepullprogress",
-				applicationID, service,
-			),
-			nil,
-		)
-
-		if err := req.Write(deviceConn); err != nil {
-			http.Error(w, err.Error(), codes.StatusDeviceConnectionFailure)
-			return
-		}
-
-		resp, err := http.ReadResponse(bufio.NewReader(deviceConn), req)
+		resp, err := client.GetImagePullProgress(deviceConn, applicationID, service)
 		if err != nil {
 			http.Error(w, err.Error(), codes.StatusDeviceConnectionFailure)
 			return
