@@ -21,15 +21,6 @@ func (r *Runner) getServiceMetrics(
 	appsByID map[string]*models.Application,
 	latestAppReleaseByAppID map[string]*models.Release,
 ) (metrics datadog.Series) {
-	// GET the metrics endpoint
-	// ON ALL DEVICES that match this application
-	//
-	// TODO: if things start getting slow, the runtime of this function, and
-	// specifically this following section should probably be optimized
-	if device.Status != models.DeviceStatusOnline {
-		return nil
-	}
-
 	appIsScheduled := map[string]bool{} // we have denormalized (app, serv), (app, serv2) tuples in metricConfig.Configs
 	for _, config := range metricConfig.Configs {
 		if config.Params == nil {

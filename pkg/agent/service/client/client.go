@@ -45,7 +45,6 @@ func InitiateSSH(deviceConn net.Conn) error {
 }
 
 func ExecuteCommand(deviceConn net.Conn, command io.ReadCloser, background bool) (*http.Response, error) {
-	// TODO: build a proper client for this API
 	req, _ := http.NewRequest("POST", "/execute", command)
 
 	if background {

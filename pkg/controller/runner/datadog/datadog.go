@@ -55,7 +55,7 @@ func (r *Runner) Do(ctx context.Context) {
 
 		// Get metric configs
 		stateMetricConfig, err := r.metricTargetConfigs.LookupMetricTargetConfig(ctx, project.ID, string(models.MetricStateTargetType))
-		if err != nil || stateMetricConfig == nil {
+		if err != nil {
 			log.WithField("project_id", project.ID).
 				WithError(err).Error("getting state metric config")
 			continue
@@ -65,7 +65,7 @@ func (r *Runner) Do(ctx context.Context) {
 		}
 
 		hostMetricConfig, err := r.metricTargetConfigs.LookupMetricTargetConfig(ctx, project.ID, string(models.MetricHostTargetType))
-		if err != nil || hostMetricConfig == nil {
+		if err != nil {
 			log.WithField("project_id", project.ID).
 				WithError(err).Error("getting host metric config")
 			continue
@@ -75,7 +75,7 @@ func (r *Runner) Do(ctx context.Context) {
 		}
 
 		serviceMetricConfig, err := r.metricTargetConfigs.LookupMetricTargetConfig(ctx, project.ID, string(models.MetricServiceTargetType))
-		if err != nil || serviceMetricConfig == nil {
+		if err != nil {
 			log.WithField("project_id", project.ID).
 				WithError(err).Error("getting service metric config")
 			continue

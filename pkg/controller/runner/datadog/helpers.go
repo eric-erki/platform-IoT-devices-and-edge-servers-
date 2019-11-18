@@ -22,7 +22,7 @@ func getFilteredMetrics(
 	config models.MetricConfig,
 	metrics []datadog.Metric,
 ) []datadog.Metric {
-	var metricPrefix = "deviceplane."
+	var metricPrefix string
 	switch targetType {
 	case models.MetricHostTargetType:
 		metricPrefix = "deviceplane.host."
@@ -31,9 +31,8 @@ func getFilteredMetrics(
 	case models.MetricStateTargetType:
 		metricPrefix = "deviceplane.state."
 	default:
-		metricPrefix += "unknown"
+		return nil
 	}
-	metricPrefix += "."
 
 	returnedMetrics := make([]datadog.Metric, 0)
 	returnedMetricsLookup := make(map[string]bool, len(metrics))
@@ -68,9 +67,15 @@ func getFilteredMetrics(
 				for _, tag := range metricConfig.Tags {
 					switch tag {
 					case "device":
-						addTag("tag", tag, device.Name)
+						m.Tags = append(
+							m.Tags,
+							fmt.Sprintf("%s:%s", tag, device.Name),
+						)
 					case "application":
-						addTag("tag", tag, app.Name)
+						m.Tags = append(
+							m.Tags,
+							fmt.Sprintf("%s:%s", tag, app.Name),
+						)
 					}
 				}
 
