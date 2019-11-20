@@ -35,6 +35,8 @@ func (s *Service) ssh(w http.ResponseWriter, r *http.Request) {
 
 	conn := conncontext.GetConn(r)
 
+	fmt.Println("A")
+
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
 
@@ -55,11 +57,15 @@ func (s *Service) ssh(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
+	fmt.Println("B")
+
 	signer, err := generateSigner()
 	if err != nil {
 		http.Error(w, errors.Wrap(err, "generate signer").Error(), http.StatusInternalServerError)
 		return
 	}
+
+	fmt.Println("C")
 
 	sshServer := &ssh.Server{
 		Handler:         sshServerHandler(ctx),
@@ -67,6 +73,8 @@ func (s *Service) ssh(w http.ResponseWriter, r *http.Request) {
 		ChannelHandlers: ssh.DefaultChannelHandlers,
 		HostSigners:     []ssh.Signer{signer},
 	}
+
+	fmt.Println("D")
 
 	var options []ssh.Option
 	if len(s.variables.GetAuthorizedSSHKeys()) > 0 {
@@ -82,17 +90,22 @@ func (s *Service) ssh(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	fmt.Println("E")
+
 	for _, option := range options {
 		if err = sshServer.SetOption(option); err != nil {
 			http.Error(w, errors.Wrap(err, "set SSH option").Error(), http.StatusInternalServerError)
 		}
 	}
 
+	fmt.Println("F")
+
 	sshServer.HandleConn(conn)
 }
 
 func sshServerHandler(ctx context.Context) func(s ssh.Session) {
 	return func(s ssh.Session) {
+		fmt.Println("a")
 		ctx, cancel := context.WithCancel(ctx)
 		defer cancel()
 
@@ -108,6 +121,7 @@ func sshServerHandler(ctx context.Context) func(s ssh.Session) {
 		}
 
 		cmd := exec.CommandContext(ctx, command[0], command[1:]...)
+		fmt.Println("b")
 
 		ptyReq, winCh, isPty := s.Pty()
 		if isPty {
@@ -119,6 +133,8 @@ func sshServerHandler(ctx context.Context) func(s ssh.Session) {
 				return
 			}
 
+			fmt.Println("c")
+
 			go func() {
 				for win := range winCh {
 					syscall.Syscall(syscall.SYS_IOCTL, f.Fd(), uintptr(syscall.TIOCSWINSZ),
@@ -129,6 +145,8 @@ func sshServerHandler(ctx context.Context) func(s ssh.Session) {
 						})))
 				}
 			}()
+
+			fmt.Println("d")
 
 			go io.Copy(f, s)
 			io.Copy(s, f)
@@ -148,9 +166,11 @@ func sshServerHandler(ctx context.Context) func(s ssh.Session) {
 }
 
 func generateSigner() (ssh.Signer, error) {
+	fmt.Println("1")
 	key, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println("2")
 	return gossh.NewSignerFromKey(key)
 }
