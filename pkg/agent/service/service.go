@@ -3,6 +3,8 @@ package service
 import (
 	"net/http"
 
+	"github.com/apex/log"
+	"github.com/deviceplane/deviceplane/pkg/agent/metrics"
 	"github.com/deviceplane/deviceplane/pkg/agent/netns"
 	"github.com/deviceplane/deviceplane/pkg/agent/supervisor"
 	"github.com/deviceplane/deviceplane/pkg/agent/variables"
@@ -34,7 +36,15 @@ func NewService(
 	s.router.HandleFunc("/ssh", s.ssh).Methods("POST")
 	s.router.HandleFunc("/applications/{application}/services/{service}/imagepullprogress", s.imagePullProgress).Methods("GET")
 	s.router.HandleFunc("/applications/{application}/services/{service}/metrics", s.metrics).Methods("GET")
-	s.router.Handle("/metrics", promhttp.Handler())
+
+	s.router.Handle("/metrics/agent", promhttp.Handler())
+
+	hostMetricsHandler, err := metrics.HostMetricsHandler()
+	if err != nil {
+		log.WithError(err).Error("create host metrics handler")
+	} else {
+		s.router.Handle("/metrics/host", *hostMetricsHandler)
+	}
 
 	return s
 }
