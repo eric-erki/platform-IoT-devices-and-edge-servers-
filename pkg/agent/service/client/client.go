@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func GetDeviceAgentMetrics(deviceConn net.Conn) (*http.Response, error) {
+func GetAgentMetrics(deviceConn net.Conn) (*http.Response, error) {
 	req, _ := http.NewRequest(
 		"GET",
 		"/metrics/agent",
@@ -21,7 +21,7 @@ func GetDeviceAgentMetrics(deviceConn net.Conn) (*http.Response, error) {
 	return http.ReadResponse(bufio.NewReader(deviceConn), req)
 }
 
-func GetDeviceHostMetrics(deviceConn net.Conn) (*http.Response, error) {
+func GetHostMetrics(deviceConn net.Conn) (*http.Response, error) {
 	req, _ := http.NewRequest(
 		"GET",
 		"/metrics/host",

@@ -11,8 +11,12 @@ import (
 	"github.com/prometheus/node_exporter/collector"
 )
 
+// This should be more than enough concurrent requests. We're only polling this
+// once per device (non-concurrently), so other requests come from customer API
+// calls. If we exceed this count, we're probably doing something wrong.
+const MaxRequestsInFlight = 3
+
 func HostMetricsHandler() (*http.Handler, error) {
-	maxRequests := 3
 	nc, err := newNodeCollector(
 		"cpu",
 		"diskstats",
@@ -40,7 +44,7 @@ func HostMetricsHandler() (*http.Handler, error) {
 			promhttp.HandlerOpts{
 				ErrorLog:            log.NewErrorLogger(),
 				ErrorHandling:       promhttp.ContinueOnError,
-				MaxRequestsInFlight: maxRequests,
+				MaxRequestsInFlight: MaxRequestsInFlight,
 				Registry:            metricsRegistry,
 			},
 		),

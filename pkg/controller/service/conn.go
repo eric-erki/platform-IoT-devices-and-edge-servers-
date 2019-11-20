@@ -60,7 +60,7 @@ func (s *Service) hostMetrics(w http.ResponseWriter, r *http.Request,
 	deviceID string,
 ) {
 	s.withDeviceConnection(w, r, projectID, deviceID, func(deviceConn net.Conn) {
-		resp, err := client.GetDeviceHostMetrics(deviceConn)
+		resp, err := client.GetHostMetrics(deviceConn)
 		if err != nil {
 			http.Error(w, err.Error(), codes.StatusDeviceConnectionFailure)
 			return
@@ -75,7 +75,7 @@ func (s *Service) agentMetrics(w http.ResponseWriter, r *http.Request,
 	deviceID string,
 ) {
 	s.withDeviceConnection(w, r, projectID, deviceID, func(deviceConn net.Conn) {
-		resp, err := client.GetDeviceAgentMetrics(deviceConn)
+		resp, err := client.GetAgentMetrics(deviceConn)
 		if err != nil {
 			http.Error(w, err.Error(), codes.StatusDeviceConnectionFailure)
 			return
