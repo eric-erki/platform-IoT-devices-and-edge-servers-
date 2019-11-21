@@ -3,7 +3,6 @@ package service
 import (
 	"crypto/rand"
 	"crypto/rsa"
-	"fmt"
 	"net/http"
 	"sync"
 
@@ -64,12 +63,10 @@ func (s *Service) getSigner() (ssh.Signer, error) {
 	// Generate
 	s.signerLock.Lock()
 	defer s.signerLock.Unlock()
-	fmt.Println("1", diff()) // timer
 	key, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("2", diff()) // timer
 	signer, err := gossh.NewSignerFromKey(key)
 	if err != nil {
 		return nil, err

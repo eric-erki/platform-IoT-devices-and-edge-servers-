@@ -24,27 +24,13 @@ const (
 	entrypoint = `if [ "$(readlink /bin/sh)" = "dash" ] && [ -f "/bin/bash" ]; then exec /bin/bash; else exec /bin/sh; fi`
 )
 
-var start time.Time
-
-func diff() interface{} {
-	d := time.Since(start)
-	start = time.Now()
-	return d.Milliseconds()
-}
-
 func (s *Service) ssh(w http.ResponseWriter, r *http.Request) {
-	start = time.Now()
-
 	if s.variables.GetDisableSSH() {
 		http.Error(w, "SSH is disabled", http.StatusForbidden)
 		return
 	}
 
-	fmt.Println("A-1", diff())
-
 	conn := conncontext.GetConn(r)
-
-	fmt.Println("A", diff())
 
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
@@ -66,15 +52,11 @@ func (s *Service) ssh(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	fmt.Println("B", diff())
-
 	signer, err := s.getSigner()
 	if err != nil {
 		http.Error(w, errors.Wrap(err, "generate signer").Error(), http.StatusInternalServerError)
 		return
 	}
-
-	fmt.Println("C", diff())
 
 	sshServer := &ssh.Server{
 		Handler:         sshServerHandler(ctx),
@@ -82,8 +64,6 @@ func (s *Service) ssh(w http.ResponseWriter, r *http.Request) {
 		ChannelHandlers: ssh.DefaultChannelHandlers,
 		HostSigners:     []ssh.Signer{signer},
 	}
-
-	fmt.Println("D", diff())
 
 	var options []ssh.Option
 	if len(s.variables.GetAuthorizedSSHKeys()) > 0 {
@@ -99,22 +79,17 @@ func (s *Service) ssh(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	fmt.Println("E", diff())
-
 	for _, option := range options {
 		if err = sshServer.SetOption(option); err != nil {
 			http.Error(w, errors.Wrap(err, "set SSH option").Error(), http.StatusInternalServerError)
 		}
 	}
 
-	fmt.Println("F", diff())
-
 	sshServer.HandleConn(conn)
 }
 
 func sshServerHandler(ctx context.Context) func(s ssh.Session) {
 	return func(s ssh.Session) {
-		fmt.Println("a", diff())
 		ctx, cancel := context.WithCancel(ctx)
 		defer cancel()
 
@@ -130,7 +105,6 @@ func sshServerHandler(ctx context.Context) func(s ssh.Session) {
 		}
 
 		cmd := exec.CommandContext(ctx, command[0], command[1:]...)
-		fmt.Println("b", diff())
 
 		ptyReq, winCh, isPty := s.Pty()
 		if isPty {
@@ -142,8 +116,6 @@ func sshServerHandler(ctx context.Context) func(s ssh.Session) {
 				return
 			}
 
-			fmt.Println("c", diff())
-
 			go func() {
 				for win := range winCh {
 					syscall.Syscall(syscall.SYS_IOCTL, f.Fd(), uintptr(syscall.TIOCSWINSZ),
@@ -154,8 +126,6 @@ func sshServerHandler(ctx context.Context) func(s ssh.Session) {
 						})))
 				}
 			}()
-
-			fmt.Println("d", diff())
 
 			go io.Copy(f, s)
 			io.Copy(s, f)
