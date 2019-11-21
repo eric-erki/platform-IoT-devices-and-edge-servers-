@@ -2,8 +2,6 @@ package service
 
 import (
 	"context"
-	"crypto/rand"
-	"crypto/rsa"
 	"fmt"
 	"io"
 	"net/http"
@@ -17,7 +15,6 @@ import (
 	"github.com/gliderlabs/ssh"
 	"github.com/kr/pty"
 	"github.com/pkg/errors"
-	gossh "golang.org/x/crypto/ssh"
 )
 
 const (
@@ -71,7 +68,7 @@ func (s *Service) ssh(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("B", diff())
 
-	signer, err := generateSigner()
+	signer, err := s.getSigner()
 	if err != nil {
 		http.Error(w, errors.Wrap(err, "generate signer").Error(), http.StatusInternalServerError)
 		return
@@ -175,14 +172,4 @@ func sshServerHandler(ctx context.Context) func(s ssh.Session) {
 			}
 		}
 	}
-}
-
-func generateSigner() (ssh.Signer, error) {
-	fmt.Println("1", diff())
-	key, err := rsa.GenerateKey(rand.Reader, 2048)
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println("2", diff())
-	return gossh.NewSignerFromKey(key)
 }

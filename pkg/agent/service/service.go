@@ -1,14 +1,20 @@
 package service
 
 import (
+	"crypto/rand"
+	"crypto/rsa"
+	"fmt"
 	"net/http"
+	"sync"
 
 	"github.com/deviceplane/deviceplane/pkg/agent/netns"
 	"github.com/deviceplane/deviceplane/pkg/agent/supervisor"
 	"github.com/deviceplane/deviceplane/pkg/agent/variables"
 	"github.com/deviceplane/deviceplane/pkg/engine"
+	"github.com/gliderlabs/ssh"
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	gossh "golang.org/x/crypto/ssh"
 )
 
 type Service struct {
@@ -17,6 +23,9 @@ type Service struct {
 	confDir          string
 	netnsManager     *netns.Manager
 	router           *mux.Router
+
+	signer     ssh.Signer
+	signerLock sync.RWMutex
 }
 
 func NewService(
@@ -30,6 +39,7 @@ func NewService(
 		netnsManager:     netns.NewManager(engine),
 		router:           mux.NewRouter(),
 	}
+	go s.getSigner()
 
 	s.router.HandleFunc("/ssh", s.ssh).Methods("POST")
 	s.router.HandleFunc("/applications/{application}/services/{service}/imagepullprogress", s.imagePullProgress).Methods("GET")
@@ -41,4 +51,29 @@ func NewService(
 
 func (s *Service) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.router.ServeHTTP(w, r)
+}
+
+func (s *Service) getSigner() (ssh.Signer, error) {
+	s.signerLock.RLock()
+	if s.signer != nil {
+		defer s.signerLock.RUnlock()
+		return s.signer, nil
+	}
+	s.signerLock.RUnlock()
+
+	// Generate
+	s.signerLock.Lock()
+	defer s.signerLock.Unlock()
+	fmt.Println("1", diff()) // timer
+	key, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("2", diff()) // timer
+	signer, err := gossh.NewSignerFromKey(key)
+	if err != nil {
+		return nil, err
+	}
+	s.signer = signer
+	return s.signer, nil
 }
