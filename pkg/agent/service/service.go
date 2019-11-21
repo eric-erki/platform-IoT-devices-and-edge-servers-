@@ -24,7 +24,7 @@ type Service struct {
 	router           *mux.Router
 
 	signer     ssh.Signer
-	signerLock sync.RWMutex
+	signerLock sync.Mutex
 }
 
 func NewService(
@@ -53,16 +53,14 @@ func (s *Service) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Service) getSigner() (ssh.Signer, error) {
-	s.signerLock.RLock()
-	if s.signer != nil {
-		defer s.signerLock.RUnlock()
-		return s.signer, nil
-	}
-	s.signerLock.RUnlock()
-
-	// Generate
 	s.signerLock.Lock()
 	defer s.signerLock.Unlock()
+
+	if s.signer != nil {
+		return s.signer, nil
+	}
+
+	// Generate
 	key, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
 		return nil, err
@@ -71,6 +69,8 @@ func (s *Service) getSigner() (ssh.Signer, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	s.signer = signer
+
 	return s.signer, nil
 }
