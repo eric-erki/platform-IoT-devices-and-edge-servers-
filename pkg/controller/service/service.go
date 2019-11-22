@@ -230,9 +230,10 @@ func NewService(
 	apiRouter.HandleFunc("/projects/{project}/devices/{device}", s.validateAuthorization("devices", "DeleteDevice", s.withDevice(s.deleteDevice))).Methods("DELETE")
 	apiRouter.HandleFunc("/projects/{project}/devices/{device}/ssh", s.validateAuthorization("devices", "SSH", s.withDevice(s.initiateSSH))).Methods("GET")
 	apiRouter.HandleFunc("/projects/{project}/devices/{device}/applications/{application}/services/{service}/imagepullprogress", s.validateAuthorization("devices", "GetImagePullProgress", s.withDevice(s.imagePullProgress))).Methods("GET")
-	apiRouter.HandleFunc("/projects/{project}/devices/{device}/metrics/host", s.validateAuthorization("devices", "GetMetrics", s.withDevice(s.hostMetrics))).Methods("GET")
-	apiRouter.HandleFunc("/projects/{project}/devices/{device}/metrics/agent", s.validateAuthorization("devices", "GetMetrics", s.withDevice(s.agentMetrics))).Methods("GET")
-	apiRouter.HandleFunc("/projects/{project}/devices/{device}/applications/{application}/services/{service}/metrics", s.validateAuthorization("devices", "GetServiceMetrics", s.withApplicationAndDevice(s.serviceMetrics))).Methods("GET")
+
+	apiRouter.HandleFunc("/projects/{project}/metrics/devices/{device}/host", s.validateAuthorization("devices", "GetHostMetrics", s.withDevice(s.hostMetrics))).Methods("GET")
+	apiRouter.HandleFunc("/projects/{project}/metrics/devices/{device}/agent", s.validateAuthorization("devices", "GetAgentMetrics", s.withDevice(s.agentMetrics))).Methods("GET")
+	apiRouter.HandleFunc("/projects/{project}/metrics/devices/{device}/applications/{application}/services/{service}", s.validateAuthorization("devices", "GetServiceMetrics", s.withApplicationAndDevice(s.serviceMetrics))).Methods("GET")
 
 	apiRouter.HandleFunc("/projects/{project}/devices/{device}/labels", s.validateAuthorization("devicelabels", "SetDeviceLabel", s.withDevice(s.setDeviceLabel))).Methods("PUT")
 	apiRouter.HandleFunc("/projects/{project}/devices/{device}/labels/{key}", s.validateAuthorization("devicelabels", "DeleteDeviceLabel", s.withDevice(s.deleteDeviceLabel))).Methods("DELETE")
