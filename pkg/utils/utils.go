@@ -6,6 +6,10 @@ import (
 	"net/http"
 )
 
+const (
+	ProxiedFromDeviceHeader = "proxied-from-device"
+)
+
 func JSONConvert(src, target interface{}) error {
 	bytes, err := json.Marshal(src)
 	if err != nil {
@@ -25,6 +29,8 @@ func ProxyResponse(w http.ResponseWriter, resp *http.Response) {
 			w.Header().Add(key, value)
 		}
 	}
+	w.Header().Set(ProxiedFromDeviceHeader, "")
+
 	w.WriteHeader(resp.StatusCode)
 	io.Copy(w, resp.Body)
 	resp.Body.Close()
