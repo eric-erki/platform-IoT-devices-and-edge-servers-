@@ -39,6 +39,7 @@ import ProjectSettings from './pages/project-settings';
 import Projects from './pages/projects';
 import Register from './pages/register';
 import Login from './pages/login';
+import Metrics from './pages/metrics';
 import Iam from './pages/iam';
 import PasswordRecovery from './pages/password-recovery';
 
@@ -650,9 +651,9 @@ class InnerOogie extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      tabs: ['devices', 'provisioning', 'applications', 'iam'],
-      tabLabels: ['Devices', 'Provisioning', 'Applications', 'IAM'],
-      icons: ['desktop', 'box', 'application', 'user'],
+      tabs: ['devices', 'provisioning', 'applications', 'metrics', 'iam'],
+      tabLabels: ['Devices', 'Provisioning', 'Applications', 'metrics', 'IAM'],
+      icons: ['desktop', 'box', 'application', 'key', 'user'],
       footerTabs: ['settings'],
       footerTabLabels: ['Settings'],
       footerIcons: ['settings']
@@ -673,8 +674,11 @@ class InnerOogie extends Component {
       case 'applications':
         selectedIndex = 2;
         break;
-      case 'iam':
+      case 'metrics':
         selectedIndex = 3;
+        break;
+      case 'iam':
+        selectedIndex = 4;
         break;
       case 'settings':
         footerSelectedIndex = 0;
@@ -911,6 +915,23 @@ class InnerOogie extends Component {
                 <Applications
                   user={user}
                   projectName={projectName}
+                  history={this.props.history}
+                />
+              )}
+            />
+          </Switch>
+        );
+      case 'metrics':
+        return (
+          <Switch>
+            <Route
+              exact
+              path={match.path}
+              render={route => (
+                <Metrics
+                  user={user}
+                  projectName={projectName}
+                  match={route.match}
                   history={this.props.history}
                 />
               )}
