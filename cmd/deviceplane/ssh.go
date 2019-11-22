@@ -10,82 +10,87 @@ import (
 	"strconv"
 
 	"github.com/deviceplane/deviceplane/pkg/client"
-	"github.com/urfave/cli"
-	"golang.org/x/sync/errgroup"
+	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
 
-var ssh = cli.Command{
-	Name: "ssh",
-	Flags: []cli.Flag{
-		projectFlag,
-		deviceFlag,
-		sshConnectTimeoutFlag,
-	},
-	Action: func(c *cli.Context) error {
-		return withClient(c, func(client *client.Client) error {
-			project := c.String(projectFlag.Name)
-			device := c.String(deviceFlag.Name)
-			connectTimeout := c.String(sshConnectTimeoutFlag.Name)
+func sshFunc(c *kingpin.ParseContext) error {
+	client := client.NewClient(*apiEndpointFlag, *accessKeyFlag, nil)
 
-			conn, err := client.InitiateSSH(context.TODO(), project, device)
-			if err != nil {
-				return err
+	conn, err := client.InitiateSSH(context.TODO(), *projectFlag, *deviceFlag)
+	if err != nil {
+		return err
+	}
+
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		return err
+	}
+	defer listener.Close()
+
+	var errChan = make(chan error, 2)
+
+	go func() {
+		localConn, err := listener.Accept()
+		if err != nil {
+			select {
+			case e, open := <-errChan:
+				if !open {
+					return
+				}
+				errChan <- e
+				return
+			default:
 			}
 
-			listener, err := net.Listen("tcp", "127.0.0.1:0")
-			if err != nil {
-				return err
+			errChan <- err
+			return
+		}
+
+		go io.Copy(conn, localConn)
+		io.Copy(localConn, conn)
+
+		return
+	}()
+
+	go func() {
+		defer conn.Close()
+
+		port := strconv.Itoa(listener.Addr().(*net.TCPAddr).Port)
+
+		var trailingArgs = []string{}
+		nextArg := c.Next()
+		for nextArg != nil && nextArg.Value != "" {
+			trailingArgs = append(trailingArgs, nextArg.Value)
+		}
+
+		sshArguments := append([]string{
+			"-p", port,
+			"-o",
+			"NoHostAuthenticationForLocalhost yes",
+			"127.0.0.1",
+			"-o",
+			fmt.Sprintf("ConnectTimeout=%d", *sshTimeoutFlag),
+		}, trailingArgs...)
+
+		cmd := exec.Command(
+			"ssh",
+			sshArguments...,
+		)
+		cmd.Stdin = os.Stdin
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+
+		if err := cmd.Run(); err != nil {
+			if exitError, ok := err.(*exec.ExitError); ok {
+				os.Exit(exitError.ExitCode())
+				return
 			}
-			defer listener.Close()
+			errChan <- err
+			return
+		}
 
-			g, ctx := errgroup.WithContext(context.TODO())
+		close(errChan)
+	}()
 
-			g.Go(func() error {
-				localConn, err := listener.Accept()
-				if err != nil {
-					return err
-				}
-
-				go io.Copy(conn, localConn)
-				io.Copy(localConn, conn)
-
-				return nil
-			})
-
-			g.Go(func() error {
-				defer conn.Close()
-
-				port := strconv.Itoa(listener.Addr().(*net.TCPAddr).Port)
-
-				sshArguments := append([]string{
-					"-p", port,
-					"-o",
-					"NoHostAuthenticationForLocalhost yes",
-					"127.0.0.1",
-					"-o",
-					fmt.Sprintf("ConnectTimeout=%s", connectTimeout),
-				}, c.Args()...)
-
-				cmd := exec.CommandContext(ctx,
-					"ssh",
-					sshArguments...,
-				)
-				cmd.Stdin = os.Stdin
-				cmd.Stdout = os.Stdout
-				cmd.Stderr = os.Stderr
-
-				if err := cmd.Run(); err != nil {
-					if exitError, ok := err.(*exec.ExitError); ok {
-						os.Exit(exitError.ExitCode())
-						return nil
-					}
-					return err
-				}
-
-				return nil
-			})
-
-			return g.Wait()
-		})
-	},
+	return <-errChan
 }

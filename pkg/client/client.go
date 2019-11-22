@@ -43,17 +43,17 @@ func NewClient(url *url.URL, accessKey string, httpClient *http.Client) *Client 
 	}
 }
 
-func (c *Client) CreateProject(ctx context.Context) (*models.Project, error) {
+func (c *Client) CreateProject(ctx context.Context, name string) (*models.Project, error) {
 	var project models.Project
-	if err := c.post(ctx, struct{}{}, &project, projectsURL); err != nil {
+	if err := c.post(ctx, models.Project{Name: name}, &project, projectsURL); err != nil {
 		return nil, err
 	}
 	return &project, nil
 }
 
-func (c *Client) CreateApplication(ctx context.Context, project string) (*models.Application, error) {
+func (c *Client) CreateApplication(ctx context.Context, project string, name string) (*models.Application, error) {
 	var application models.Application
-	if err := c.post(ctx, struct{}{}, &application, projectsURL, project, applicationsURL); err != nil {
+	if err := c.post(ctx, models.Application{Name: name}, &application, projectsURL, project, applicationsURL); err != nil {
 		return nil, err
 	}
 	return &application, nil

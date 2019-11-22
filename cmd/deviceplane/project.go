@@ -5,27 +5,17 @@ import (
 	"fmt"
 
 	"github.com/deviceplane/deviceplane/pkg/client"
-	"github.com/urfave/cli"
+	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
 
-var project = cli.Command{
-	Name:    "project",
-	Aliases: []string{"p"},
-	Subcommands: []cli.Command{
-		{
-			Name: "create",
-			Action: func(c *cli.Context) error {
-				return withClient(c, func(client *client.Client) error {
-					project, err := client.CreateProject(context.TODO())
-					if err != nil {
-						return err
-					}
+func createProjectFunc(c *kingpin.ParseContext) error {
+	client := client.NewClient(*apiEndpointFlag, *accessKeyFlag, nil)
+	project, err := client.CreateProject(context.TODO(), *projectFlag)
+	if err != nil {
+		return err
+	}
 
-					fmt.Println(project.ID)
+	fmt.Printf("Project %s successfully created at %s!\n", project.Name, project.CreatedAt.Format("Mon Jan _2 15:04:05 2006"))
 
-					return nil
-				})
-			},
-		},
-	},
+	return nil
 }
