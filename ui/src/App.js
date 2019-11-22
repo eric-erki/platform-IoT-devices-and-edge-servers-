@@ -130,6 +130,8 @@ class AddDevice extends Component {
         "-v /var/lib/deviceplane:/var/lib/deviceplane",
         "-v /var/run/docker.sock:/var/run/docker.sock",
         "-v /etc/os-release:/etc/os-release",
+        "-v /sys:/host/sys",
+        "-v /proc:/host/proc",
         `--label com.deviceplane.agent-version=${config.agentVersion}`,
         `deviceplane/agent:${config.agentVersion}`,
         `--project=${this.state.project.id}`,
