@@ -2791,7 +2791,7 @@ func (s *Service) getMetricTargetConfig(w http.ResponseWriter, r *http.Request,
 		return
 	}
 
-	utils.Respond(w, metricTargetConfig)
+	utils.Respond(w, metricTargetConfig.Configs)
 }
 
 func (s *Service) updateMetricTargetConfig(w http.ResponseWriter, r *http.Request,
@@ -2800,18 +2800,39 @@ func (s *Service) updateMetricTargetConfig(w http.ResponseWriter, r *http.Reques
 	vars := mux.Vars(r)
 	configType := vars["metrictargetconfigtype"]
 
-	if configType != string(models.MetricHostTargetType) &&
-		configType != string(models.MetricServiceTargetType) &&
-		configType != string(models.MetricStateTargetType) {
-		http.Error(w, store.ErrInvalidMetricTargetType.Error(), http.StatusBadRequest)
-		return
-	}
-
 	var updateMetricTargetConfigRequest struct {
 		Configs []models.MetricConfig `json:"configs"`
 	}
 	if err := read(r, &updateMetricTargetConfigRequest); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Validation
+	switch configType {
+	case string(models.MetricStateTargetType):
+		fallthrough
+	case string(models.MetricHostTargetType):
+		if len(updateMetricTargetConfigRequest.Configs) == 0 {
+			break
+		}
+		if len(updateMetricTargetConfigRequest.Configs) > 1 {
+			http.Error(w, store.ErrInvalidMetricConfig.Error(), http.StatusBadRequest)
+			return
+		}
+		if updateMetricTargetConfigRequest.Configs[0].Params != nil {
+			http.Error(w, store.ErrInvalidMetricConfig.Error(), http.StatusBadRequest)
+			return
+		}
+	case string(models.MetricServiceTargetType):
+		for _, c := range updateMetricTargetConfigRequest.Configs {
+			if c.Params == nil {
+				http.Error(w, store.ErrInvalidMetricConfig.Error(), http.StatusBadRequest)
+				return
+			}
+		}
+	default:
+		http.Error(w, store.ErrInvalidMetricTargetType.Error(), http.StatusBadRequest)
 		return
 	}
 
