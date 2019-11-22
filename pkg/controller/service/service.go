@@ -1098,27 +1098,31 @@ func (s *Service) createProject(w http.ResponseWriter, r *http.Request, authenti
 		return
 	}
 
+	allowAllMetrics := models.MetricConfig{
+		Metrics: []models.Metric{
+			{
+				Metric: "*",
+				Labels: []string{},
+				Tags:   []string{"device"},
+			},
+		},
+	}
+
 	// Create default metrics configs
 	defaultConfigs := []models.MetricTargetConfig{
 		{
-			Type: models.MetricHostTargetType,
+			Type: models.MetricStateTargetType,
 			Configs: []models.MetricConfig{
-				{
-					Metrics: []models.Metric{},
-				},
+				allowAllMetrics,
 			},
+		},
+		{
+			Type:    models.MetricHostTargetType,
+			Configs: []models.MetricConfig{},
 		},
 		{
 			Type:    models.MetricServiceTargetType,
 			Configs: []models.MetricConfig{},
-		},
-		{
-			Type: models.MetricStateTargetType,
-			Configs: []models.MetricConfig{
-				{
-					Metrics: []models.Metric{},
-				},
-			},
 		},
 	}
 	for _, config := range defaultConfigs {
