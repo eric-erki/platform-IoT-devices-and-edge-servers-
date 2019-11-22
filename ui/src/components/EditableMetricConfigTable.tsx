@@ -42,57 +42,9 @@ const MODE = {
   EDIT: 'edit',
 }
 
-function arrayFromArrayString(str: string) {
-  return str.split(',').map(x => x.trim()).filter(x => x.length);
-}
-
-function reformatArrayString(str: string) {
-  return arrayFromArrayString(str).join(", ");
-}
-
-function configSortFn(a: editableConfig, b: editableConfig) {
-  var aMetric = a.values.metricStr;
-  var bMetric = b.values.metricStr;
-  if (a.editedValues) {
-    aMetric = a.editedValues.metricStr;
-  }
-  if (b.editedValues) {
-    bMetric = b.editedValues.metricStr;
-  }
-
-  // Make '*' sort to bottom, since it's lowest priority
-  if (aMetric === '*') {
-    return 1;
-  }
-  if (bMetric === '*') {
-    return -1;
-  }
-
-  // Normal sort, otherwise
-  if (aMetric < bMetric) {
-    return -1;
-  }
-  if (aMetric === bMetric) {
-    return 0;
-  }
-  return 1;
-}
-
-function realConfigsFromEditableConfigs(editableConfigs: editableConfig[]): realConfig[] {
-  return editableConfigs.map(config => {
-    return {
-      metric: config.values.metricStr,
-      labels: arrayFromArrayString(config.values.labelsStr),
-      tags: arrayFromArrayString(config.values.tagsStr),
-    }
-  })
-}
-
 export class EditableMetricConfigTable extends Component<Props, State> {
   constructor(props: Props) {
     super(props)
-
-    console.log(this.props.configs.length)
 
     this.state = {
       configs: this.props.configs.map(c => ({
@@ -347,4 +299,50 @@ export class EditableMetricConfigTable extends Component<Props, State> {
       </Table>
     );
   }
+}
+
+function arrayFromArrayString(str: string) {
+  return str.split(',').map(x => x.trim()).filter(x => x.length);
+}
+
+function reformatArrayString(str: string) {
+  return arrayFromArrayString(str).join(", ");
+}
+
+function configSortFn(a: editableConfig, b: editableConfig) {
+  var aMetric = a.values.metricStr;
+  var bMetric = b.values.metricStr;
+  if (a.editedValues) {
+    aMetric = a.editedValues.metricStr;
+  }
+  if (b.editedValues) {
+    bMetric = b.editedValues.metricStr;
+  }
+
+  // Make '*' sort to bottom, since it's lowest priority
+  if (aMetric === '*') {
+    return 1;
+  }
+  if (bMetric === '*') {
+    return -1;
+  }
+
+  // Normal sort, otherwise
+  if (aMetric < bMetric) {
+    return -1;
+  }
+  if (aMetric === bMetric) {
+    return 0;
+  }
+  return 1;
+}
+
+function realConfigsFromEditableConfigs(editableConfigs: editableConfig[]): realConfig[] {
+  return editableConfigs.map(config => {
+    return {
+      metric: config.values.metricStr,
+      labels: arrayFromArrayString(config.values.labelsStr),
+      tags: arrayFromArrayString(config.values.tagsStr),
+    }
+  })
 }
