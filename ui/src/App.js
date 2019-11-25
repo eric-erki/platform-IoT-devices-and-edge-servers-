@@ -131,8 +131,6 @@ class AddDevice extends Component {
         "-v /var/lib/deviceplane:/var/lib/deviceplane",
         "-v /var/run/docker.sock:/var/run/docker.sock",
         "-v /etc/os-release:/etc/os-release",
-        "-v /sys:/host/sys",
-        "-v /proc:/host/proc",
         `--label com.deviceplane.agent-version=${config.agentVersion}`,
         `deviceplane/agent:${config.agentVersion}`,
         `--project=${this.state.project.id}`,
@@ -652,8 +650,8 @@ class InnerOogie extends Component {
     super(props);
     this.state = {
       tabs: ['devices', 'provisioning', 'applications', 'metrics', 'iam'],
-      tabLabels: ['Devices', 'Provisioning', 'Applications', 'metrics', 'IAM'],
-      icons: ['desktop', 'box', 'application', 'key', 'user'],
+      tabLabels: ['Devices', 'Provisioning', 'Applications', 'Metrics', 'IAM'],
+      icons: ['desktop', 'box', 'application', 'timeline-area-chart', 'user'],
       footerTabs: ['settings'],
       footerTabLabels: ['Settings'],
       footerIcons: ['settings']

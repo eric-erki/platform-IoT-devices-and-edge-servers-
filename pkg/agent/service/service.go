@@ -24,8 +24,7 @@ const (
 
 var (
 	hostMetricsFallbackHandler = http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(HostMetricsBrokenMsg))
+		http.Error(w, HostMetricsBrokenMsg, http.StatusInternalServerError)
 	}))
 )
 

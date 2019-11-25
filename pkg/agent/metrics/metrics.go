@@ -24,7 +24,7 @@ var (
 	DefaultNodeCollectorConfig = NodeCollectorConfig{
 		ProcFSPath: "/host/proc",
 		SysFSPath:  "/host/sys",
-		RootFSPath: "/",
+		RootFSPath: "/host",
 		Collectors: []string{
 			"cpu",
 			"diskstats",
