@@ -109,9 +109,24 @@ class AddDevice extends Component {
     }
     const heading = 'Add Device';
 
-    var dockerCommand;
+    var dockerCommands = [];
+    dockerCommands.push([
+      "docker run -d --restart=always",
+      "--privileged",
+      "--net=host",
+      "--pid=host",
+      "-v /etc/deviceplane:/etc/deviceplane",
+      "-v /var/lib/deviceplane:/var/lib/deviceplane",
+      "-v /var/run/docker.sock:/var/run/docker.sock",
+      "-v /etc/os-release:/etc/os-release",
+      `--label com.deviceplane.agent-version=${config.agentVersion}`,
+      `deviceplane/agent:${config.agentVersion}`,
+      `--project=${this.state.project.id}`,
+      `--registration-token=${this.state.deviceRegistrationToken.id}`
+    ].join(" "));
+
     if (window.location.hostname === "localhost") {
-      dockerCommand = [
+      dockerCommands.push([
         "go run cmd/agent/main.go",
         "--controller=http://localhost:8080/api",
         "--conf-dir=./cmd/agent/conf",
@@ -120,22 +135,24 @@ class AddDevice extends Component {
         `--project=${this.state.project.id}`,
         `--registration-token=${this.state.deviceRegistrationToken.id}`,
         "# note, this is the local version"
-      ].join(" ");
-    } else {
-      dockerCommand = [
-        "docker run -d --restart=always",
+      ].join(" "));
+      dockerCommands.push([
+        "docker run",
         "--privileged",
         "--net=host",
         "--pid=host",
-        "-v /etc/deviceplane:/etc/deviceplane",
-        "-v /var/lib/deviceplane:/var/lib/deviceplane",
+        "-v $GOPATH/src/github.com/deviceplane/deviceplane/cmd/agent/conf:/etc/deviceplane",
+        "-v $GOPATH/src/github.com/deviceplane/deviceplane/cmd/agent/state:/var/lib/deviceplane",
         "-v /var/run/docker.sock:/var/run/docker.sock",
         "-v /etc/os-release:/etc/os-release",
-        `--label com.deviceplane.agent-version=${config.agentVersion}`,
-        `deviceplane/agent:${config.agentVersion}`,
+        `--label com.deviceplane.agent-version=arm64-dev-123456789`,
+        `deviceplane/agent:arm64-dev-123456789`,
+        "--log-level=debug",
         `--project=${this.state.project.id}`,
-        `--registration-token=${this.state.deviceRegistrationToken.id}`
-      ].join(" ");
+        `--registration-token=${this.state.deviceRegistrationToken.id}`,
+        "--controller=http://docker.for.mac.host.internal:8080/api",
+        "# note, this is the local version"
+      ].join(" "));
     }
 
     return (
@@ -192,16 +209,20 @@ class AddDevice extends Component {
                 border="muted"
                 background="tint2"
               >
-                <Text>Run the following command to register your device.</Text>
-                <Card
-                  marginTop={majorScale(1)}
-                  padding={majorScale(1)}
-                  background="#234361"
-                >
-                  <Code fontFamily="mono" color="white">
-                    {dockerCommand}
-                  </Code>
-                </Card>
+                <Text>
+                  Run the following command to register your device.
+                </Text>
+                {dockerCommands.map(cmd =>
+                  <Card
+                    marginTop={majorScale(1)}
+                    padding={majorScale(1)}
+                    background="#234361"
+                  >
+                    <Code fontFamily="mono" color="white">
+                      {cmd}
+                    </Code>
+                  </Card>
+                )}
               </Card>
             </Pane>
           </InnerCard>
