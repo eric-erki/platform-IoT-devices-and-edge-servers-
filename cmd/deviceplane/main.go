@@ -3,35 +3,48 @@ package main
 import (
 	"os"
 
+	"github.com/deviceplane/deviceplane/pkg/client"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
 
 var (
-	app             = kingpin.New("deviceplane", "The Deviceplane CLI.")
-	apiEndpointFlag = app.Flag("url", "API Endpoint.").Hidden().Default("https://cloud.deviceplane.com:443/api").URL()
-	accessKeyFlag   = app.Flag("access-key", "Access Key used for authentication.").Required().String()
-	projectFlag     = app.Flag("project", "Project name.").Required().String()
+	// Command and global flags
+	// TODO: new custom template
+	app                   = kingpin.New("deviceplane", "The Deviceplane CLI.").UsageTemplate(kingpin.CompactUsageTemplate).Version("dev")
+	globalAPIEndpointFlag = app.Flag("url", "API Endpoint.").Hidden().Default("https://cloud.deviceplane.com:443/api").URL()
+	globalAccessKeyFlag   = app.Flag("access-key", "Access Key used for authentication.").Envar("DEVICEPLANE_ACCESS_KEY").String()
+	globalProjectFlag     = app.Flag("project", "Project name.").Envar("DEVICEPLANE_PROJECT").String()
+	globalConfigFileFlag  = app.Flag("config", "Config file to use.").Default("~/.deviceplane/config").String()
 
+	// Top level commands
 	sshCmd         = app.Command("ssh", "SSH into a device.")
 	deviceFlag     = sshCmd.Flag("device", "Device to SSH into.").Required().String()
 	sshTimeoutFlag = sshCmd.Flag("timeout", "Maximum length to attempt establishing a connection.").Default("60").Int()
 
-	projectCmd       = app.Command("project", "Manage projects.")
-	createProjectCmd = projectCmd.Command("create", "Create a new project.")
+	// Categorical commands
 
-	applicationCmd       = app.Command("application", "Manage applications.")
-	createApplicationCmd = applicationCmd.Command("create", "Create a new application.")
-	applicationFlag      = createApplicationCmd.Flag("application", "Application name.").Required().String()
-	editCmd              = applicationCmd.Command("edit", "Manually modify an application's latest release config.")
-	deployCmd            = applicationCmd.Command("deploy", "Deploy an application from a yaml file.")
-	deployFileArg        = deployCmd.Arg("deployfile", "File path of the yaml file to deploy.").Required().String()
+	// Project
+	projectCmd       = app.Command("project", "Manage projects.")
+	projectListCmd   = projectCmd.Command("list", "List projects.")
+	projectCreateCmd = projectCmd.Command("create", "Create a new project.")
+
+	// Device
+	deviceCmd     = app.Command("device", "Manage devices.")
+	deviceListCmd = deviceCmd.Command("list", "List devices.")
+	deviceSSHCmd  = deviceCmd.Command("ssh", "SSH into a device.")
+)
+
+var (
+	apiClient *client.Client
 )
 
 func main() {
-	kingpin.Version("dev")
-
-	sshCmd.Action(sshFunc)
-	createProjectCmd.Action(createProjectFunc)
-
+	app = app.PreAction(func(c *kingpin.ParseContext) error {
+		if globalAPIEndpointFlag == nil || globalAccessKeyFlag == nil {
+			return nil // Kingpin will write a better error after it validates required flags
+		}
+		apiClient = client.NewClient(*globalAPIEndpointFlag, *globalAccessKeyFlag, nil)
+		return nil
+	})
 	kingpin.MustParse(app.Parse(os.Args[1:]))
 }

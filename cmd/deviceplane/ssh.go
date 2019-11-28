@@ -9,14 +9,11 @@ import (
 	"os/exec"
 	"strconv"
 
-	"github.com/deviceplane/deviceplane/pkg/client"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
 
-func sshFunc(c *kingpin.ParseContext) error {
-	client := client.NewClient(*apiEndpointFlag, *accessKeyFlag, nil)
-
-	conn, err := client.InitiateSSH(context.TODO(), *projectFlag, *deviceFlag)
+func sshAction(c *kingpin.ParseContext) error {
+	conn, err := apiClient.InitiateSSH(context.TODO(), *globalProjectFlag, *deviceFlag)
 	if err != nil {
 		return err
 	}

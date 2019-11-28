@@ -7,14 +7,28 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/deviceplane/deviceplane/pkg/client"
 	"github.com/deviceplane/deviceplane/pkg/interpolation"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
 
+var (
+	applicationCmd = app.Command("application", "Manage applications.")
+	_              = requireAccessKey(applicationCmd)
+	_              = requireProject(applicationCmd)
+
+	applicationListCmd = applicationCmd.Command("list", "List applications.")
+
+	applicationCreateCmd = applicationCmd.Command("create", "Create a new application.")
+	applicationArg       = applicationCreateCmd.Arg("application", "Application name.").Required().String()
+
+	applicationEditCmd = applicationCmd.Command("edit", "Manually modify an application's latest release config.")
+
+	applicationDeployCmd     = applicationCmd.Command("deploy", "Deploy an application from a yaml file.")
+	applicationDeployFileArg = applicationDeployCmd.Arg("deployfile", "File path of the yaml file to deploy.").Required().ExistingFile()
+)
+
 func createApplicationFunc(c *kingpin.ParseContext) error {
-	client := client.NewClient(*apiEndpointFlag, *accessKeyFlag, nil)
-	application, err := client.CreateApplication(context.TODO(), *projectFlag, *applicationFlag)
+	application, err := apiClient.CreateApplication(context.TODO(), *globalProjectFlag, *applicationArg)
 	if err != nil {
 		return err
 	}
@@ -25,8 +39,7 @@ func createApplicationFunc(c *kingpin.ParseContext) error {
 }
 
 func deployApplicationFunc(c *kingpin.ParseContext) error {
-	client := client.NewClient(*apiEndpointFlag, *accessKeyFlag, nil)
-	yamlConfigBytes, err := ioutil.ReadFile(*deployFileArg)
+	yamlConfigBytes, err := ioutil.ReadFile(*applicationDeployFileArg)
 	if err != nil {
 		return err
 	}
@@ -36,20 +49,18 @@ func deployApplicationFunc(c *kingpin.ParseContext) error {
 		return err
 	}
 
-	release, err := client.CreateRelease(context.TODO(), *projectFlag, *applicationFlag, finalYamlConfig)
+	release, err := apiClient.CreateRelease(context.TODO(), *globalProjectFlag, *applicationArg, finalYamlConfig)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("Latest release %s for application %s successfully released at %s!\n", release.ID, *applicationFlag, release.CreatedAt.Format("Mon Jan _2 15:04:05 2006"))
+	fmt.Printf("Latest release %s for application %s successfully released at %s!\n", release.ID, *applicationArg, release.CreatedAt.Format("Mon Jan _2 15:04:05 2006"))
 
 	return nil
 }
 
 func editApplicationConfigFunc(c *kingpin.ParseContext) error {
-	client := client.NewClient(*apiEndpointFlag, *accessKeyFlag, nil)
-
-	release, err := client.GetLatestRelease(context.TODO(), *projectFlag, *applicationFlag)
+	release, err := apiClient.GetLatestRelease(context.TODO(), *globalProjectFlag, *applicationArg)
 	if err != nil {
 		return err
 	}
@@ -98,12 +109,12 @@ func editApplicationConfigFunc(c *kingpin.ParseContext) error {
 		return err
 	}
 
-	release, err = client.CreateRelease(context.TODO(), *projectFlag, *applicationFlag, string(yamlConfigBytes))
+	release, err = apiClient.CreateRelease(context.TODO(), *globalProjectFlag, *applicationArg, string(yamlConfigBytes))
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("Latest release %s for application %s successfully released at %s!\n", release.ID, *applicationFlag, release.CreatedAt.Format("Mon Jan _2 15:04:05 2006"))
+	fmt.Printf("Latest release %s for application %s successfully released at %s!\n", release.ID, *applicationArg, release.CreatedAt.Format("Mon Jan _2 15:04:05 2006"))
 
 	return nil
 }

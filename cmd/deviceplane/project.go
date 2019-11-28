@@ -4,13 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/deviceplane/deviceplane/pkg/client"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
 
-func createProjectFunc(c *kingpin.ParseContext) error {
-	client := client.NewClient(*apiEndpointFlag, *accessKeyFlag, nil)
-	project, err := client.CreateProject(context.TODO(), *projectFlag)
+func createProjectAction(c *kingpin.ParseContext) error {
+	project, err := apiClient.CreateProject(context.TODO(), *globalProjectFlag)
 	if err != nil {
 		return err
 	}
