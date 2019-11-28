@@ -2,12 +2,15 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"time"
 
 	"github.com/deviceplane/deviceplane/pkg/interpolation"
+	"github.com/hako/durafmt"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
 
@@ -17,17 +20,71 @@ var (
 	_              = requireProject(applicationCmd)
 
 	applicationListCmd = applicationCmd.Command("list", "List applications.")
+	_                  = applicationListCmd.Action(applicationListFunc)
 
 	applicationCreateCmd = applicationCmd.Command("create", "Create a new application.")
-	applicationArg       = applicationCreateCmd.Arg("application", "Application name.").Required().String()
+	_                    = applicationCreateCmd.Action(applicationCreateFunc)
 
 	applicationEditCmd = applicationCmd.Command("edit", "Manually modify an application's latest release config.")
+	_                  = applicationEditCmd.Action(applicationEditFunc)
 
-	applicationDeployCmd     = applicationCmd.Command("deploy", "Deploy an application from a yaml file.")
-	applicationDeployFileArg = applicationDeployCmd.Arg("deployfile", "File path of the yaml file to deploy.").Required().ExistingFile()
+	applicationViewCmd = applicationCmd.Command("view", "View an application's latest release config.")
+	_                  = applicationViewCmd.Action(applicationViewFunc)
+
+	applicationDeployCmd = applicationCmd.Command("deploy", "Deploy an application from a yaml file.")
+	_                    = applicationDeployCmd.Action(applicationDeployFunc)
+
+	applicationArg *string = &[]string{""}[0] // Required so kingpin doesn't crash when setting
+	_                      = func() error {
+		for _, cmd := range []*kingpin.CmdClause{
+			applicationCreateCmd,
+			applicationEditCmd,
+			applicationViewCmd,
+			applicationDeployCmd,
+		} {
+			cmd.Arg("application", "Application name.").Required().StringVar(applicationArg)
+		}
+		return nil
+	}()
+
+	// We want this to come after the "application" argument
+	applicationDeployFileArg = applicationDeployCmd.Arg("file", "File path of the yaml file to deploy.").Required().ExistingFile()
+
+	// TODO: check if we changed this to "raw" or "r" (can also add all three...):
+	applicationJSONViewFlag *bool = &[]bool{false}[0]
+	_                             = func() error {
+		for _, cmd := range []*kingpin.CmdClause{
+			applicationListCmd,
+			applicationViewCmd,
+		} {
+			cmd.Flag("json", "View JSON output.").BoolVar(applicationJSONViewFlag)
+		}
+		return nil
+	}()
 )
 
-func createApplicationFunc(c *kingpin.ParseContext) error {
+func applicationListFunc(c *kingpin.ParseContext) error {
+	applications, err := apiClient.ListApplications(context.TODO(), *globalProjectFlag)
+	if err != nil {
+		return err
+	}
+
+	if applicationJSONViewFlag != nil && *applicationJSONViewFlag == true {
+		fmt.Printf("%+v\n", applications)
+	} else {
+		table.SetHeader([]string{"Name", "Description", "Created At"})
+		for _, app := range applications {
+			duration := durafmt.Parse(time.Now().Sub(app.CreatedAt)).LimitFirstN(2)
+			table.Append([]string{app.Name, app.Description, duration.String() + " ago"})
+			// table.Append([]string{app.Name, app.Description, app.CreatedAt.Local().Format("Mon Jan 2 3:04pm")})
+		}
+		table.Render()
+	}
+
+	return nil
+}
+
+func applicationCreateFunc(c *kingpin.ParseContext) error {
 	application, err := apiClient.CreateApplication(context.TODO(), *globalProjectFlag, *applicationArg)
 	if err != nil {
 		return err
@@ -38,7 +95,7 @@ func createApplicationFunc(c *kingpin.ParseContext) error {
 	return nil
 }
 
-func deployApplicationFunc(c *kingpin.ParseContext) error {
+func applicationDeployFunc(c *kingpin.ParseContext) error {
 	yamlConfigBytes, err := ioutil.ReadFile(*applicationDeployFileArg)
 	if err != nil {
 		return err
@@ -59,7 +116,34 @@ func deployApplicationFunc(c *kingpin.ParseContext) error {
 	return nil
 }
 
-func editApplicationConfigFunc(c *kingpin.ParseContext) error {
+func applicationViewFunc(c *kingpin.ParseContext) error {
+	release, err := apiClient.GetLatestRelease(context.TODO(), *globalProjectFlag, *applicationArg)
+	if err != nil {
+		return err
+	}
+
+	var jsonConfig interface{}
+	var yamlConfig string
+	if release != nil {
+		jsonConfig = release.Config
+		yamlConfig = release.RawConfig
+	}
+
+	// TODO: properly serialize
+	if applicationJSONViewFlag != nil && *applicationJSONViewFlag == true {
+		jsonBytes, err := json.Marshal(jsonConfig)
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(jsonBytes))
+	} else {
+		fmt.Println(yamlConfig)
+	}
+
+	return nil
+}
+
+func applicationEditFunc(c *kingpin.ParseContext) error {
 	release, err := apiClient.GetLatestRelease(context.TODO(), *globalProjectFlag, *applicationArg)
 	if err != nil {
 		return err

@@ -97,12 +97,12 @@ func populateEmptyValuesFromConfig(c *kingpin.ParseContext) (err error) {
 	// The first two steps are handled automatically by kingpin
 	if config.AccessKey != nil {
 		if globalAccessKeyFlag == nil || *globalAccessKeyFlag == "" {
-			globalAccessKeyFlag = config.AccessKey
+			*globalAccessKeyFlag = *config.AccessKey
 		}
 	}
 	if config.Project != nil {
 		if globalProjectFlag == nil || *globalProjectFlag == "" {
-			globalProjectFlag = config.Project
+			*globalProjectFlag = *config.Project
 		}
 	}
 

@@ -23,8 +23,10 @@ require (
 	github.com/gorilla/handlers v1.4.0
 	github.com/gorilla/mux v1.7.1
 	github.com/gorilla/websocket v1.4.0
+	github.com/hako/durafmt v0.0.0-20191009132224-3f39dc1ed9f4
 	github.com/kr/pty v1.1.3
 	github.com/leodido/go-urn v1.1.0 // indirect
+	github.com/olekukonko/tablewriter v0.0.3
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/prometheus/client_golang v1.2.1

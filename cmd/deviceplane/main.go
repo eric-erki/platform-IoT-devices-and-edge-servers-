@@ -15,6 +15,7 @@ var (
 	globalAccessKeyFlag   = app.Flag("access-key", "Access Key used for authentication.").Envar("DEVICEPLANE_ACCESS_KEY").String()
 	globalProjectFlag     = app.Flag("project", "Project name.").Envar("DEVICEPLANE_PROJECT").String()
 	globalConfigFileFlag  = app.Flag("config", "Config file to use.").Default("~/.deviceplane/config").String()
+	_                     = app.PreAction(initializeClient)
 
 	// Top level commands
 	sshCmd         = app.Command("ssh", "SSH into a device.")
@@ -36,15 +37,9 @@ var (
 
 var (
 	apiClient *client.Client
+	table     = createDefaultTable()
 )
 
 func main() {
-	app = app.PreAction(func(c *kingpin.ParseContext) error {
-		if globalAPIEndpointFlag == nil || globalAccessKeyFlag == nil {
-			return nil // Kingpin will write a better error after it validates required flags
-		}
-		apiClient = client.NewClient(*globalAPIEndpointFlag, *globalAccessKeyFlag, nil)
-		return nil
-	})
 	kingpin.MustParse(app.Parse(os.Args[1:]))
 }
