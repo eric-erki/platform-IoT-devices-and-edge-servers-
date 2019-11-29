@@ -1,4 +1,4 @@
-package main
+package application
 
 import (
 	"context"
@@ -9,73 +9,35 @@ import (
 	"os/exec"
 	"time"
 
+	"github.com/deviceplane/deviceplane/cmd/deviceplane/cliutils"
 	"github.com/deviceplane/deviceplane/pkg/interpolation"
 	"github.com/hako/durafmt"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
 
-var (
-	applicationCmd = app.Command("application", "Manage applications.")
-	_              = requireAccessKey(applicationCmd)
-	_              = requireProject(applicationCmd)
+func addApplicationArg(cmd *kingpin.CmdClause) *kingpin.ArgClause {
+	arg := cmd.Arg("application", "Application name.").Required()
+	arg.StringVar(applicationArg)
+	arg.HintAction(func() []string {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+		defer cancel()
 
-	applicationListCmd = applicationCmd.Command("list", "List applications.")
-	_                  = applicationListCmd.Action(applicationListAction)
-
-	applicationCreateCmd = applicationCmd.Command("create", "Create a new application.")
-	_                    = addApplicationArg(applicationCreateCmd)
-	_                    = applicationCreateCmd.Action(applicationCreateAction)
-
-	applicationEditCmd = applicationCmd.Command("edit", "Manually modify an application's latest release config.")
-	_                  = addApplicationArg(applicationEditCmd)
-	_                  = applicationEditCmd.Action(applicationEditAction)
-
-	applicationViewCmd = applicationCmd.Command("view", "View an application's latest release config.")
-	_                  = addApplicationArg(applicationViewCmd)
-	_                  = applicationViewCmd.Action(applicationViewAction)
-
-	applicationDeployCmd     = applicationCmd.Command("deploy", "Deploy an application from a yaml file.")
-	applicationDeployFileArg = applicationDeployCmd.Arg("file", "File path of the yaml file to deploy.").Required().ExistingFile()
-	_                        = addApplicationArg(applicationDeployCmd)
-	_                        = applicationDeployCmd.Action(applicationDeployAction)
-
-	applicationArg    *string = &[]string{""}[0]
-	addApplicationArg         = func(cmd *kingpin.CmdClause) *kingpin.ArgClause {
-		arg := cmd.Arg("application", "Application name.").Required()
-		arg.StringVar(applicationArg)
-		arg.HintAction(func() []string {
-			ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-			defer cancel()
-
-			applications, err := apiClient.ListApplications(ctx, *globalProjectFlag)
-			if err != nil {
-				return []string{}
-			}
-
-			names := make([]string, len(applications))
-			for _, app := range applications {
-				names = append(names, app.Name)
-			}
-			return names
-		})
-		return arg
-	}
-
-	// TODO: check if we changed this to "raw" or "r" (can also add all three...):
-	applicationJSONViewFlag *bool = &[]bool{false}[0]
-	_                             = func() error {
-		for _, cmd := range []*kingpin.CmdClause{
-			applicationListCmd,
-			applicationViewCmd,
-		} {
-			cmd.Flag("json", "View JSON output.").BoolVar(applicationJSONViewFlag)
+		applications, err := config.APIClient.ListApplications(ctx, *config.Flags.Project)
+		if err != nil {
+			return []string{}
 		}
-		return nil
-	}()
-)
+
+		names := make([]string, len(applications))
+		for _, app := range applications {
+			names = append(names, app.Name)
+		}
+		return names
+	})
+	return arg
+}
 
 func applicationListAction(c *kingpin.ParseContext) error {
-	applications, err := apiClient.ListApplications(context.TODO(), *globalProjectFlag)
+	applications, err := config.APIClient.ListApplications(context.TODO(), *config.Flags.Project)
 	if err != nil {
 		return err
 	}
@@ -83,6 +45,7 @@ func applicationListAction(c *kingpin.ParseContext) error {
 	if applicationJSONViewFlag != nil && *applicationJSONViewFlag == true {
 		fmt.Printf("%+v\n", applications)
 	} else {
+		table := cliutils.DefaultTable()
 		table.SetHeader([]string{"Name", "Description", "Created At"})
 		for _, app := range applications {
 			duration := durafmt.Parse(time.Now().Sub(app.CreatedAt)).LimitFirstN(2)
@@ -95,7 +58,7 @@ func applicationListAction(c *kingpin.ParseContext) error {
 }
 
 func applicationCreateAction(c *kingpin.ParseContext) error {
-	application, err := apiClient.CreateApplication(context.TODO(), *globalProjectFlag, *applicationArg)
+	application, err := config.APIClient.CreateApplication(context.TODO(), *config.Flags.Project, *applicationArg)
 	if err != nil {
 		return err
 	}
@@ -116,7 +79,7 @@ func applicationDeployAction(c *kingpin.ParseContext) error {
 		return err
 	}
 
-	release, err := apiClient.CreateRelease(context.TODO(), *globalProjectFlag, *applicationArg, finalYamlConfig)
+	release, err := config.APIClient.CreateRelease(context.TODO(), *config.Flags.Project, *applicationArg, finalYamlConfig)
 	if err != nil {
 		return err
 	}
@@ -127,7 +90,7 @@ func applicationDeployAction(c *kingpin.ParseContext) error {
 }
 
 func applicationViewAction(c *kingpin.ParseContext) error {
-	release, err := apiClient.GetLatestRelease(context.TODO(), *globalProjectFlag, *applicationArg)
+	release, err := config.APIClient.GetLatestRelease(context.TODO(), *config.Flags.Project, *applicationArg)
 	if err != nil {
 		return err
 	}
@@ -153,7 +116,7 @@ func applicationViewAction(c *kingpin.ParseContext) error {
 }
 
 func applicationEditAction(c *kingpin.ParseContext) error {
-	release, err := apiClient.GetLatestRelease(context.TODO(), *globalProjectFlag, *applicationArg)
+	release, err := config.APIClient.GetLatestRelease(context.TODO(), *config.Flags.Project, *applicationArg)
 	if err != nil {
 		return err
 	}
@@ -202,7 +165,7 @@ func applicationEditAction(c *kingpin.ParseContext) error {
 		return err
 	}
 
-	release, err = apiClient.CreateRelease(context.TODO(), *globalProjectFlag, *applicationArg, string(yamlConfigBytes))
+	release, err = config.APIClient.CreateRelease(context.TODO(), *config.Flags.Project, *applicationArg, string(yamlConfigBytes))
 	if err != nil {
 		return err
 	}

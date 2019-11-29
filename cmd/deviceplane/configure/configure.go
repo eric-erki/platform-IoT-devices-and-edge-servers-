@@ -1,4 +1,4 @@
-package main
+package configure
 
 import (
 	"bufio"
@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/deviceplane/deviceplane/cmd/deviceplane/global"
 	"github.com/deviceplane/deviceplane/pkg/interpolation"
 	"github.com/pkg/errors"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
@@ -16,15 +17,21 @@ import (
 )
 
 var (
-	// Global initialization
-	_ = app.PreAction(populateEmptyValuesFromConfig)
-
-	// Commands
-	configureCmd = app.Command("configure", "Configure this CLI utility.")
-	_            = configureCmd.Action(configureAction)
+	gConfig *global.Config
 )
 
-type Config struct {
+func Initialize(c *global.Config) {
+	gConfig = c
+
+	// Global initialization
+	c.App.PreAction(populateEmptyValuesFromConfig)
+
+	// Commands
+	configureCmd := c.App.Command("configure", "Configure this CLI utility.")
+	configureCmd.Action(configureAction)
+}
+
+type ConfigValues struct {
 	AccessKey *string `yaml:"access-key,omitempty"`
 	Project   *string `yaml:"project,omitempty"`
 }
@@ -38,39 +45,39 @@ func populateEmptyValuesFromConfig(c *kingpin.ParseContext) (err error) {
 
 	// (This happens if kingpin has an error while parsing. Let it throw its
 	// errors first, ours don't matter at that point)
-	if c.Error() || globalConfigFileFlag == nil || *globalConfigFileFlag == "" {
+	if c.Error() || gConfig.Flags.ConfigFile == nil || *gConfig.Flags.ConfigFile == "" {
 		return nil
 	}
 
 	// This should normally be expanded by the shell,
 	// but this is for the our default flag value,
 	// which starts with "~/" but does not get expanded
-	if strings.HasPrefix(*globalConfigFileFlag, "~/") {
+	if strings.HasPrefix(*gConfig.Flags.ConfigFile, "~/") {
 		usr, err := user.Current()
 		if err != nil {
 			return errors.Wrap(err, "failed to get home dir")
 		}
 		dir := usr.HomeDir
-		expandedPath := filepath.Join(dir, (*globalConfigFileFlag)[2:])
-		globalConfigFileFlag = &expandedPath
+		expandedPath := filepath.Join(dir, (*gConfig.Flags.ConfigFile)[2:])
+		gConfig.Flags.ConfigFile = &expandedPath
 	}
 
-	gcf, err := os.Open(*globalConfigFileFlag)
+	gcf, err := os.Open(*gConfig.Flags.ConfigFile)
 	if err != nil {
 		if !os.IsNotExist(err) {
 			return errors.Wrap(err, "unknown file error")
 		}
 
 		// Create if not exists
-		err := os.MkdirAll(filepath.Dir(*globalConfigFileFlag), os.ModeDir)
+		err := os.MkdirAll(filepath.Dir(*gConfig.Flags.ConfigFile), os.ModeDir)
 		if err != nil && !os.IsExist(err) {
 			return errors.Wrap(err, "could not create config directory")
 		}
-		err = os.Chmod(filepath.Dir(*globalConfigFileFlag), 0700)
+		err = os.Chmod(filepath.Dir(*gConfig.Flags.ConfigFile), 0700)
 		if err != nil {
 			return errors.Wrap(err, "failed to change config file perms")
 		}
-		gcf, err = os.Create(*globalConfigFileFlag)
+		gcf, err = os.Create(*gConfig.Flags.ConfigFile)
 		if err != nil {
 			return errors.Wrap(err, "failed to create config file")
 		}
@@ -87,22 +94,22 @@ func populateEmptyValuesFromConfig(c *kingpin.ParseContext) (err error) {
 		return errors.Wrap(err, "failed to interpolate config data")
 	}
 
-	var config Config
-	err = yaml.Unmarshal([]byte(configString), &config)
+	var configValues ConfigValues
+	err = yaml.Unmarshal([]byte(configString), &configValues)
 	if err != nil {
 		return errors.Wrap(err, "failed to unmarshal config file")
 	}
 
 	// Fill config in order of FLAG -> ENV -> CONFIG
 	// The first two steps are handled automatically by kingpin
-	if config.AccessKey != nil {
-		if globalAccessKeyFlag == nil || *globalAccessKeyFlag == "" {
-			*globalAccessKeyFlag = *config.AccessKey
+	if configValues.AccessKey != nil {
+		if gConfig.Flags.AccessKey == nil || *gConfig.Flags.AccessKey == "" {
+			*gConfig.Flags.AccessKey = *configValues.AccessKey
 		}
 	}
-	if config.Project != nil {
-		if globalProjectFlag == nil || *globalProjectFlag == "" {
-			*globalProjectFlag = *config.Project
+	if configValues.Project != nil {
+		if gConfig.Flags.Project == nil || *gConfig.Flags.Project == "" {
+			*gConfig.Flags.Project = *configValues.Project
 		}
 	}
 
@@ -115,15 +122,15 @@ func configureAction(c *kingpin.ParseContext) error {
 
 	// Read input
 	var extraAccessKeyMsg string
-	if globalAccessKeyFlag != nil && *globalAccessKeyFlag != "" {
-		extraAccessKeyMsg = fmt.Sprintf(` (or leave empty to use "%s")`, *globalAccessKeyFlag)
+	if gConfig.Flags.AccessKey != nil && *gConfig.Flags.AccessKey != "" {
+		extraAccessKeyMsg = fmt.Sprintf(` (or leave empty to use "%s")`, *gConfig.Flags.AccessKey)
 	}
 	fmt.Printf("Enter access key%s: \n>", extraAccessKeyMsg)
 	rawAccessKey, _ := reader.ReadString('\n')
 
 	var extraProjectMsg string
-	if globalProjectFlag != nil && *globalProjectFlag != "" {
-		extraProjectMsg = fmt.Sprintf(` (or leave empty to use "%s")`, *globalProjectFlag)
+	if gConfig.Flags.Project != nil && *gConfig.Flags.Project != "" {
+		extraProjectMsg = fmt.Sprintf(` (or leave empty to use "%s")`, *gConfig.Flags.Project)
 	}
 	fmt.Printf("Enter project%s: \n>", extraProjectMsg)
 	rawProject, _ := reader.ReadString('\n')
@@ -134,26 +141,26 @@ func configureAction(c *kingpin.ParseContext) error {
 
 	// Replace input if needed
 	if accessKey == "" {
-		accessKey = *globalAccessKeyFlag
+		accessKey = *gConfig.Flags.AccessKey
 	}
 	if project == "" {
-		project = *globalProjectFlag
+		project = *gConfig.Flags.Project
 	}
 
 	fmt.Printf("Configuring with access key (%s) and project (%s)\n", accessKey, project)
 
 	// Actually configure
-	config := Config{
+	configValues := ConfigValues{
 		AccessKey: &accessKey,
 		Project:   &project,
 	}
 
-	configBytes, err := yaml.Marshal(config)
+	configBytes, err := yaml.Marshal(configValues)
 	if err != nil {
 		return errors.Wrap(err, "failed to serialize config")
 	}
 
-	err = ioutil.WriteFile(*globalConfigFileFlag, configBytes, 0700)
+	err = ioutil.WriteFile(*gConfig.Flags.ConfigFile, configBytes, 0700)
 	if err != nil {
 		return errors.Wrap(err, "failed to write config to disk")
 	}

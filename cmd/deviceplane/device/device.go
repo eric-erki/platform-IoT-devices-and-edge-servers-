@@ -1,7 +1,8 @@
-package main
+package device
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -11,65 +12,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/deviceplane/deviceplane/cmd/deviceplane/cliutils"
+
 	"github.com/hako/durafmt"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
 
-var (
-	deviceCmd = app.Command("device", "Manage devices.")
-
-	deviceListCmd = deviceCmd.Command("list", "List devices.")
-	_             = deviceListCmd.Action(deviceListAction)
-
-	deviceMetricsCmd = deviceCmd.Command("metrics", "Get device metrics.")
-
-	deviceMetricsHostCmd = deviceMetricsCmd.Command("host", "Get metrics on the device itself.")
-	_                    = addDeviceArg(deviceMetricsHostCmd)
-	_                    = deviceMetricsHostCmd.Action(deviceHostMetricsAction)
-
-	deviceMetricsServiceCmd     = deviceMetricsCmd.Command("service", "Get the metrics from a service running on the device.")
-	deviceMetricsServiceArg     = deviceMetricsServiceCmd.Arg("application", "The application under which the service is running.").Required().String()
-	deviceMetricsApplicationArg = deviceMetricsServiceCmd.Arg("service", "The name of the service which is exposing a metrics endpoint.").Required().String()
-	_                           = addDeviceArg(deviceMetricsServiceCmd)
-	_                           = deviceMetricsServiceCmd.Action(deviceServiceMetricsAction)
-
-	// Global and device-level commands
-	sshTimeoutFlag *int = &[]int{0}[0]
-	_                   = func() error {
-		globalAndCategorizedCmd(app, deviceCmd, func(attachmentPoint hasCommand) {
-			deviceSSHCmd := attachmentPoint.Command("ssh", "SSH into a device.")
-			addDeviceArg(deviceSSHCmd)
-			deviceSSHCmd.Flag("timeout", "Maximum length to attempt establishing a connection.").Default("60").IntVar(sshTimeoutFlag)
-			deviceSSHCmd.Action(deviceSSHAction)
-		})
-		return nil
-	}()
-
-	deviceArg    *string = &[]string{""}[0]
-	addDeviceArg         = func(cmd *kingpin.CmdClause) *kingpin.ArgClause {
-		arg := cmd.Arg("device", "Device name.").Required()
-		arg.StringVar(deviceArg)
-		arg.HintAction(func() []string {
-			ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-			defer cancel()
-
-			devices, err := apiClient.ListDevices(ctx, *globalProjectFlag)
-			if err != nil {
-				return []string{}
-			}
-
-			names := make([]string, len(devices))
-			for _, d := range devices {
-				names = append(names, d.Name)
-			}
-			return names
-		})
-		return arg
-	}
-)
-
 func deviceListAction(c *kingpin.ParseContext) error {
-	devices, err := apiClient.ListDevices(context.TODO(), *globalProjectFlag)
+	devices, err := config.APIClient.ListDevices(context.TODO(), *config.Flags.Project)
 	if err != nil {
 		return err
 	}
@@ -77,6 +27,7 @@ func deviceListAction(c *kingpin.ParseContext) error {
 	// TODO: add JSON flag here
 	// fmt.Printf("%+v\n", devices)
 
+	table := cliutils.DefaultTable()
 	table.SetHeader([]string{"Name", "Status", "IP", "OS", "Labels", "Last Seen", "Created"})
 	for _, d := range devices {
 		created := durafmt.Parse(time.Now().Sub(d.CreatedAt)).LimitFirstN(2)
@@ -106,17 +57,15 @@ func deviceListAction(c *kingpin.ParseContext) error {
 }
 
 func deviceHostMetricsAction(c *kingpin.ParseContext) error {
-	fmt.Println("NOT IMPLEMENTED YET")
-	return nil
+	return errors.New("NOT IMPLEMENTED YET")
 }
 
 func deviceServiceMetricsAction(c *kingpin.ParseContext) error {
-	fmt.Println("NOT IMPLEMENTED YET")
-	return nil
+	return errors.New("NOT IMPLEMENTED YET")
 }
 
 func deviceSSHAction(c *kingpin.ParseContext) error {
-	conn, err := apiClient.InitiateSSH(context.TODO(), *globalProjectFlag, *deviceArg)
+	conn, err := config.APIClient.InitiateSSH(context.TODO(), *config.Flags.Project, *deviceArg)
 	if err != nil {
 		return err
 	}
