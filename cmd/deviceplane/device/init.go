@@ -16,6 +16,8 @@ var (
 	deviceMetricsServiceArg     *string = &[]string{""}[0]
 	deviceMetricsApplicationArg *string = &[]string{""}[0]
 
+	deviceJSONOutputFlag *bool = &[]bool{false}[0]
+
 	config *global.Config
 )
 
@@ -26,6 +28,17 @@ func Initialize(c *global.Config) {
 
 	deviceListCmd := deviceCmd.Command("list", "List devices.")
 	_ = deviceListCmd.Action(deviceListAction)
+
+	cliutils.GlobalAndCategorizedCmd(config.App, deviceCmd, func(attachmentPoint cliutils.HasCommand) {
+		deviceSSHCmd := attachmentPoint.Command("ssh", "SSH into a device.")
+		addDeviceArg(deviceSSHCmd)
+		deviceSSHCmd.Flag("timeout", "Maximum length to attempt establishing a connection.").Default("60").IntVar(sshTimeoutFlag)
+		deviceSSHCmd.Action(deviceSSHAction)
+	})
+
+	deviceInspectCmd := deviceCmd.Command("inspect", "Inspect a device's properties and labels.")
+	addDeviceArg(deviceInspectCmd)
+	_ = deviceInspectCmd.Action(deviceInspectAction)
 
 	deviceMetricsCmd := deviceCmd.Command("metrics", "Get device metrics.")
 
@@ -39,13 +52,13 @@ func Initialize(c *global.Config) {
 	addDeviceArg(deviceMetricsServiceCmd)
 	deviceMetricsServiceCmd.Action(deviceServiceMetricsAction)
 
-	// Global and device-level commands
-	cliutils.GlobalAndCategorizedCmd(config.App, deviceCmd, func(attachmentPoint cliutils.HasCommand) {
-		deviceSSHCmd := attachmentPoint.Command("ssh", "SSH into a device.")
-		addDeviceArg(deviceSSHCmd)
-		deviceSSHCmd.Flag("timeout", "Maximum length to attempt establishing a connection.").Default("60").IntVar(sshTimeoutFlag)
-		deviceSSHCmd.Action(deviceSSHAction)
-	})
+	// TODO: check if we changed this to "raw" or "r" (can also add all three...):
+	for _, cmd := range []*kingpin.CmdClause{
+		deviceListCmd,
+		deviceInspectCmd,
+	} {
+		cmd.Flag("json", "View output in JSON.").BoolVar(deviceJSONOutputFlag)
+	}
 }
 
 func addDeviceArg(cmd *kingpin.CmdClause) *kingpin.ArgClause {

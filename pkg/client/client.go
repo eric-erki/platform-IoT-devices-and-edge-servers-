@@ -59,6 +59,14 @@ func (c *Client) CreateApplication(ctx context.Context, project string, name str
 	return &application, nil
 }
 
+func (c *Client) ListProjects(ctx context.Context, project string) ([]models.Project, error) {
+	var projects []models.Project
+	if err := c.get(ctx, &projects, projectsURL, project, projectsURL); err != nil {
+		return nil, err
+	}
+	return projects, nil
+}
+
 func (c *Client) ListApplications(ctx context.Context, project string) ([]models.Application, error) {
 	var applications []models.Application
 	if err := c.get(ctx, &applications, projectsURL, project, applicationsURL); err != nil {

@@ -42,7 +42,7 @@ func applicationListAction(c *kingpin.ParseContext) error {
 		return err
 	}
 
-	if applicationJSONViewFlag != nil && *applicationJSONViewFlag == true {
+	if applicationJSONOutputFlag != nil && *applicationJSONOutputFlag == true {
 		fmt.Printf("%+v\n", applications)
 	} else {
 		table := cliutils.DefaultTable()
@@ -89,7 +89,7 @@ func applicationDeployAction(c *kingpin.ParseContext) error {
 	return nil
 }
 
-func applicationViewAction(c *kingpin.ParseContext) error {
+func applicationInspectAction(c *kingpin.ParseContext) error {
 	release, err := config.APIClient.GetLatestRelease(context.TODO(), *config.Flags.Project, *applicationArg)
 	if err != nil {
 		return err
@@ -102,7 +102,7 @@ func applicationViewAction(c *kingpin.ParseContext) error {
 		yamlConfig = release.RawConfig
 	}
 
-	if applicationJSONViewFlag != nil && *applicationJSONViewFlag == true {
+	if applicationJSONOutputFlag != nil && *applicationJSONOutputFlag == true {
 		jsonBytes, err := json.Marshal(jsonConfig)
 		if err != nil {
 			return err

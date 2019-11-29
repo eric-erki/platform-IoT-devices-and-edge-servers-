@@ -7,9 +7,9 @@ import (
 )
 
 var (
-	applicationDeployFileArg *string = &[]string{""}[0]
-	applicationArg           *string = &[]string{""}[0]
-	applicationJSONViewFlag  *bool   = &[]bool{false}[0]
+	applicationDeployFileArg  *string = &[]string{""}[0]
+	applicationArg            *string = &[]string{""}[0]
+	applicationJSONOutputFlag *bool   = &[]bool{false}[0]
 
 	config *global.Config
 )
@@ -32,9 +32,9 @@ func Initialize(c *global.Config) {
 	addApplicationArg(applicationEditCmd)
 	applicationEditCmd.Action(applicationEditAction)
 
-	applicationViewCmd := applicationCmd.Command("view", "View an application's latest release config.")
-	addApplicationArg(applicationViewCmd)
-	applicationViewCmd.Action(applicationViewAction)
+	applicationInspectCmd := applicationCmd.Command("inspect", "Inspect an application's latest release config.")
+	addApplicationArg(applicationInspectCmd)
+	applicationInspectCmd.Action(applicationInspectAction)
 
 	applicationDeployCmd := applicationCmd.Command("deploy", "Deploy an application from a yaml file.")
 	applicationDeployFileArg = applicationDeployCmd.Arg("file", "File path of the yaml file to deploy.").Required().ExistingFile()
@@ -44,8 +44,8 @@ func Initialize(c *global.Config) {
 	// TODO: check if we changed this to "raw" or "r" (can also add all three...):
 	for _, cmd := range []*kingpin.CmdClause{
 		applicationListCmd,
-		applicationViewCmd,
+		applicationInspectCmd,
 	} {
-		cmd.Flag("json", "View JSON output.").BoolVar(applicationJSONViewFlag)
+		cmd.Flag("json", "View output in JSON.").BoolVar(applicationJSONOutputFlag)
 	}
 }

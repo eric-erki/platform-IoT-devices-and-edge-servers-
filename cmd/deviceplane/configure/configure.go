@@ -9,27 +9,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/deviceplane/deviceplane/cmd/deviceplane/global"
 	"github.com/deviceplane/deviceplane/pkg/interpolation"
 	"github.com/pkg/errors"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 	"gopkg.in/yaml.v2"
 )
-
-var (
-	gConfig *global.Config
-)
-
-func Initialize(c *global.Config) {
-	gConfig = c
-
-	// Global initialization
-	c.App.PreAction(populateEmptyValuesFromConfig)
-
-	// Commands
-	configureCmd := c.App.Command("configure", "Configure this CLI utility.")
-	configureCmd.Action(configureAction)
-}
 
 type ConfigValues struct {
 	AccessKey *string `yaml:"access-key,omitempty"`

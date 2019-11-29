@@ -56,6 +56,10 @@ func deviceListAction(c *kingpin.ParseContext) error {
 	return nil
 }
 
+func deviceInspectAction(c *kingpin.ParseContext) error {
+	return errors.New("NOT IMPLEMENTED YET")
+}
+
 func deviceHostMetricsAction(c *kingpin.ParseContext) error {
 	return errors.New("NOT IMPLEMENTED YET")
 }
