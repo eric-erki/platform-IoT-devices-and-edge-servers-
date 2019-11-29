@@ -37,8 +37,8 @@ func populateEmptyValuesFromConfig(c *kingpin.ParseContext) (err error) {
 	}()
 
 	// (This happens if kingpin has an error while parsing. Let it throw its
-	// errors, ours don't matter at that point)
-	if c.Error() {
+	// errors first, ours don't matter at that point)
+	if c.Error() || globalConfigFileFlag == nil || *globalConfigFileFlag == "" {
 		return nil
 	}
 
@@ -58,39 +58,39 @@ func populateEmptyValuesFromConfig(c *kingpin.ParseContext) (err error) {
 	gcf, err := os.Open(*globalConfigFileFlag)
 	if err != nil {
 		if !os.IsNotExist(err) {
-			return err
+			return errors.Wrap(err, "unknown file error")
 		}
 
 		// Create if not exists
 		err := os.MkdirAll(filepath.Dir(*globalConfigFileFlag), os.ModeDir)
 		if err != nil && !os.IsExist(err) {
-			return err
+			return errors.Wrap(err, "could not create config directory")
 		}
 		err = os.Chmod(filepath.Dir(*globalConfigFileFlag), 0700)
 		if err != nil {
-			return err
+			return errors.Wrap(err, "failed to change config file perms")
 		}
 		gcf, err = os.Create(*globalConfigFileFlag)
 		if err != nil {
-			return err
+			return errors.Wrap(err, "failed to create config file")
 		}
 	}
 
 	r := bufio.NewReader(gcf)
 	configBytes, err := ioutil.ReadAll(r)
 	if err != nil {
-		return errors.Wrap(err, "failed to read file")
+		return errors.Wrap(err, "failed to read config file")
 	}
 
 	configString, err := interpolation.Interpolate(string(configBytes), os.Getenv)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "failed to interpolate config data")
 	}
 
 	var config Config
 	err = yaml.Unmarshal([]byte(configString), &config)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "failed to unmarshal config file")
 	}
 
 	// Fill config in order of FLAG -> ENV -> CONFIG
