@@ -94,7 +94,7 @@ func (c *Client) Execute(ctx context.Context, project, deviceID, command string)
 }
 
 func (c *Client) InitiateSSH(ctx context.Context, project, deviceID string) (net.Conn, error) {
-	req, err := http.NewRequest("", "", nil)
+	req, err := http.NewRequestWithContext(ctx, "", "", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +110,7 @@ func (c *Client) InitiateSSH(ctx context.Context, project, deviceID string) (net
 }
 
 func (c *Client) get(ctx context.Context, out interface{}, s ...string) error {
-	req, err := http.NewRequest("GET", getURL(c.url, s...), nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", getURL(c.url, s...), nil)
 	if err != nil {
 		return err
 	}
@@ -134,7 +134,7 @@ func (c *Client) post(ctx context.Context, in, out interface{}, s ...string) err
 
 	reader := bytes.NewReader(reqBytes)
 
-	req, err := http.NewRequest("POST", getURL(c.url, s...), reader)
+	req, err := http.NewRequestWithContext(ctx, "POST", getURL(c.url, s...), reader)
 	if err != nil {
 		return err
 	}

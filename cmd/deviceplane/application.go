@@ -42,7 +42,23 @@ var (
 			applicationViewCmd,
 			applicationDeployCmd,
 		} {
-			cmd.Arg("application", "Application name.").Required().StringVar(applicationArg)
+			arg := cmd.Arg("application", "Application name.").Required()
+			arg.StringVar(applicationArg)
+			arg.HintAction(func() []string {
+				ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+				defer cancel()
+
+				applications, err := apiClient.ListApplications(ctx, *globalProjectFlag)
+				if err != nil {
+					return []string{}
+				}
+
+				names := make([]string, len(applications))
+				for _, app := range applications {
+					names = append(names, app.Name)
+				}
+				return names
+			})
 		}
 		return nil
 	}()
@@ -76,7 +92,6 @@ func applicationListFunc(c *kingpin.ParseContext) error {
 		for _, app := range applications {
 			duration := durafmt.Parse(time.Now().Sub(app.CreatedAt)).LimitFirstN(2)
 			table.Append([]string{app.Name, app.Description, duration.String() + " ago"})
-			// table.Append([]string{app.Name, app.Description, app.CreatedAt.Local().Format("Mon Jan 2 3:04pm")})
 		}
 		table.Render()
 	}
