@@ -15,7 +15,7 @@ import (
 var (
 	// Command and global flags
 	// TODO: new custom template
-	app = kingpin.New("deviceplane", "The Deviceplane CLI.").UsageTemplate(kingpin.CompactUsageTemplate).Version("dev")
+	app = kingpin.New("deviceplane", "The Deviceplane CLI.").UsageTemplate(cliutils.CustomTemplate).Version("dev")
 
 	config = global.Config{
 		App:             app,
