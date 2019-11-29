@@ -18,7 +18,8 @@ var (
 	app = kingpin.New("deviceplane", "The Deviceplane CLI.").UsageTemplate(kingpin.CompactUsageTemplate).Version("dev")
 
 	config = global.Config{
-		App: app,
+		App:             app,
+		ParsedCorrectly: app.Flag("internal-parsing-validator", "").Hidden().Default("true").Bool(),
 
 		Flags: global.ConfigFlags{
 			APIEndpoint: app.Flag("url", "API Endpoint.").Hidden().Default("https://cloud.deviceplane.com:443/api").URL(),

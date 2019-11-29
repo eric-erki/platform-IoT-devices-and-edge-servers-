@@ -45,7 +45,7 @@ func populateEmptyValuesFromConfig(c *kingpin.ParseContext) (err error) {
 
 	// (This happens if kingpin has an error while parsing. Let it throw its
 	// errors first, ours don't matter at that point)
-	if c.Error() || gConfig.Flags.ConfigFile == nil || *gConfig.Flags.ConfigFile == "" {
+	if c.Error() || gConfig.ParsedCorrectly == nil || !*gConfig.ParsedCorrectly {
 		return nil
 	}
 

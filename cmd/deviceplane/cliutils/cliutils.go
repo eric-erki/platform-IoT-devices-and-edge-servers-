@@ -1,7 +1,7 @@
 package cliutils
 
 import (
-	"errors"
+	"fmt"
 	"log"
 	"os"
 
@@ -13,17 +13,27 @@ import (
 )
 
 func RequireAccessKey(config *global.Config, c interface{}) interface{} {
-	return RequireVariableForPreAction(config.Flags.AccessKey, errors.New("access key flag/env/config not provided"), c)
+	return RequireVariableForPreAction(
+		config,
+		config.Flags.AccessKey,
+		fmt.Errorf("Access Key not found as a flag, env var, or in config (%s)", *config.Flags.ConfigFile),
+		c,
+	)
 }
 
 func RequireProject(config *global.Config, c interface{}) interface{} {
-	return RequireVariableForPreAction(config.Flags.Project, errors.New("project flag/env/config not provided"), c)
+	return RequireVariableForPreAction(
+		config,
+		config.Flags.Project,
+		fmt.Errorf("Project not found as a flag, env var, or in config (%s)", *config.Flags.ConfigFile),
+		c,
+	)
 }
 
-func RequireVariableForPreAction(variable *string, err error, c interface{}) interface{} {
+func RequireVariableForPreAction(config *global.Config, variable *string, err error, c interface{}) interface{} {
 	requirePreAction := func(c *kingpin.ParseContext) error {
-		if c.Error() {
-			return nil
+		if c.Error() || !*config.ParsedCorrectly {
+			return nil // Let kingpin's errors precede
 		}
 		if variable == nil || *variable == "" {
 			return err
@@ -46,9 +56,6 @@ func RequireVariableForPreAction(variable *string, err error, c interface{}) int
 
 func InitializeAPIClient(config *global.Config) func(c *kingpin.ParseContext) error {
 	return func(c *kingpin.ParseContext) error {
-		if config.Flags.APIEndpoint == nil || config.Flags.AccessKey == nil {
-			return nil // Kingpin will write a better error after it validates required flags
-		}
 		config.APIClient = client.NewClient(*config.Flags.APIEndpoint, *config.Flags.AccessKey, nil)
 		return nil
 	}
@@ -65,7 +72,7 @@ func DefaultTable() *tablewriter.Table {
 	table.SetRowSeparator("")
 	table.SetHeaderLine(false)
 	table.SetBorder(false)
-	table.SetTablePadding("\t") // pad with tabs
+	table.SetTablePadding(" \t ")
 	table.SetNoWhiteSpace(true)
 	return table
 }

@@ -9,9 +9,10 @@ import (
 )
 
 type Config struct {
-	App       *kingpin.Application
-	Flags     ConfigFlags
-	APIClient *client.Client
+	App             *kingpin.Application
+	ParsedCorrectly *bool
+	Flags           ConfigFlags
+	APIClient       *client.Client
 }
 
 type ConfigFlags struct {
