@@ -23,48 +23,43 @@ var (
 	_                  = applicationListCmd.Action(applicationListAction)
 
 	applicationCreateCmd = applicationCmd.Command("create", "Create a new application.")
+	_                    = addApplicationArg(applicationCreateCmd)
 	_                    = applicationCreateCmd.Action(applicationCreateAction)
 
 	applicationEditCmd = applicationCmd.Command("edit", "Manually modify an application's latest release config.")
+	_                  = addApplicationArg(applicationEditCmd)
 	_                  = applicationEditCmd.Action(applicationEditAction)
 
 	applicationViewCmd = applicationCmd.Command("view", "View an application's latest release config.")
+	_                  = addApplicationArg(applicationViewCmd)
 	_                  = applicationViewCmd.Action(applicationViewAction)
 
-	applicationDeployCmd = applicationCmd.Command("deploy", "Deploy an application from a yaml file.")
-	_                    = applicationDeployCmd.Action(applicationDeployAction)
-
-	applicationArg *string = &[]string{""}[0] // Required so kingpin doesn't crash when setting
-	_                      = func() error {
-		for _, cmd := range []*kingpin.CmdClause{
-			applicationCreateCmd,
-			applicationEditCmd,
-			applicationViewCmd,
-			applicationDeployCmd,
-		} {
-			arg := cmd.Arg("application", "Application name.").Required()
-			arg.StringVar(applicationArg)
-			arg.HintAction(func() []string {
-				ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-				defer cancel()
-
-				applications, err := apiClient.ListApplications(ctx, *globalProjectFlag)
-				if err != nil {
-					return []string{}
-				}
-
-				names := make([]string, len(applications))
-				for _, app := range applications {
-					names = append(names, app.Name)
-				}
-				return names
-			})
-		}
-		return nil
-	}()
-
-	// We want this to come after the "application" argument
+	applicationDeployCmd     = applicationCmd.Command("deploy", "Deploy an application from a yaml file.")
 	applicationDeployFileArg = applicationDeployCmd.Arg("file", "File path of the yaml file to deploy.").Required().ExistingFile()
+	_                        = addApplicationArg(applicationDeployCmd)
+	_                        = applicationDeployCmd.Action(applicationDeployAction)
+
+	applicationArg    *string = &[]string{""}[0]
+	addApplicationArg         = func(cmd *kingpin.CmdClause) *kingpin.ArgClause {
+		arg := cmd.Arg("application", "Application name.").Required()
+		arg.StringVar(applicationArg)
+		arg.HintAction(func() []string {
+			ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+			defer cancel()
+
+			applications, err := apiClient.ListApplications(ctx, *globalProjectFlag)
+			if err != nil {
+				return []string{}
+			}
+
+			names := make([]string, len(applications))
+			for _, app := range applications {
+				names = append(names, app.Name)
+			}
+			return names
+		})
+		return arg
+	}
 
 	// TODO: check if we changed this to "raw" or "r" (can also add all three...):
 	applicationJSONViewFlag *bool = &[]bool{false}[0]
