@@ -7,6 +7,12 @@ import (
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
 
+var (
+	projectCmd       = app.Command("project", "Manage projects.")
+	projectListCmd   = projectCmd.Command("list", "List projects.")
+	projectCreateCmd = projectCmd.Command("create", "Create a new project.")
+)
+
 func createProjectAction(c *kingpin.ParseContext) error {
 	project, err := apiClient.CreateProject(context.TODO(), *globalProjectFlag)
 	if err != nil {

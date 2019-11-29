@@ -20,19 +20,19 @@ var (
 	_              = requireProject(applicationCmd)
 
 	applicationListCmd = applicationCmd.Command("list", "List applications.")
-	_                  = applicationListCmd.Action(applicationListFunc)
+	_                  = applicationListCmd.Action(applicationListAction)
 
 	applicationCreateCmd = applicationCmd.Command("create", "Create a new application.")
-	_                    = applicationCreateCmd.Action(applicationCreateFunc)
+	_                    = applicationCreateCmd.Action(applicationCreateAction)
 
 	applicationEditCmd = applicationCmd.Command("edit", "Manually modify an application's latest release config.")
-	_                  = applicationEditCmd.Action(applicationEditFunc)
+	_                  = applicationEditCmd.Action(applicationEditAction)
 
 	applicationViewCmd = applicationCmd.Command("view", "View an application's latest release config.")
-	_                  = applicationViewCmd.Action(applicationViewFunc)
+	_                  = applicationViewCmd.Action(applicationViewAction)
 
 	applicationDeployCmd = applicationCmd.Command("deploy", "Deploy an application from a yaml file.")
-	_                    = applicationDeployCmd.Action(applicationDeployFunc)
+	_                    = applicationDeployCmd.Action(applicationDeployAction)
 
 	applicationArg *string = &[]string{""}[0] // Required so kingpin doesn't crash when setting
 	_                      = func() error {
@@ -79,7 +79,7 @@ var (
 	}()
 )
 
-func applicationListFunc(c *kingpin.ParseContext) error {
+func applicationListAction(c *kingpin.ParseContext) error {
 	applications, err := apiClient.ListApplications(context.TODO(), *globalProjectFlag)
 	if err != nil {
 		return err
@@ -99,7 +99,7 @@ func applicationListFunc(c *kingpin.ParseContext) error {
 	return nil
 }
 
-func applicationCreateFunc(c *kingpin.ParseContext) error {
+func applicationCreateAction(c *kingpin.ParseContext) error {
 	application, err := apiClient.CreateApplication(context.TODO(), *globalProjectFlag, *applicationArg)
 	if err != nil {
 		return err
@@ -110,7 +110,7 @@ func applicationCreateFunc(c *kingpin.ParseContext) error {
 	return nil
 }
 
-func applicationDeployFunc(c *kingpin.ParseContext) error {
+func applicationDeployAction(c *kingpin.ParseContext) error {
 	yamlConfigBytes, err := ioutil.ReadFile(*applicationDeployFileArg)
 	if err != nil {
 		return err
@@ -131,7 +131,7 @@ func applicationDeployFunc(c *kingpin.ParseContext) error {
 	return nil
 }
 
-func applicationViewFunc(c *kingpin.ParseContext) error {
+func applicationViewAction(c *kingpin.ParseContext) error {
 	release, err := apiClient.GetLatestRelease(context.TODO(), *globalProjectFlag, *applicationArg)
 	if err != nil {
 		return err
@@ -144,7 +144,6 @@ func applicationViewFunc(c *kingpin.ParseContext) error {
 		yamlConfig = release.RawConfig
 	}
 
-	// TODO: properly serialize
 	if applicationJSONViewFlag != nil && *applicationJSONViewFlag == true {
 		jsonBytes, err := json.Marshal(jsonConfig)
 		if err != nil {
@@ -158,7 +157,7 @@ func applicationViewFunc(c *kingpin.ParseContext) error {
 	return nil
 }
 
-func applicationEditFunc(c *kingpin.ParseContext) error {
+func applicationEditAction(c *kingpin.ParseContext) error {
 	release, err := apiClient.GetLatestRelease(context.TODO(), *globalProjectFlag, *applicationArg)
 	if err != nil {
 		return err

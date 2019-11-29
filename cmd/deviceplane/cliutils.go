@@ -62,7 +62,17 @@ func createDefaultTable() *tablewriter.Table {
 	table.SetRowSeparator("")
 	table.SetHeaderLine(false)
 	table.SetBorder(false)
-	table.SetTablePadding("\t\t") // pad with tabs
+	table.SetTablePadding("\t") // pad with tabs
 	table.SetNoWhiteSpace(true)
 	return table
+}
+
+type hasCommand interface {
+	Command(name string, help string) *kingpin.CmdClause
+}
+
+func globalAndCategorizedCmd(globalApp *kingpin.Application, categoryCmd *kingpin.CmdClause, do func(hasCommand)) {
+	for _, attachmentPoint := range []hasCommand{globalApp, categoryCmd} {
+		do(attachmentPoint)
+	}
 }

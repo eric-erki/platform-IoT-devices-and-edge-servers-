@@ -16,23 +16,6 @@ var (
 	globalProjectFlag     = app.Flag("project", "Project name.").Envar("DEVICEPLANE_PROJECT").String()
 	globalConfigFileFlag  = app.Flag("config", "Config file to use.").Default("~/.deviceplane/config").String()
 	_                     = app.PreAction(initializeClient)
-
-	// Top level commands
-	sshCmd         = app.Command("ssh", "SSH into a device.")
-	deviceFlag     = sshCmd.Flag("device", "Device to SSH into.").Required().String()
-	sshTimeoutFlag = sshCmd.Flag("timeout", "Maximum length to attempt establishing a connection.").Default("60").Int()
-
-	// Categorical commands
-
-	// Project
-	projectCmd       = app.Command("project", "Manage projects.")
-	projectListCmd   = projectCmd.Command("list", "List projects.")
-	projectCreateCmd = projectCmd.Command("create", "Create a new project.")
-
-	// Device
-	deviceCmd     = app.Command("device", "Manage devices.")
-	deviceListCmd = deviceCmd.Command("list", "List devices.")
-	deviceSSHCmd  = deviceCmd.Command("ssh", "SSH into a device.")
 )
 
 var (
