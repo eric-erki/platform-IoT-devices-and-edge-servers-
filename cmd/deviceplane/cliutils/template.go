@@ -1,61 +1,56 @@
 package cliutils
 
-const CustomTemplate = `{{define "FormatCommand"}}\
+import "fmt"
+
+var CustomTemplate string
+
+func recursiveCommandMatcher(cmds []string) string {
+	if len(cmds) == 0 {
+		return "false"
+	}
+	cmd := cmds[0]
+	return fmt.Sprintf(`(or (eq .Name "%s") %s)`, cmd, recursiveCommandMatcher(cmds[1:]))
+}
+
+func init() {
+	fastAccessCmdStr := recursiveCommandMatcher([]string{
+		"ssh",
+		"help",
+	})
+
+	CustomTemplate = `{{define "FormatCommand"}}\
 {{if .FlagSummary}} {{.FlagSummary}}{{end}}\
 {{range .Args}} {{if not .Required}}[{{end}}<{{.Name}}>{{if .Value|IsCumulative}}...{{end}}{{if not .Required}}]{{end}}{{end}}\
 {{end}}\
 
 {{define "CustomCmd"}}\
+{{if not .Hidden}}\
 {{.Depth|Indent}} {{.Name}}{{if .Default}}*{{end}}{{template "FormatCommand" .}}  --  {{.Help}}
 {{range .Commands}}\
 {{template "CustomCmd" .}}\
 {{end}}\
 {{end}}\
+{{end}}\
 
-{{define "TopLevelCmds"}}\
+{{define "AllCmds"}}\
 {{range .}}\
-{{if not .Hidden}}\
-{{if eq (len .FlattenedCommands) 0 }}\
+{{template "CustomCmd" .}}\
+{{end}}\
+{{end}}\
+
+{{define "TopLevelFastAccessCmds"}}\
+{{range .}}\
+{{if ` + fastAccessCmdStr + `}}\
 {{template "CustomCmd" .}}\
 {{end}}\
 {{end}}\
 {{end}}\
-{{end}}\
 
-{{define "NestedCmds"}}\
+{{define "TopLevelRegularCmds"}}\
 {{range .}}\
-{{if not .Hidden}}\
-{{if ne (len .FlattenedCommands) 0 }}\
+{{if not ` + fastAccessCmdStr + `}}\
 {{template "CustomCmd" .}}\
 {{.Depth|Indent}}
-{{end}}\
-{{end}}\
-{{end}}\
-{{end}}\
-
-{{define "FormatCommandList"}}\
-{{range .}}\
-{{if not .Hidden}}\
-{{.Depth|Indent}}{{.Name}}{{if .Default}}*{{end}}{{template "FormatCommand" .}}
-{{end}}\
-{{template "FormatCommandList" .Commands}}\
-{{end}}\
-{{end}}\
-
-{{define "FormatCommands"}}\
-{{range .FlattenedCommands}}\
-{{if not .Hidden}}\
-  {{.FullCommand}}{{if .Default}}*{{end}}{{template "FormatCommand" .}}
-{{.Help|Wrap 4}}
-{{end}}\
-{{end}}\
-{{end}}\
-
-{{define "CustomFormatCommands"}}\
-{{range .FlattenedCommands}}\
-{{if not .Hidden}}\
-  {{.FullCommand}}{{if .Default}}*{{end}}{{template "FormatCommand" .}}
-{{.Help|Wrap 4}}
 {{end}}\
 {{end}}\
 {{end}}\
@@ -84,12 +79,13 @@ Args:
 {{if .Context.SelectedCommand}}\
 {{if len .Context.SelectedCommand.Commands}}\
 Subcommands:
-{{template "CustomFormatCommands" .Context.SelectedCommand}}
+{{template "AllCmds" .Context.SelectedCommand.Commands}}
 {{end}}\
 {{else if .App.Commands}}\
+Fast-Access Commands:
+{{template "TopLevelFastAccessCmds" .App.Commands}}
 Commands:
-{{template "TopLevelCmds" .App.Commands}}
-Nested Commands:
-{{template "NestedCmds" .App.Commands}}
+{{template "TopLevelRegularCmds" .App.Commands}}
 {{end}}\
 `
+}
