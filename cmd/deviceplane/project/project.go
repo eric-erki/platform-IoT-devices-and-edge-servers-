@@ -2,6 +2,7 @@ package project
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -9,9 +10,11 @@ import (
 	"github.com/deviceplane/deviceplane/cmd/deviceplane/cliutils"
 	"github.com/hako/durafmt"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
+	"gopkg.in/yaml.v2"
 )
 
 func projectListAction(c *kingpin.ParseContext) error {
+	// TODO: fix this
 	return errors.New("This requires a projects endpoint which we don't have yet")
 
 	projects, err := config.APIClient.ListProjects(context.TODO(), *config.Flags.Project)
@@ -19,10 +22,8 @@ func projectListAction(c *kingpin.ParseContext) error {
 		return err
 	}
 
-	// TODO: serialize this properly
-	if projectJSONOutputFlag != nil && *projectJSONOutputFlag == true {
-		fmt.Printf("%+v\n", projects)
-	} else {
+	switch *projectOutputFlag {
+	case cliutils.FormatTable:
 		table := cliutils.DefaultTable()
 		table.SetHeader([]string{"Name", "Description", "Created At"})
 		for _, p := range projects {
@@ -30,6 +31,20 @@ func projectListAction(c *kingpin.ParseContext) error {
 			table.Append([]string{p.Name, duration.String() + " ago"})
 		}
 		table.Render()
+
+	case cliutils.FormatYAML:
+		bytes, err := yaml.Marshal(projects)
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(bytes))
+
+	case cliutils.FormatJSON:
+		bytes, err := json.Marshal(projects)
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(bytes))
 	}
 
 	return nil

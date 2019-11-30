@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/deviceplane/deviceplane/cmd/deviceplane/global"
 	"github.com/deviceplane/deviceplane/pkg/client"
@@ -85,4 +86,17 @@ func GlobalAndCategorizedCmd(globalApp *kingpin.Application, categoryCmd *kingpi
 	for _, attachmentPoint := range []HasCommand{globalApp, categoryCmd} {
 		do(attachmentPoint)
 	}
+}
+
+var (
+	FormatTable string = "table"
+	FormatJSON  string = "json"
+	FormatYAML  string = "yaml"
+)
+
+func AddFormatFlag(formatVar *string, categoryCmd *kingpin.CmdClause, allowedFormats ...string) {
+	fFlag := categoryCmd.Flag("output", fmt.Sprintf("Output format to use. (%s)", strings.Join(allowedFormats, ", ")))
+	fFlag.Short('o')
+	fFlag.Default(allowedFormats[0])
+	fFlag.EnumVar(formatVar, allowedFormats...)
 }

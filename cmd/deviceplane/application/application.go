@@ -13,6 +13,7 @@ import (
 	"github.com/deviceplane/deviceplane/pkg/interpolation"
 	"github.com/hako/durafmt"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
+	"gopkg.in/yaml.v2"
 )
 
 func addApplicationArg(cmd *kingpin.CmdClause) *kingpin.ArgClause {
@@ -42,9 +43,8 @@ func applicationListAction(c *kingpin.ParseContext) error {
 		return err
 	}
 
-	if applicationJSONOutputFlag != nil && *applicationJSONOutputFlag == true {
-		fmt.Printf("%+v\n", applications)
-	} else {
+	switch *applicationOutputFlag {
+	case cliutils.FormatTable:
 		table := cliutils.DefaultTable()
 		table.SetHeader([]string{"Name", "Description", "Created At"})
 		for _, app := range applications {
@@ -52,8 +52,21 @@ func applicationListAction(c *kingpin.ParseContext) error {
 			table.Append([]string{app.Name, app.Description, duration.String() + " ago"})
 		}
 		table.Render()
-	}
 
+	case cliutils.FormatYAML:
+		bytes, err := yaml.Marshal(applications)
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(bytes))
+
+	case cliutils.FormatJSON:
+		bytes, err := json.Marshal(applications)
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(bytes))
+	}
 	return nil
 }
 
@@ -102,14 +115,20 @@ func applicationInspectAction(c *kingpin.ParseContext) error {
 		yamlConfig = release.RawConfig
 	}
 
-	if applicationJSONOutputFlag != nil && *applicationJSONOutputFlag == true {
-		jsonBytes, err := json.Marshal(jsonConfig)
+	switch *applicationOutputFlag {
+	case cliutils.FormatYAML:
+		bytes, err := yaml.Marshal(yamlConfig)
 		if err != nil {
 			return err
 		}
-		fmt.Println(string(jsonBytes))
-	} else {
-		fmt.Println(yamlConfig)
+		fmt.Println(string(bytes))
+
+	case cliutils.FormatJSON:
+		bytes, err := json.Marshal(jsonConfig)
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(bytes))
 	}
 
 	return nil

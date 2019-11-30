@@ -2,6 +2,7 @@ package device
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -16,6 +17,7 @@ import (
 
 	"github.com/hako/durafmt"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
+	"gopkg.in/yaml.v2"
 )
 
 func deviceListAction(c *kingpin.ParseContext) error {
@@ -24,47 +26,64 @@ func deviceListAction(c *kingpin.ParseContext) error {
 		return err
 	}
 
-	// TODO: add JSON flag here
-	// fmt.Printf("%+v\n", devices)
+	switch *deviceOutputFlag {
+	case cliutils.FormatTable:
+		table := cliutils.DefaultTable()
+		table.SetHeader([]string{"Name", "Status", "IP", "OS", "Labels", "Last Seen", "Created"})
+		for _, d := range devices {
+			created := durafmt.Parse(time.Now().Sub(d.CreatedAt)).LimitFirstN(2)
+			lastSeen := durafmt.Parse(time.Now().Sub(d.LastSeenAt)).LimitFirstN(2)
 
-	table := cliutils.DefaultTable()
-	table.SetHeader([]string{"Name", "Status", "IP", "OS", "Labels", "Last Seen", "Created"})
-	for _, d := range devices {
-		created := durafmt.Parse(time.Now().Sub(d.CreatedAt)).LimitFirstN(2)
-		lastSeen := durafmt.Parse(time.Now().Sub(d.LastSeenAt)).LimitFirstN(2)
+			labelsArr := make([]string, len(d.Labels))
+			i := 0
+			for k, v := range d.Labels {
+				labelsArr[i] = fmt.Sprintf("%s:%s", k, v)
+				i += 1
+			}
+			labelsStr := strings.Join(labelsArr, "\n")
 
-		labelsArr := make([]string, len(d.Labels))
-		i := 0
-		for k, v := range d.Labels {
-			labelsArr[i] = fmt.Sprintf("%s:%s", k, v)
-			i += 1
+			table.Append([]string{
+				d.Name,
+				string(d.Status),
+				d.Info.IPAddress,
+				d.Info.OSRelease.Name,
+				labelsStr,
+				lastSeen.String() + " ago",
+				created.String() + " ago",
+			})
 		}
-		labelsStr := strings.Join(labelsArr, "\n")
+		table.Render()
 
-		table.Append([]string{
-			d.Name,
-			string(d.Status),
-			d.Info.IPAddress,
-			d.Info.OSRelease.Name,
-			labelsStr,
-			lastSeen.String() + " ago",
-			created.String() + " ago",
-		})
+	case cliutils.FormatYAML:
+		bytes, err := yaml.Marshal(devices)
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(bytes))
+
+	case cliutils.FormatJSON:
+		bytes, err := json.Marshal(devices)
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(bytes))
 	}
-	table.Render()
 
 	return nil
 }
 
 func deviceInspectAction(c *kingpin.ParseContext) error {
+	// TODO: fix this
 	return errors.New("NOT IMPLEMENTED YET")
 }
 
 func deviceHostMetricsAction(c *kingpin.ParseContext) error {
+	// TODO: fix this
 	return errors.New("NOT IMPLEMENTED YET")
 }
 
 func deviceServiceMetricsAction(c *kingpin.ParseContext) error {
+	// TODO: fix this
 	return errors.New("NOT IMPLEMENTED YET")
 }
 
