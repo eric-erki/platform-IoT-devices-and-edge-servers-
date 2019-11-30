@@ -57,8 +57,8 @@ func Initialize(c *global.Config) {
 	_ = deviceMetricsHostCmd.Action(deviceHostMetricsAction)
 
 	deviceMetricsServiceCmd := deviceMetricsCmd.Command("service", "Get the metrics from a service running on the device.")
-	deviceMetricsServiceArg = deviceMetricsServiceCmd.Arg("application", "The application under which the service is running.").Required().String()
-	deviceMetricsApplicationArg = deviceMetricsServiceCmd.Arg("service", "The name of the service which is exposing a metrics endpoint.").Required().String()
+	deviceMetricsServiceCmd.Arg("application", "The application under which the service is running.").Required().StringVar(deviceMetricsServiceArg)
+	deviceMetricsServiceCmd.Arg("service", "The name of the service which is exposing a metrics endpoint.").Required().StringVar(deviceMetricsApplicationArg)
 	addDeviceArg(deviceMetricsServiceCmd)
 	deviceMetricsServiceCmd.Action(deviceServiceMetricsAction)
 }

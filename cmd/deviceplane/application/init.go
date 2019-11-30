@@ -6,11 +6,12 @@ import (
 )
 
 var (
-	applicationArg *string = &[]string{""}[0]
+	applicationArg        *string = &[]string{""}[0]
+	applicationOutputFlag *string = &[]string{""}[0]
+
+	applicationConfigOnlyFlag *bool = &[]bool{false}[0]
 
 	applicationDeployFileArg *string = &[]string{""}[0]
-
-	applicationOutputFlag *string = &[]string{""}[0]
 
 	config *global.Config
 )
@@ -30,24 +31,25 @@ func Initialize(c *global.Config) {
 	)
 	applicationListCmd.Action(applicationListAction)
 
-	applicationCreateCmd := applicationCmd.Command("create", "Create a new application.")
-	addApplicationArg(applicationCreateCmd)
-	applicationCreateCmd.Action(applicationCreateAction)
-
-	applicationEditCmd := applicationCmd.Command("edit", "Manually modify an application's latest release config.")
-	addApplicationArg(applicationEditCmd)
-	applicationEditCmd.Action(applicationEditAction)
-
-	applicationInspectCmd := applicationCmd.Command("inspect", "Inspect an application's latest release config.")
+	applicationInspectCmd := applicationCmd.Command("inspect", "Inspect an application.")
 	addApplicationArg(applicationInspectCmd)
 	cliutils.AddFormatFlag(applicationOutputFlag, applicationInspectCmd,
 		cliutils.FormatYAML,
 		cliutils.FormatJSON,
 	)
+	applicationInspectCmd.Flag("config-only", "Only output the latest release config for an application.").Short('c').Default("false").BoolVar(applicationConfigOnlyFlag)
 	applicationInspectCmd.Action(applicationInspectAction)
 
-	applicationDeployCmd := applicationCmd.Command("deploy", "Deploy an application from a yaml file.")
-	applicationDeployFileArg = applicationDeployCmd.Arg("file", "File path of the yaml file to deploy.").Required().ExistingFile()
+	applicationCreateCmd := applicationCmd.Command("create", "Create a new application.")
+	addApplicationArg(applicationCreateCmd)
+	applicationCreateCmd.Action(applicationCreateAction)
+
+	applicationEditCmd := applicationCmd.Command("edit", "Manually modify an application's config.")
+	addApplicationArg(applicationEditCmd)
+	applicationEditCmd.Action(applicationEditAction)
+
+	applicationDeployCmd := applicationCmd.Command("deploy", "Deploy an application's config from a file.")
+	applicationDeployCmd.Arg("file", "File path of the yaml file to deploy.").Required().ExistingFileVar(applicationDeployFileArg)
 	addApplicationArg(applicationDeployCmd)
 	applicationDeployCmd.Action(applicationDeployAction)
 }

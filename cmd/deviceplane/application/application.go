@@ -103,32 +103,51 @@ func applicationDeployAction(c *kingpin.ParseContext) error {
 }
 
 func applicationInspectAction(c *kingpin.ParseContext) error {
-	release, err := config.APIClient.GetLatestRelease(context.TODO(), *config.Flags.Project, *applicationArg)
-	if err != nil {
-		return err
-	}
-
-	var jsonConfig interface{}
-	var yamlConfig string
-	if release != nil {
-		jsonConfig = release.Config
-		yamlConfig = release.RawConfig
-	}
-
-	switch *applicationOutputFlag {
-	case cliutils.FormatYAML:
-		bytes, err := yaml.Marshal(yamlConfig)
+	if applicationConfigOnlyFlag == nil || !*applicationConfigOnlyFlag {
+		application, err := config.APIClient.GetApplication(context.TODO(), *config.Flags.Project, *applicationArg)
 		if err != nil {
 			return err
 		}
-		fmt.Println(string(bytes))
 
-	case cliutils.FormatJSON:
-		bytes, err := json.Marshal(jsonConfig)
+		switch *applicationOutputFlag {
+		case cliutils.FormatYAML:
+			bytes, err := yaml.Marshal(application)
+			if err != nil {
+				return err
+			}
+			fmt.Println(string(bytes))
+
+		case cliutils.FormatJSON:
+			bytes, err := json.Marshal(application)
+			if err != nil {
+				return err
+			}
+			fmt.Println(string(bytes))
+		}
+	} else {
+		release, err := config.APIClient.GetLatestRelease(context.TODO(), *config.Flags.Project, *applicationArg)
 		if err != nil {
 			return err
 		}
-		fmt.Println(string(bytes))
+
+		var jsonConfig interface{}
+		var yamlConfig string
+		if release != nil {
+			jsonConfig = release.Config
+			yamlConfig = release.RawConfig
+		}
+
+		switch *applicationOutputFlag {
+		case cliutils.FormatYAML:
+			fmt.Println(yamlConfig)
+
+		case cliutils.FormatJSON:
+			bytes, err := json.Marshal(jsonConfig)
+			if err != nil {
+				return err
+			}
+			fmt.Println(string(bytes))
+		}
 	}
 
 	return nil

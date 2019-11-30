@@ -83,6 +83,14 @@ func (c *Client) ListDevices(ctx context.Context, project string) ([]models.Devi
 	return devices, nil
 }
 
+func (c *Client) GetApplication(ctx context.Context, project, app string) (*models.Application, error) {
+	var application models.Application
+	if err := c.get(ctx, &application, projectsURL, project, applicationsURL, app); err != nil {
+		return nil, err
+	}
+	return &application, nil
+}
+
 func (c *Client) GetLatestRelease(ctx context.Context, project, application string) (*models.Release, error) {
 	var release models.Release
 	if err := c.get(ctx, &release, projectsURL, project, applicationsURL, application, releasesURL, "latest"); err != nil {
