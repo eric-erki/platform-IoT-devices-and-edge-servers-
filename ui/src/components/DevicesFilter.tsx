@@ -8,84 +8,85 @@ import {
   majorScale,
   Strong,
   TextInput,
-  minorScale
+  minorScale,
   // @ts-ignore
 } from 'evergreen-ui';
 import utils from '../utils';
 
-export type Query = Filter[]
+export type Query = Filter[];
 
-export type Filter = Condition[]
+export type Filter = Condition[];
 
 export type Condition = {
-  type:  ConditionType
-  params: ConditionParams
-}
+  type: ConditionType;
+  params: ConditionParams;
+};
 
-type ConditionType = string
-export const DevicePropertyCondition: ConditionType = "DevicePropertyCondition";
-export const LabelValueCondition: ConditionType = "LabelValueCondition";
-export const LabelExistenceCondition: ConditionType = "LabelExistenceCondition";
+type ConditionType = string;
+export const DevicePropertyCondition: ConditionType = 'DevicePropertyCondition';
+export const LabelValueCondition: ConditionType = 'LabelValueCondition';
+export const LabelExistenceCondition: ConditionType = 'LabelExistenceCondition';
 
-export type ConditionParams = DevicePropertyConditionParams |
-  LabelValueConditionParams |
-  LabelExistenceConditionParams;
+export type ConditionParams =
+  | DevicePropertyConditionParams
+  | LabelValueConditionParams
+  | LabelExistenceConditionParams;
 
 export type DevicePropertyConditionParams = {
-  property: string
-  operator: Operator
-  value:    string
-}
+  property: string;
+  operator: Operator;
+  value: string;
+};
 
 export type LabelValueConditionParams = {
-  key: string
-  operator: Operator
-  value: string
-}
+  key: string;
+  operator: Operator;
+  value: string;
+};
 
 export type LabelExistenceConditionParams = {
-  key: string
-  operator: Operator
-}
+  key: string;
+  operator: Operator;
+};
 
 type Operator = string;
-export const OperatorIs:  Operator = "is";
-export const OperatorIsNot:  Operator = "is not";
-export const OperatorExists:  Operator = "exists";
-export const OperatorNotExists:  Operator = "does not exist";
+export const OperatorIs: Operator = 'is';
+export const OperatorIsNot: Operator = 'is not';
+export const OperatorExists: Operator = 'exists';
+export const OperatorNotExists: Operator = 'does not exist';
 
 const DefaultDevicePropertyConditionParams = (): DevicePropertyConditionParams => {
   return {
     property: 'status',
     operator: OperatorIs,
     value: 'online',
-  }
-}
+  };
+};
 
 const DefaultLabelValueConditionParams = (): LabelValueConditionParams => {
   return {
     key: '',
     operator: OperatorIs,
     value: '',
-  }
-}
+  };
+};
 
 const DefaultLabelExistenceConditionParams = (): LabelExistenceConditionParams => {
   return {
     key: '',
     operator: OperatorExists,
-  }
-}
+  };
+};
 
 interface Props {
-  whitelistedConditions?: ConditionType[]
-  show: boolean
-  onClose: () => void
-  onSubmit?: (filter: Filter) => void
+  whitelistedConditions?: ConditionType[];
+  show: boolean;
+  onClose: () => void;
+  onSubmit?: (filter: Filter) => void;
 }
 
 interface State {
-  filter: Filter
+  filter: Filter;
 }
 
 export class DevicesFilter extends Component<Props, State> {
@@ -104,13 +105,19 @@ export class DevicesFilter extends Component<Props, State> {
       {
         type: LabelExistenceCondition,
         text: 'Label Existence',
-      }
-    ].filter((c) => {
-      if (!this.props.whitelistedConditions) {
-        return true;
-      }
-      return this.props.whitelistedConditions.includes(c.type);
-    }).map(c => <option key={c.type} value={c.type}>{c.text}</option>);
+      },
+    ]
+      .filter(c => {
+        if (!this.props.whitelistedConditions) {
+          return true;
+        }
+        return this.props.whitelistedConditions.includes(c.type);
+      })
+      .map(c => (
+        <option key={c.type} value={c.type}>
+          {c.text}
+        </option>
+      ));
 
     this.defaultCondition = [
       {
@@ -124,29 +131,25 @@ export class DevicesFilter extends Component<Props, State> {
       {
         type: LabelExistenceCondition,
         params: DefaultLabelExistenceConditionParams(),
-      }
-    ].filter((c) => {
+      },
+    ].filter(c => {
       if (!this.props.whitelistedConditions) {
         return true;
       }
       return this.props.whitelistedConditions.includes(c.type);
     })[0];
     if (!this.defaultCondition) {
-      throw('No default condition was whitelisted')
+      throw 'No default condition was whitelisted';
     }
 
     this.state = {
-      filter: [
-        utils.deepClone(this.defaultCondition),
-      ]
-    }
+      filter: [utils.deepClone(this.defaultCondition)],
+    };
   }
 
   resetFilter() {
     this.setState({
-      filter: [
-        utils.deepClone(this.defaultCondition),
-      ]
+      filter: [utils.deepClone(this.defaultCondition)],
     });
   }
 
@@ -159,11 +162,7 @@ export class DevicesFilter extends Component<Props, State> {
       const selectClassName: string = utils.randomClassName();
       return (
         <>
-          <Pane
-            display="flex"
-            flexDirection="column"
-            flex="1"
-          >
+          <Pane display="flex" flexDirection="column" flex="1">
             <TextInput
               width="auto"
               placeholder="Key"
@@ -176,8 +175,8 @@ export class DevicesFilter extends Component<Props, State> {
                       condition.params.key = key;
                     }
                     return condition;
-                  })
-                })
+                  }),
+                });
               }}
             />
 
@@ -193,7 +192,7 @@ export class DevicesFilter extends Component<Props, State> {
                       condition.params.operator = operator;
                     }
                     return condition;
-                  })
+                  }),
                 });
               }}
             >
@@ -217,8 +216,8 @@ export class DevicesFilter extends Component<Props, State> {
                       condition.params.value = value;
                     }
                     return condition;
-                  })
-                })
+                  }),
+                });
               }}
             />
           </Pane>
@@ -242,8 +241,8 @@ export class DevicesFilter extends Component<Props, State> {
                       condition.params.key = key;
                     }
                     return condition;
-                  })
-                })
+                  }),
+                });
               }}
             />
           </Pane>
@@ -257,7 +256,7 @@ export class DevicesFilter extends Component<Props, State> {
                     condition.params.operator = operator;
                   }
                   return condition;
-                })
+                }),
               });
             }}
             marginRight={majorScale(1)}
@@ -283,7 +282,7 @@ export class DevicesFilter extends Component<Props, State> {
                     condition.params.property = property;
                   }
                   return condition;
-                })
+                }),
               });
             }}
             marginRight={majorScale(1)}
@@ -300,7 +299,7 @@ export class DevicesFilter extends Component<Props, State> {
                     condition.params.operator = operator;
                   }
                   return condition;
-                })
+                }),
               });
             }}
             marginRight={majorScale(1)}
@@ -318,8 +317,8 @@ export class DevicesFilter extends Component<Props, State> {
                     condition.params.value = value;
                   }
                   return condition;
-                })
-              })
+                }),
+              });
             }}
             marginRight={majorScale(1)}
           >
@@ -350,109 +349,106 @@ export class DevicesFilter extends Component<Props, State> {
           }}
           confirmLabel="Filter"
           hasCancel={false}
-          style={{ maxHeight: majorScale(12), overflowY: 'auto' }}
         >
           <Pane display="flex" flexDirection="column">
-            {filter.map((condition, index) => {return (
-              <Fragment key={index}>
-                <Pane display="flex" justifyContent="space-around">
-                  <Select
-                    value={condition.type}
-                    onChange={(event: Event) => {
-                      if (event.target == null) {
-                        return;
-                      }
-                      var { value: property } = event.target as HTMLSelectElement;
-                      this.setState({
-                        filter: filter.map((condition, i) => {
-                          if (i !== index) {
-                            return condition;
-                          }
-                          if (condition.type === property) {
-                            return condition;
-                          }
+            {filter.map((condition, index) => {
+              return (
+                <Fragment key={index}>
+                  <Pane display="flex" justifyContent="space-around">
+                    <Select
+                      value={condition.type}
+                      onChange={event => {
+                        if (event.target == null) {
+                          return;
+                        }
+                        var {
+                          value: property,
+                        } = event.target as HTMLSelectElement;
+                        this.setState({
+                          filter: filter.map((condition, i) => {
+                            if (i !== index) {
+                              return condition;
+                            }
+                            if (condition.type === property) {
+                              return condition;
+                            }
 
-                          let params: ConditionParams;
-                          switch (property) {
-                            case DevicePropertyCondition:
-                              params = DefaultDevicePropertyConditionParams();
-                              break;
-                            case LabelValueCondition:
-                              params = DefaultLabelValueConditionParams();
-                              break;
-                            case LabelExistenceCondition:
-                              params = DefaultLabelExistenceConditionParams();
-                              break;
-                            default:
-                              property = DevicePropertyCondition;
-                              params = DefaultDevicePropertyConditionParams();
-                          };
-                          condition = {
-                            type: property,
-                            params,
-                          }
-                          return condition;
-                        })
-                      });
-                    }}
-                    className={selectClassName}
-                    marginRight={majorScale(1)}
-                  >
-                    {this.conditionOptions}
-                  </Select>
-                  <style>{`
+                            let params: ConditionParams;
+                            switch (property) {
+                              case DevicePropertyCondition:
+                                params = DefaultDevicePropertyConditionParams();
+                                break;
+                              case LabelValueCondition:
+                                params = DefaultLabelValueConditionParams();
+                                break;
+                              case LabelExistenceCondition:
+                                params = DefaultLabelExistenceConditionParams();
+                                break;
+                              default:
+                                property = DevicePropertyCondition;
+                                params = DefaultDevicePropertyConditionParams();
+                            }
+                            condition = {
+                              type: property,
+                              params,
+                            };
+                            return condition;
+                          }),
+                        });
+                      }}
+                      className={selectClassName}
+                      marginRight={majorScale(1)}
+                    >
+                      {this.conditionOptions}
+                    </Select>
+                    <style>{`
                     .${selectClassName} > select {
                       width: auto;
                     }
                   `}</style>
 
-                  {this.renderCondition(condition, index)}
+                    {this.renderCondition(condition, index)}
 
-                  {index > 0 ? (
-                    <IconButton
-                      icon="cross"
-                      intent="danger"
-                      appearance="minimal"
-                      onClick={() =>
-                        this.setState({
-                          filter: filter.filter((_, i) => i !== index)
-                        })
-                      }
-                    />
-                  ) : (
-                    <Pane width={majorScale(4)} />
-                  )}
-                </Pane>
-                {index < filter.length - 1 && (
-                  <Pane marginY={majorScale(2)}>
-                    <Strong
-                      size={300}
-                      paddingX={majorScale(2)}
-                      paddingY={majorScale(1)}
-                      backgroundColor="#E4E7EB"
-                      borderRadius={3}
-                    >
-                      OR
-                    </Strong>
+                    {index > 0 ? (
+                      <IconButton
+                        icon="cross"
+                        intent="danger"
+                        appearance="minimal"
+                        onClick={() =>
+                          this.setState({
+                            filter: filter.filter((_, i) => i !== index),
+                          })
+                        }
+                      />
+                    ) : (
+                      <Pane width={majorScale(4)} />
+                    )}
                   </Pane>
-                )}
-              </Fragment>
-            )})}
+                  {index < filter.length - 1 && (
+                    <Pane marginY={majorScale(2)}>
+                      <Strong
+                        size={300}
+                        paddingX={majorScale(2)}
+                        paddingY={majorScale(1)}
+                        backgroundColor="#E4E7EB"
+                        borderRadius={3}
+                      >
+                        OR
+                      </Strong>
+                    </Pane>
+                  )}
+                </Fragment>
+              );
+            })}
           </Pane>
-          <Pane
-          display="flex"
-          flexDirection="column"
-          marginTop={majorScale(4)}>
+          <Pane display="flex" flexDirection="column" marginTop={majorScale(4)}>
             <Pane>
               <Button
                 intent="none"
                 iconBefore="plus"
                 onClick={() => {
                   this.setState({
-                    filter: [
-                      ...filter,
-                      utils.deepClone(this.defaultCondition),
-                    ]
+                    filter: [...filter, utils.deepClone(this.defaultCondition)],
                   });
                 }}
               >

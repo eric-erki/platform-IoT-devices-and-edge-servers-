@@ -2,29 +2,29 @@ import React, { Fragment, Component } from 'react';
 import {
   Pane,
   Text,
-  Dialog,
-  Select,
-  IconButton,
-  Button,
   majorScale,
-  Strong,
-  TextInput,
   Icon,
-  minorScale
+  minorScale,
   // @ts-ignore
 } from 'evergreen-ui';
-import utils from '../utils';
-import { Query, Condition, LabelValueCondition, LabelValueConditionParams, LabelExistenceCondition, LabelExistenceConditionParams, DevicePropertyCondition, DevicePropertyConditionParams } from './DevicesFilter';
+import {
+  Query,
+  Condition,
+  LabelValueCondition,
+  LabelValueConditionParams,
+  LabelExistenceCondition,
+  LabelExistenceConditionParams,
+  DevicePropertyCondition,
+  DevicePropertyConditionParams,
+} from './DevicesFilter';
 
 interface Props {
-  query: Query
-  canRemoveFilter: boolean,
+  query: Query;
+  canRemoveFilter: boolean;
   removeFilter?: (index: number) => void;
 }
 
-interface State {
-
-}
+interface State {}
 
 export class DevicesFilterButtons extends Component<Props, State> {
   constructor(props: Props) {
@@ -36,10 +36,7 @@ export class DevicesFilterButtons extends Component<Props, State> {
       let cond = condition.params as LabelValueConditionParams;
       return (
         <Fragment>
-          <Text
-            fontWeight={700}
-            marginRight={minorScale(1)}
-          >
+          <Text fontWeight={700} marginRight={minorScale(1)}>
             {cond.key}
           </Text>
 
@@ -56,10 +53,7 @@ export class DevicesFilterButtons extends Component<Props, State> {
       let cond = condition.params as LabelExistenceConditionParams;
       return (
         <Fragment>
-          <Text
-            fontWeight={700}
-            marginRight={minorScale(1)}
-          >
+          <Text fontWeight={700} marginRight={minorScale(1)}>
             {cond.key}
           </Text>
 
@@ -143,23 +137,27 @@ export class DevicesFilterButtons extends Component<Props, State> {
                     >
                       OR
                     </Text>
-                  )
-                }
+                  )}
                 </Fragment>
               ))}
-              {this.props.canRemoveFilter && (<Icon
-                marginLeft={minorScale(3)}
-                icon="cross"
-                appearance="minimal"
-                cursor="pointer"
-                color="white"
-                size={14}
-                onClick={() => this.props.removeFilter ? this.props.removeFilter(index) : null}
-              />)}
+              {this.props.canRemoveFilter && (
+                <Icon
+                  marginLeft={minorScale(3)}
+                  icon="cross"
+                  cursor="pointer"
+                  color="white"
+                  size={14}
+                  onClick={() =>
+                    this.props.removeFilter
+                      ? this.props.removeFilter(index)
+                      : null
+                  }
+                />
+              )}
             </Pane>
           </Pane>
         ))}
       </Pane>
-    )
+    );
   }
 }

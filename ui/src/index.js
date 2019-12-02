@@ -1,8 +1,30 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
+import { Router, View } from 'react-navi';
+import HelmetProvider from 'react-navi-helmet-async';
+import { Provider } from 'react-redux';
+
+import routes from './routes';
 import * as serviceWorker from './serviceWorker';
+import store from './store';
+
+import Page from './components/page';
+
+const App = () => {
+  return (
+    <Provider store={store}>
+      <HelmetProvider>
+        <Router routes={routes}>
+          <Page>
+            <Suspense fallback={null}>
+              <View />
+            </Suspense>
+          </Page>
+        </Router>
+      </HelmetProvider>
+    </Provider>
+  );
+};
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
