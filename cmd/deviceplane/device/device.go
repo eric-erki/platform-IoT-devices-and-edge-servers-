@@ -3,7 +3,6 @@ package device
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -73,18 +72,47 @@ func deviceListAction(c *kingpin.ParseContext) error {
 }
 
 func deviceInspectAction(c *kingpin.ParseContext) error {
-	// TODO: fix this
-	return errors.New("NOT IMPLEMENTED YET")
+	device, err := config.APIClient.GetDevice(context.TODO(), *config.Flags.Project, *deviceArg)
+	if err != nil {
+		return err
+	}
+
+	switch *deviceOutputFlag {
+	case cliutils.FormatYAML:
+		bytes, err := yaml.Marshal(device)
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(bytes))
+
+	case cliutils.FormatJSON:
+		bytes, err := json.Marshal(device)
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(bytes))
+	}
+	return nil
 }
 
 func deviceHostMetricsAction(c *kingpin.ParseContext) error {
-	// TODO: fix this
-	return errors.New("NOT IMPLEMENTED YET")
+	metrics, err := config.APIClient.GetDeviceHostMetrics(context.TODO(), *config.Flags.Project, *deviceArg)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(*metrics)
+	return nil
 }
 
 func deviceServiceMetricsAction(c *kingpin.ParseContext) error {
-	// TODO: fix this
-	return errors.New("NOT IMPLEMENTED YET")
+	metrics, err := config.APIClient.GetDeviceServiceMetrics(context.TODO(), *config.Flags.Project, *deviceArg, *deviceMetricsApplicationArg, *deviceMetricsServiceArg)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(*metrics)
+	return nil
 }
 
 func deviceSSHAction(c *kingpin.ParseContext) error {

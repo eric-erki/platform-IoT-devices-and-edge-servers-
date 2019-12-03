@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -24,6 +25,8 @@ const (
 	sshURL          = "ssh"
 	executeURL      = "execute"
 	bundleURL       = "bundle"
+	metricsURL      = "metrics"
+	servicesURL     = "services"
 )
 
 type Client struct {
@@ -83,12 +86,36 @@ func (c *Client) ListDevices(ctx context.Context, project string) ([]models.Devi
 	return devices, nil
 }
 
-func (c *Client) GetApplication(ctx context.Context, project, app string) (*models.Application, error) {
-	var application models.Application
-	if err := c.get(ctx, &application, projectsURL, project, applicationsURL, app); err != nil {
+func (c *Client) GetApplication(ctx context.Context, project, application string) (*models.Application, error) {
+	var app models.Application
+	if err := c.get(ctx, &app, projectsURL, project, applicationsURL, application+"?full"); err != nil {
 		return nil, err
 	}
-	return &application, nil
+	return &app, nil
+}
+
+func (c *Client) GetDevice(ctx context.Context, project, device string) (*models.Device, error) {
+	var d models.Device
+	if err := c.get(ctx, &d, projectsURL, project, devicesURL, device+"?full"); err != nil {
+		return nil, err
+	}
+	return &d, nil
+}
+
+func (c *Client) GetDeviceHostMetrics(ctx context.Context, project, device string) (*string, error) {
+	var rawOpenMetrics string
+	if err := c.get(ctx, &rawOpenMetrics, projectsURL, project, devicesURL, device, metricsURL, "host"); err != nil {
+		return nil, err
+	}
+	return &rawOpenMetrics, nil
+}
+
+func (c *Client) GetDeviceServiceMetrics(ctx context.Context, project, device, application, service string) (*string, error) {
+	var rawOpenMetrics string
+	if err := c.get(ctx, &rawOpenMetrics, projectsURL, project, devicesURL, device, applicationsURL, application, servicesURL, service, metricsURL); err != nil {
+		return nil, err
+	}
+	return &rawOpenMetrics, nil
 }
 
 func (c *Client) GetLatestRelease(ctx context.Context, project, application string) (*models.Release, error) {
@@ -181,12 +208,21 @@ func (c *Client) performRequest(req *http.Request, out interface{}) error {
 func (c *Client) handleResponse(resp *http.Response, out interface{}) error {
 	switch resp.StatusCode {
 	case http.StatusOK:
+		switch o := out.(type) {
+		case *string:
+			bytes, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				return err
+			}
+			*o = string(bytes)
+			return nil
+		}
 		return json.NewDecoder(resp.Body).Decode(&out)
 	case http.StatusBadRequest, http.StatusNotFound:
 		bytes, _ := ioutil.ReadAll(resp.Body)
 		return errors.New(string(bytes))
 	default:
-		return errors.New(resp.Status)
+		return fmt.Errorf("%d %s", resp.StatusCode, resp.Status)
 	}
 }
 
