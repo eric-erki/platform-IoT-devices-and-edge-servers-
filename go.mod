@@ -39,12 +39,11 @@ require (
 	github.com/sendgrid/rest v2.4.1+incompatible // indirect
 	github.com/sendgrid/sendgrid-go v3.4.1+incompatible
 	github.com/stretchr/testify v1.3.0
-	github.com/urfave/cli v1.20.0
+	github.com/urfave/cli v1.20.0 // indirect
 	github.com/vishvananda/netns v0.0.0-20190625233234-7109fa855b0f
 	github.com/zorkian/go-datadog-api v2.24.0+incompatible // indirect
 	golang.org/x/build v0.0.0-20190604154314-6c34d49dff48 // indirect
 	golang.org/x/crypto v0.0.0-20191002192127-34f69633bfdc
-	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v9 v9.29.1
