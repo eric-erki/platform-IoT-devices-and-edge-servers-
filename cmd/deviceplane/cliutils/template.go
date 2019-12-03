@@ -63,10 +63,14 @@ func init() {
 
 {{end}}\
 
+{{define "AutocompleteHelp"}}\
+To add autocompletion, add ` + "`" + `eval "$({{.}} --completion-script-bash)"` + "`" + ` to your bashrc or zshrc file.
+{{end}}\
+
 {{if .Context.SelectedCommand}}\
 usage: {{.App.Name}} {{.Context.SelectedCommand}}{{template "FormatUsage" .Context.SelectedCommand}}
 {{else}}\
-usage: {{.App.Name}}{{template "FormatUsage" .App}}
+usage: {{.App.Name}}{{template "FormatUsage" .App}}{{template "AutocompleteHelp" .App.Name}}
 {{end}}\
 {{if .Context.Flags}}\
 Flags:
