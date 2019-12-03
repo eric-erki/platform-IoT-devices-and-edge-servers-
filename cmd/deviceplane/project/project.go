@@ -3,7 +3,6 @@ package project
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"time"
 
@@ -14,9 +13,6 @@ import (
 )
 
 func projectListAction(c *kingpin.ParseContext) error {
-	// TODO: fix this
-	return errors.New("This requires a projects endpoint which we don't have yet")
-
 	projects, err := config.APIClient.ListProjects(context.TODO(), *config.Flags.Project)
 	if err != nil {
 		return err
@@ -25,10 +21,15 @@ func projectListAction(c *kingpin.ParseContext) error {
 	switch *projectOutputFlag {
 	case cliutils.FormatTable:
 		table := cliutils.DefaultTable()
-		table.SetHeader([]string{"Name", "Description", "Created At"})
+		table.SetHeader([]string{"Name", "Devices", "Applications", "Created At"})
 		for _, p := range projects {
 			duration := durafmt.Parse(time.Now().Sub(p.CreatedAt)).LimitFirstN(2)
-			table.Append([]string{p.Name, duration.String() + " ago"})
+			table.Append([]string{
+				p.Name,
+				fmt.Sprintf("%d", p.DeviceCounts.AllCount),
+				fmt.Sprintf("%d", p.ApplicationCounts.AllCount),
+				duration.String() + " ago",
+			})
 		}
 		table.Render()
 

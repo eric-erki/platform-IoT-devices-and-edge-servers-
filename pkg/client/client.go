@@ -27,6 +27,7 @@ const (
 	bundleURL       = "bundle"
 	metricsURL      = "metrics"
 	servicesURL     = "services"
+	membershipsURL  = "memberships"
 )
 
 type Client struct {
@@ -62,10 +63,15 @@ func (c *Client) CreateApplication(ctx context.Context, project string, name str
 	return &application, nil
 }
 
-func (c *Client) ListProjects(ctx context.Context, project string) ([]models.Project, error) {
-	var projects []models.Project
-	if err := c.get(ctx, &projects, projectsURL, project, projectsURL); err != nil {
+func (c *Client) ListProjects(ctx context.Context, project string) ([]models.ProjectFull, error) {
+	var memberships []models.MembershipFull1
+	if err := c.get(ctx, &memberships, membershipsURL+"?full"); err != nil {
 		return nil, err
+	}
+
+	var projects []models.ProjectFull
+	for _, m := range memberships {
+		projects = append(projects, m.Project)
 	}
 	return projects, nil
 }
