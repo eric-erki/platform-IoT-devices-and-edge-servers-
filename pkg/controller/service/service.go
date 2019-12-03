@@ -279,28 +279,23 @@ func (s *Service) health(w http.ResponseWriter, r *http.Request) {
 	s.st.Incr("health", nil, 1)
 }
 
-func (s *Service) intentional500(w http.ResponseWriter, r *http.Request, authenticatedUserID, authenticatedServiceAccountID string) {
+func (s *Service) intentional500(w http.ResponseWriter, r *http.Request,
+	authenticatedUser *models.User, authenticatedServiceAccount *models.ServiceAccount,
+) {
 	// TODO
-	if authenticatedUserID == "" {
+	if authenticatedUser == nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	user, err := s.users.GetUser(r.Context(), authenticatedUserID)
-	if err != nil {
-		log.WithError(err).Error("get user")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	if user.SuperAdmin {
+	if authenticatedUser.SuperAdmin {
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
 		w.WriteHeader(http.StatusForbidden)
 	}
 }
 
-func (s *Service) withUserOrServiceAccountAuth(handler func(http.ResponseWriter, *http.Request, string, string)) func(http.ResponseWriter, *http.Request) {
+func (s *Service) withUserOrServiceAccountAuth(handler func(http.ResponseWriter, *http.Request, *models.User, *models.ServiceAccount)) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var userID string
 		var serviceAccountAccessKey *models.ServiceAccountAccessKey
@@ -376,7 +371,7 @@ func (s *Service) withUserOrServiceAccountAuth(handler func(http.ResponseWriter,
 				return
 			}
 
-			handler(w, r, userID, "")
+			handler(w, r, user, nil)
 		} else if serviceAccountAccessKey != nil {
 			serviceAccount, err := s.serviceAccounts.GetServiceAccount(r.Context(),
 				serviceAccountAccessKey.ServiceAccountID, serviceAccountAccessKey.ProjectID)
@@ -386,7 +381,7 @@ func (s *Service) withUserOrServiceAccountAuth(handler func(http.ResponseWriter,
 				return
 			}
 
-			handler(w, r, "", serviceAccount.ID)
+			handler(w, r, nil, serviceAccount)
 		} else {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -395,7 +390,7 @@ func (s *Service) withUserOrServiceAccountAuth(handler func(http.ResponseWriter,
 }
 
 func (s *Service) validateAuthorization(requestedResource, requestedAction string, handler func(http.ResponseWriter, *http.Request, string, string, string)) func(http.ResponseWriter, *http.Request) {
-	return s.withUserOrServiceAccountAuth(func(w http.ResponseWriter, r *http.Request, authenticatedUserID, authenticatedServiceAccountID string) {
+	return s.withUserOrServiceAccountAuth(func(w http.ResponseWriter, r *http.Request, authenticatedUser *models.User, authenticatedServiceAccount *models.ServiceAccount) {
 		vars := mux.Vars(r)
 		project := vars["project"]
 		if project == "" {
@@ -421,15 +416,15 @@ func (s *Service) validateAuthorization(requestedResource, requestedAction strin
 		}
 
 		var roles []string
-		if authenticatedUserID != "" {
+		if authenticatedUser != nil {
 			if _, err := s.memberships.GetMembership(r.Context(),
-				authenticatedUserID, projectID,
+				authenticatedUser.ID, projectID,
 			); err == store.ErrMembershipNotFound {
 				http.Error(w, err.Error(), http.StatusNotFound)
 				return
 			} else if err != nil {
 				// TODO: better logging all around
-				log.WithField("user_id", authenticatedUserID).
+				log.WithField("user_id", authenticatedUser.ID).
 					WithField("project_id", projectID).
 					WithError(err).
 					Error("get membership")
@@ -438,7 +433,7 @@ func (s *Service) validateAuthorization(requestedResource, requestedAction strin
 			}
 
 			roleBindings, err := s.membershipRoleBindings.ListMembershipRoleBindings(r.Context(),
-				authenticatedUserID, projectID)
+				authenticatedUser.ID, projectID)
 			if err != nil {
 				log.WithError(err).Error("list membership role bindings")
 				w.WriteHeader(http.StatusInternalServerError)
@@ -448,10 +443,10 @@ func (s *Service) validateAuthorization(requestedResource, requestedAction strin
 			for _, roleBinding := range roleBindings {
 				roles = append(roles, roleBinding.RoleID)
 			}
-		} else if authenticatedServiceAccountID != "" {
+		} else if authenticatedServiceAccount.ID != "" {
 			// Sanity check that this service account belongs to this project
 			if _, err := s.serviceAccounts.GetServiceAccount(r.Context(),
-				authenticatedServiceAccountID, projectID,
+				authenticatedServiceAccount.ID, projectID,
 			); err == store.ErrServiceAccountNotFound {
 				w.WriteHeader(http.StatusForbidden)
 				return
@@ -462,7 +457,7 @@ func (s *Service) validateAuthorization(requestedResource, requestedAction strin
 			}
 
 			roleBindings, err := s.serviceAccountRoleBindings.ListServiceAccountRoleBindings(r.Context(),
-				authenticatedServiceAccountID, projectID)
+				authenticatedServiceAccount.ID, projectID)
 			if err != nil {
 				log.WithError(err).Error("list service account role bindings")
 				w.WriteHeader(http.StatusInternalServerError)
@@ -475,27 +470,41 @@ func (s *Service) validateAuthorization(requestedResource, requestedAction strin
 		}
 
 		var configs []authz.Config
-		for _, roleID := range roles {
-			role, err := s.roles.GetRole(r.Context(), roleID, projectID)
-			if err == store.ErrRoleNotFound {
-				continue
-			} else if err != nil {
-				log.WithError(err).Error("get role")
-				w.WriteHeader(http.StatusInternalServerError)
-				return
+		if authenticatedUser != nil && authenticatedUser.SuperAdmin {
+			configs = []authz.Config{authz.ReadAllRole}
+		} else {
+			for _, roleID := range roles {
+				role, err := s.roles.GetRole(r.Context(), roleID, projectID)
+				if err == store.ErrRoleNotFound {
+					continue
+				} else if err != nil {
+					log.WithError(err).Error("get role")
+					w.WriteHeader(http.StatusInternalServerError)
+					return
+				}
+				var config authz.Config
+				if err := yaml.Unmarshal([]byte(role.Config), &config); err != nil {
+					log.WithError(err).Error("unmarshal role config")
+					w.WriteHeader(http.StatusInternalServerError)
+					return
+				}
+				configs = append(configs, config)
 			}
-			var config authz.Config
-			if err := yaml.Unmarshal([]byte(role.Config), &config); err != nil {
-				log.WithError(err).Error("unmarshal role config")
-				w.WriteHeader(http.StatusInternalServerError)
-				return
-			}
-			configs = append(configs, config)
 		}
 
 		if !authz.Evaluate(requestedResource, requestedAction, configs) {
 			w.WriteHeader(http.StatusForbidden)
 			return
+		}
+
+		var authenticatedUserID string
+		if authenticatedUser != nil {
+			authenticatedUserID = authenticatedUser.ID
+		}
+
+		var authenticatedServiceAccountID string
+		if authenticatedServiceAccount != nil {
+			authenticatedServiceAccountID = authenticatedServiceAccount.ID
 		}
 
 		handler(w, r, projectID, authenticatedUserID, authenticatedServiceAccountID)
@@ -766,26 +775,23 @@ func (s *Service) logout(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *Service) getMe(w http.ResponseWriter, r *http.Request, authenticatedUserID, authenticatedServiceAccountID string) {
+func (s *Service) getMe(w http.ResponseWriter, r *http.Request,
+	authenticatedUser *models.User, authenticatedServiceAccount *models.ServiceAccount,
+) {
 	// TODO
-	if authenticatedUserID == "" {
+	if authenticatedUser == nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	user, err := s.users.GetUser(r.Context(), authenticatedUserID)
-	if err != nil {
-		log.WithError(err).Error("get user")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	utils.Respond(w, user)
+	utils.Respond(w, *authenticatedUser)
 }
 
-func (s *Service) updateMe(w http.ResponseWriter, r *http.Request, authenticatedUserID, authenticatedServiceAccountID string) {
+func (s *Service) updateMe(w http.ResponseWriter, r *http.Request,
+	authenticatedUser *models.User, authenticatedServiceAccount *models.ServiceAccount,
+) {
 	// TODO
-	if authenticatedUserID == "" {
+	if authenticatedUser == nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -809,7 +815,7 @@ func (s *Service) updateMe(w http.ResponseWriter, r *http.Request, authenticated
 			return
 		}
 
-		if _, err := s.users.ValidateUser(r.Context(), authenticatedUserID, hash.Hash(*updateUserRequest.CurrentPassword)); err == store.ErrUserNotFound {
+		if _, err := s.users.ValidateUser(r.Context(), authenticatedUser.ID, hash.Hash(*updateUserRequest.CurrentPassword)); err == store.ErrUserNotFound {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		} else if err != nil {
@@ -818,35 +824,35 @@ func (s *Service) updateMe(w http.ResponseWriter, r *http.Request, authenticated
 			return
 		}
 
-		if _, err := s.users.UpdatePasswordHash(r.Context(), authenticatedUserID, hash.Hash(*updateUserRequest.Password)); err != nil {
+		if _, err := s.users.UpdatePasswordHash(r.Context(), authenticatedUser.ID, hash.Hash(*updateUserRequest.Password)); err != nil {
 			log.WithError(err).Error("update password hash")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 	}
 	if updateUserRequest.FirstName != nil {
-		if _, err := s.users.UpdateFirstName(r.Context(), authenticatedUserID, *updateUserRequest.FirstName); err != nil {
+		if _, err := s.users.UpdateFirstName(r.Context(), authenticatedUser.ID, *updateUserRequest.FirstName); err != nil {
 			log.WithError(err).Error("update first name")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 	}
 	if updateUserRequest.LastName != nil {
-		if _, err := s.users.UpdateLastName(r.Context(), authenticatedUserID, *updateUserRequest.LastName); err != nil {
+		if _, err := s.users.UpdateLastName(r.Context(), authenticatedUser.ID, *updateUserRequest.LastName); err != nil {
 			log.WithError(err).Error("update last name")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 	}
 	if updateUserRequest.Company != nil {
-		if _, err := s.users.UpdateCompany(r.Context(), authenticatedUserID, *updateUserRequest.Company); err != nil {
+		if _, err := s.users.UpdateCompany(r.Context(), authenticatedUser.ID, *updateUserRequest.Company); err != nil {
 			log.WithError(err).Error("update company")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 	}
 
-	user, err := s.users.GetUser(r.Context(), authenticatedUserID)
+	user, err := s.users.GetUser(r.Context(), authenticatedUser.ID)
 	if err != nil {
 		log.WithError(err).Error("get user")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -856,14 +862,16 @@ func (s *Service) updateMe(w http.ResponseWriter, r *http.Request, authenticated
 	utils.Respond(w, user)
 }
 
-func (s *Service) listMembershipsByUser(w http.ResponseWriter, r *http.Request, authenticatedUserID, authenticatedServiceAccountID string) {
+func (s *Service) listMembershipsByUser(w http.ResponseWriter, r *http.Request,
+	authenticatedUser *models.User, authenticatedServiceAccount *models.ServiceAccount,
+) {
 	// TODO
-	if authenticatedUserID == "" {
+	if authenticatedUser.ID == "" {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	memberships, err := s.memberships.ListMembershipsByUser(r.Context(), authenticatedUserID)
+	memberships, err := s.memberships.ListMembershipsByUser(r.Context(), authenticatedUser.ID)
 	if err != nil {
 		log.WithError(err).Error("list memberships by user")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -920,9 +928,11 @@ func (s *Service) listMembershipsByUser(w http.ResponseWriter, r *http.Request, 
 	utils.Respond(w, ret)
 }
 
-func (s *Service) createUserAccessKey(w http.ResponseWriter, r *http.Request, authenticatedUserID, authenticatedServiceAccountID string) {
+func (s *Service) createUserAccessKey(w http.ResponseWriter, r *http.Request,
+	authenticatedUser *models.User, authenticatedServiceAccount *models.ServiceAccount,
+) {
 	// TODO
-	if authenticatedUserID == "" {
+	if authenticatedUser == nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -938,7 +948,7 @@ func (s *Service) createUserAccessKey(w http.ResponseWriter, r *http.Request, au
 	userAccessKeyValue := "u" + ksuid.New().String()
 
 	user, err := s.userAccessKeys.CreateUserAccessKey(r.Context(),
-		authenticatedUserID, hash.Hash(userAccessKeyValue), createUserAccessKeyRequest.Description)
+		authenticatedUser.ID, hash.Hash(userAccessKeyValue), createUserAccessKeyRequest.Description)
 	if err != nil {
 		log.WithError(err).Error("create user access key")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -952,9 +962,11 @@ func (s *Service) createUserAccessKey(w http.ResponseWriter, r *http.Request, au
 }
 
 // TODO: verify that the user owns this access key
-func (s *Service) getUserAccessKey(w http.ResponseWriter, r *http.Request, authenticatedUserID, authenticatedServiceAccountID string) {
+func (s *Service) getUserAccessKey(w http.ResponseWriter, r *http.Request,
+	authenticatedUser *models.User, authenticatedServiceAccount *models.ServiceAccount,
+) {
 	// TODO
-	if authenticatedUserID == "" {
+	if authenticatedUser == nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -975,14 +987,16 @@ func (s *Service) getUserAccessKey(w http.ResponseWriter, r *http.Request, authe
 	utils.Respond(w, userAccessKey)
 }
 
-func (s *Service) listUserAccessKeys(w http.ResponseWriter, r *http.Request, authenticatedUserID, authenticatedServiceAccountID string) {
+func (s *Service) listUserAccessKeys(w http.ResponseWriter, r *http.Request,
+	authenticatedUser *models.User, authenticatedServiceAccount *models.ServiceAccount,
+) {
 	// TODO
-	if authenticatedUserID == "" {
+	if authenticatedUser == nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	userAccessKeys, err := s.userAccessKeys.ListUserAccessKeys(r.Context(), authenticatedUserID)
+	userAccessKeys, err := s.userAccessKeys.ListUserAccessKeys(r.Context(), authenticatedUser.ID)
 	if err != nil {
 		log.WithError(err).Error("list users")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -993,7 +1007,9 @@ func (s *Service) listUserAccessKeys(w http.ResponseWriter, r *http.Request, aut
 }
 
 // TODO: verify that the user owns this access key
-func (s *Service) deleteUserAccessKey(w http.ResponseWriter, r *http.Request, authenticatedUserID, authenticatedServiceAccountID string) {
+func (s *Service) deleteUserAccessKey(w http.ResponseWriter, r *http.Request,
+	authenticatedUser *models.User, authenticatedServiceAccount *models.ServiceAccount,
+) {
 	vars := mux.Vars(r)
 	userAccessKeyID := vars["useraccesskey"]
 
@@ -1004,7 +1020,9 @@ func (s *Service) deleteUserAccessKey(w http.ResponseWriter, r *http.Request, au
 	}
 }
 
-func (s *Service) createProject(w http.ResponseWriter, r *http.Request, authenticatedUserID, authenticatedServiceAccountID string) {
+func (s *Service) createProject(w http.ResponseWriter, r *http.Request,
+	authenticatedUser *models.User, authenticatedServiceAccount *models.ServiceAccount,
+) {
 	var createProjectRequest struct {
 		Name string `json:"name" validate:"name"`
 	}
@@ -1029,7 +1047,7 @@ func (s *Service) createProject(w http.ResponseWriter, r *http.Request, authenti
 		return
 	}
 
-	if _, err = s.memberships.CreateMembership(r.Context(), authenticatedUserID, project.ID); err != nil {
+	if _, err = s.memberships.CreateMembership(r.Context(), authenticatedUser.ID, project.ID); err != nil {
 		log.WithError(err).Error("create membership")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -1076,7 +1094,7 @@ func (s *Service) createProject(w http.ResponseWriter, r *http.Request, authenti
 	}
 
 	if _, err = s.membershipRoleBindings.CreateMembershipRoleBinding(r.Context(),
-		authenticatedUserID, adminRole.ID, project.ID,
+		authenticatedUser.ID, adminRole.ID, project.ID,
 	); err != nil {
 		log.WithError(err).Error("create membership role binding")
 		w.WriteHeader(http.StatusInternalServerError)
