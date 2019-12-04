@@ -4,10 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"time"
 
 	"github.com/deviceplane/deviceplane/cmd/deviceplane/cliutils"
-	"github.com/hako/durafmt"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 	"gopkg.in/yaml.v2"
 )
@@ -23,12 +21,11 @@ func projectListAction(c *kingpin.ParseContext) error {
 		table := cliutils.DefaultTable()
 		table.SetHeader([]string{"Name", "Devices", "Applications", "Created At"})
 		for _, p := range projects {
-			duration := durafmt.Parse(time.Now().Sub(p.CreatedAt)).LimitFirstN(2)
 			table.Append([]string{
 				p.Name,
 				fmt.Sprintf("%d", p.DeviceCounts.AllCount),
 				fmt.Sprintf("%d", p.ApplicationCounts.AllCount),
-				duration.String() + " ago",
+				cliutils.DurafmtSince(p.CreatedAt).String() + " ago",
 			})
 		}
 		table.Render()

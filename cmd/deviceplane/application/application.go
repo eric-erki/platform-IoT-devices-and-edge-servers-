@@ -11,7 +11,6 @@ import (
 
 	"github.com/deviceplane/deviceplane/cmd/deviceplane/cliutils"
 	"github.com/deviceplane/deviceplane/pkg/interpolation"
-	"github.com/hako/durafmt"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 	"gopkg.in/yaml.v2"
 )
@@ -48,8 +47,7 @@ func applicationListAction(c *kingpin.ParseContext) error {
 		table := cliutils.DefaultTable()
 		table.SetHeader([]string{"Name", "Description", "Created At"})
 		for _, app := range applications {
-			duration := durafmt.Parse(time.Now().Sub(app.CreatedAt)).LimitFirstN(2)
-			table.Append([]string{app.Name, app.Description, duration.String() + " ago"})
+			table.Append([]string{app.Name, app.Description, cliutils.DurafmtSince(app.CreatedAt).String() + " ago"})
 		}
 		table.Render()
 

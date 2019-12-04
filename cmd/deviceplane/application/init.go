@@ -44,12 +44,15 @@ func Initialize(c *global.Config) {
 	addApplicationArg(applicationCreateCmd)
 	applicationCreateCmd.Action(applicationCreateAction)
 
-	applicationEditCmd := applicationCmd.Command("edit", "Manually modify an application's config.")
-	addApplicationArg(applicationEditCmd)
-	applicationEditCmd.Action(applicationEditAction)
+	cliutils.GlobalAndCategorizedCmd(config.App, applicationCmd, func(attachmentPoint cliutils.HasCommand) {
+		applicationEditCmd := attachmentPoint.Command("edit", "Manually modify an application's config.")
+		addApplicationArg(applicationEditCmd)
+		applicationEditCmd.Action(applicationEditAction)
 
-	applicationDeployCmd := applicationCmd.Command("deploy", "Deploy an application's config from a file.")
-	applicationDeployCmd.Arg("file", "File path of the yaml file to deploy.").Required().ExistingFileVar(applicationDeployFileArg)
-	addApplicationArg(applicationDeployCmd)
-	applicationDeployCmd.Action(applicationDeployAction)
+		applicationDeployCmd := attachmentPoint.Command("deploy", "Deploy an application's config from a file.")
+		addApplicationArg(applicationDeployCmd)
+		applicationDeployCmd.Arg("file", "File path of the yaml file to deploy.").Required().ExistingFileVar(applicationDeployFileArg)
+		applicationDeployCmd.Action(applicationDeployAction)
+	})
+
 }

@@ -33,7 +33,7 @@ func Initialize(c *global.Config) {
 		cliutils.FormatYAML,
 		cliutils.FormatJSON,
 	)
-	_ = deviceListCmd.Action(deviceListAction)
+	deviceListCmd.Action(deviceListAction)
 
 	cliutils.GlobalAndCategorizedCmd(config.App, deviceCmd, func(attachmentPoint cliutils.HasCommand) {
 		deviceSSHCmd := attachmentPoint.Command("ssh", "SSH into a device.")
@@ -48,18 +48,18 @@ func Initialize(c *global.Config) {
 		cliutils.FormatYAML,
 		cliutils.FormatJSON,
 	)
-	_ = deviceInspectCmd.Action(deviceInspectAction)
+	deviceInspectCmd.Action(deviceInspectAction)
 
 	deviceMetricsCmd := deviceCmd.Command("metrics", "Get device metrics.")
 
 	deviceMetricsHostCmd := deviceMetricsCmd.Command("host", "Get metrics on the device itself.")
-	_ = addDeviceArg(deviceMetricsHostCmd)
-	_ = deviceMetricsHostCmd.Action(deviceHostMetricsAction)
+	addDeviceArg(deviceMetricsHostCmd)
+	deviceMetricsHostCmd.Action(deviceHostMetricsAction)
 
 	deviceMetricsServiceCmd := deviceMetricsCmd.Command("service", "Get the metrics from a service running on the device.")
+	addDeviceArg(deviceMetricsServiceCmd)
 	deviceMetricsServiceCmd.Arg("application", "The application under which the service is running.").Required().StringVar(deviceMetricsApplicationArg)
 	deviceMetricsServiceCmd.Arg("service", "The name of the service which is exposing a metrics endpoint.").Required().StringVar(deviceMetricsServiceArg)
-	addDeviceArg(deviceMetricsServiceCmd)
 	deviceMetricsServiceCmd.Action(deviceServiceMetricsAction)
 }
 

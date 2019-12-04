@@ -31,10 +31,10 @@ var (
 )
 
 func main() {
-	application.Initialize(&config)
-	device.Initialize(&config)
 	configure.Initialize(&config)
 	project.Initialize(&config)
+	application.Initialize(&config)
+	device.Initialize(&config)
 
 	app.PreAction(cliutils.InitializeAPIClient(&config))
 	kingpin.MustParse(app.Parse(os.Args[1:]))

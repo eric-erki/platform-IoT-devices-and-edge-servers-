@@ -10,11 +10,9 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/deviceplane/deviceplane/cmd/deviceplane/cliutils"
 
-	"github.com/hako/durafmt"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 	"gopkg.in/yaml.v2"
 )
@@ -30,8 +28,8 @@ func deviceListAction(c *kingpin.ParseContext) error {
 		table := cliutils.DefaultTable()
 		table.SetHeader([]string{"Name", "Status", "IP", "OS", "Labels", "Last Seen", "Created"})
 		for _, d := range devices {
-			created := durafmt.Parse(time.Now().Sub(d.CreatedAt)).LimitFirstN(2)
-			lastSeen := durafmt.Parse(time.Now().Sub(d.LastSeenAt)).LimitFirstN(2)
+			createdStr := cliutils.DurafmtSince(d.CreatedAt).String() + " ago"
+			lastSeenStr := cliutils.DurafmtSince(d.LastSeenAt).String() + " ago"
 
 			labelsArr := make([]string, len(d.Labels))
 			i := 0
@@ -47,8 +45,8 @@ func deviceListAction(c *kingpin.ParseContext) error {
 				d.Info.IPAddress,
 				d.Info.OSRelease.Name,
 				labelsStr,
-				lastSeen.String() + " ago",
-				created.String() + " ago",
+				lastSeenStr,
+				createdStr,
 			})
 		}
 		table.Render()

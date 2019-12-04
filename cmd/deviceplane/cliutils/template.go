@@ -16,6 +16,8 @@ func init() {
 	fastAccessCmdStr := recursiveCommandMatcher([]string{
 		"ssh",
 		"help",
+		"deploy",
+		"edit",
 	})
 
 	CustomTemplate = `{{define "FormatCommand"}}\
