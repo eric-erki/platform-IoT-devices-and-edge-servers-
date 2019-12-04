@@ -26,8 +26,9 @@ func Initialize(c *global.Config) {
 	applicationListCmd := applicationCmd.Command("list", "List applications.")
 	cliutils.AddFormatFlag(applicationOutputFlag, applicationListCmd,
 		cliutils.FormatTable,
-		cliutils.FormatJSON,
 		cliutils.FormatYAML,
+		cliutils.FormatJSON,
+		cliutils.FormatJSONStream,
 	)
 	applicationListCmd.Action(applicationListAction)
 

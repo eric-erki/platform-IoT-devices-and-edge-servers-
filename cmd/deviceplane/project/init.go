@@ -21,6 +21,7 @@ func Initialize(c *global.Config) {
 		cliutils.FormatTable,
 		cliutils.FormatYAML,
 		cliutils.FormatJSON,
+		cliutils.FormatJSONStream,
 	)
 	projectListCmd.Action(projectListAction)
 

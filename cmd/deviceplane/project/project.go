@@ -2,12 +2,10 @@ package project
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	"github.com/deviceplane/deviceplane/cmd/deviceplane/cliutils"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
-	"gopkg.in/yaml.v2"
 )
 
 func projectListAction(c *kingpin.ParseContext) error {
@@ -16,8 +14,7 @@ func projectListAction(c *kingpin.ParseContext) error {
 		return err
 	}
 
-	switch *projectOutputFlag {
-	case cliutils.FormatTable:
+	if *projectOutputFlag == cliutils.FormatTable {
 		table := cliutils.DefaultTable()
 		table.SetHeader([]string{"Name", "Devices", "Applications", "Created At"})
 		for _, p := range projects {
@@ -29,23 +26,10 @@ func projectListAction(c *kingpin.ParseContext) error {
 			})
 		}
 		table.Render()
-
-	case cliutils.FormatYAML:
-		bytes, err := yaml.Marshal(projects)
-		if err != nil {
-			return err
-		}
-		fmt.Println(string(bytes))
-
-	case cliutils.FormatJSON:
-		bytes, err := json.Marshal(projects)
-		if err != nil {
-			return err
-		}
-		fmt.Println(string(bytes))
+		return nil
 	}
 
-	return nil
+	return cliutils.PrintWithFormat(projects, *projectOutputFlag)
 }
 
 func projectCreateAction(c *kingpin.ParseContext) error {

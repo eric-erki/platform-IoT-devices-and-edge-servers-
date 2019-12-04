@@ -2,7 +2,6 @@ package application
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -12,7 +11,6 @@ import (
 	"github.com/deviceplane/deviceplane/cmd/deviceplane/cliutils"
 	"github.com/deviceplane/deviceplane/pkg/interpolation"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
-	"gopkg.in/yaml.v2"
 )
 
 func addApplicationArg(cmd *kingpin.CmdClause) *kingpin.ArgClause {
@@ -42,30 +40,17 @@ func applicationListAction(c *kingpin.ParseContext) error {
 		return err
 	}
 
-	switch *applicationOutputFlag {
-	case cliutils.FormatTable:
+	if *applicationOutputFlag == cliutils.FormatTable {
 		table := cliutils.DefaultTable()
 		table.SetHeader([]string{"Name", "Description", "Created At"})
 		for _, app := range applications {
 			table.Append([]string{app.Name, app.Description, cliutils.DurafmtSince(app.CreatedAt).String() + " ago"})
 		}
 		table.Render()
-
-	case cliutils.FormatYAML:
-		bytes, err := yaml.Marshal(applications)
-		if err != nil {
-			return err
-		}
-		fmt.Println(string(bytes))
-
-	case cliutils.FormatJSON:
-		bytes, err := json.Marshal(applications)
-		if err != nil {
-			return err
-		}
-		fmt.Println(string(bytes))
+		return nil
 	}
-	return nil
+
+	return cliutils.PrintWithFormat(applications, *applicationOutputFlag)
 }
 
 func applicationCreateAction(c *kingpin.ParseContext) error {
@@ -107,48 +92,25 @@ func applicationInspectAction(c *kingpin.ParseContext) error {
 			return err
 		}
 
+		return cliutils.PrintWithFormat(application, *applicationOutputFlag)
+	}
+
+	release, err := config.APIClient.GetLatestRelease(context.TODO(), *config.Flags.Project, *applicationArg)
+	if err != nil {
+		return err
+	}
+
+	var config interface{}
+	if release != nil {
 		switch *applicationOutputFlag {
 		case cliutils.FormatYAML:
-			bytes, err := yaml.Marshal(application)
-			if err != nil {
-				return err
-			}
-			fmt.Println(string(bytes))
-
+			config = release.RawConfig
 		case cliutils.FormatJSON:
-			bytes, err := json.Marshal(application)
-			if err != nil {
-				return err
-			}
-			fmt.Println(string(bytes))
-		}
-	} else {
-		release, err := config.APIClient.GetLatestRelease(context.TODO(), *config.Flags.Project, *applicationArg)
-		if err != nil {
-			return err
-		}
-
-		var jsonConfig interface{}
-		var yamlConfig string
-		if release != nil {
-			jsonConfig = release.Config
-			yamlConfig = release.RawConfig
-		}
-
-		switch *applicationOutputFlag {
-		case cliutils.FormatYAML:
-			fmt.Println(yamlConfig)
-
-		case cliutils.FormatJSON:
-			bytes, err := json.Marshal(jsonConfig)
-			if err != nil {
-				return err
-			}
-			fmt.Println(string(bytes))
+			config = release.Config
 		}
 	}
 
-	return nil
+	return cliutils.PrintWithFormat(config, *applicationOutputFlag)
 }
 
 func applicationEditAction(c *kingpin.ParseContext) error {

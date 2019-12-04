@@ -2,7 +2,6 @@ package device
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net"
@@ -14,7 +13,6 @@ import (
 	"github.com/deviceplane/deviceplane/cmd/deviceplane/cliutils"
 
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
-	"gopkg.in/yaml.v2"
 )
 
 func deviceListAction(c *kingpin.ParseContext) error {
@@ -23,8 +21,7 @@ func deviceListAction(c *kingpin.ParseContext) error {
 		return err
 	}
 
-	switch *deviceOutputFlag {
-	case cliutils.FormatTable:
+	if *deviceOutputFlag == cliutils.FormatTable {
 		table := cliutils.DefaultTable()
 		table.SetHeader([]string{"Name", "Status", "IP", "OS", "Labels", "Last Seen", "Created"})
 		for _, d := range devices {
@@ -50,23 +47,10 @@ func deviceListAction(c *kingpin.ParseContext) error {
 			})
 		}
 		table.Render()
-
-	case cliutils.FormatYAML:
-		bytes, err := yaml.Marshal(devices)
-		if err != nil {
-			return err
-		}
-		fmt.Println(string(bytes))
-
-	case cliutils.FormatJSON:
-		bytes, err := json.Marshal(devices)
-		if err != nil {
-			return err
-		}
-		fmt.Println(string(bytes))
+		return nil
 	}
 
-	return nil
+	return cliutils.PrintWithFormat(devices, *deviceOutputFlag)
 }
 
 func deviceInspectAction(c *kingpin.ParseContext) error {
@@ -75,22 +59,7 @@ func deviceInspectAction(c *kingpin.ParseContext) error {
 		return err
 	}
 
-	switch *deviceOutputFlag {
-	case cliutils.FormatYAML:
-		bytes, err := yaml.Marshal(device)
-		if err != nil {
-			return err
-		}
-		fmt.Println(string(bytes))
-
-	case cliutils.FormatJSON:
-		bytes, err := json.Marshal(device)
-		if err != nil {
-			return err
-		}
-		fmt.Println(string(bytes))
-	}
-	return nil
+	return cliutils.PrintWithFormat(device, *deviceOutputFlag)
 }
 
 func deviceHostMetricsAction(c *kingpin.ParseContext) error {
