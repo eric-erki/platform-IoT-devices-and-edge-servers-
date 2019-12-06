@@ -8,23 +8,28 @@ import { Row } from '../../components/core';
 const tabs = [
   {
     title: 'Overview',
-    to: '/overview',
+    to: 'overview',
   },
   {
     title: 'SSH',
-    to: '/ssh',
+    to: 'ssh',
   },
   {
     title: 'Settings',
-    to: '/settings',
+    to: 'settings',
   },
 ];
 
 const Device = ({ route }) => {
   return (
-    <Layout title={`Device / ${route.data.params.device}`}>
+    <Layout title={route.data.params.device}>
       <Row marginBottom={4}>
-        <Tabs content={tabs} />
+        <Tabs
+          content={tabs.map(({ to, title }) => ({
+            title,
+            href: `/${route.data.params.project}/${to}`,
+          }))}
+        />
       </Row>
       <View />
     </Layout>

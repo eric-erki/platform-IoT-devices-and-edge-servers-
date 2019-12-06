@@ -24,7 +24,7 @@ const Roles = ({
     >
       <Table>
         <Table.Head>
-          <Table.TextHeaderCell>Role</Table.TextHeaderCell>
+          <Table.TextHeaderCell>Name</Table.TextHeaderCell>
         </Table.Head>
         <Table.Body>
           {roles.map(role => (

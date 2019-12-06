@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
-import { Code, Icon } from 'evergreen-ui';
+import { Code } from 'evergreen-ui';
 
-import config from '../../config';
-import segment from '../../lib/segment';
-import Card from '../../components/card';
-import { Row, Text } from '../../components/core';
+import config from '../config';
+import Layout from '../components/layout';
+import Card from '../components/card';
+import { Row, Text } from '../components/core';
 
 const getDockerCommand = ({ project, deviceRegistrationToken }) => {
   if (window.location.hostname === 'localhost') {
@@ -36,34 +36,36 @@ const getDockerCommand = ({ project, deviceRegistrationToken }) => {
   }
 };
 
-const CreateDevice = ({
+const AddDevice = ({
   route: {
     data: { params, deviceRegistrationToken },
   },
 }) => {
-  useEffect(() => {
-    segment.page(); //TODO: why is this only used on this page?
-  }, []);
-
   return (
-    <Card title="Device Registration">
-      <Row marginBottom={4}>
-        <Icon icon="info-sign" color="white" marginRight={8} />
-        <Text>
-          Default device registration token with ID{' '}
-          <Code fontFamily="mono" background="#234361" color="white">
-            {deviceRegistrationToken.id}
-          </Code>{' '}
-          is being used.
-        </Text>
-      </Row>
-      <Text>Run the following command to register your device.</Text>
-      <Code fontFamily="mono" color="white">
-        {getDockerCommand({ project: params.project, deviceRegistrationToken })}
-      </Code>
-    </Card>
+    <Layout alignItems="center">
+      <Card title="Register Device">
+        <Row marginBottom={4}>
+          <Text>
+            Default device registration token with ID{' '}
+            <Code fontFamily="mono" background="#222" color="white">
+              {deviceRegistrationToken.id}
+            </Code>{' '}
+            is being used.
+          </Text>
+        </Row>
+        <Text>Run the following command to register your device:</Text>
+        <Code fontFamily="mono" color="white" background="#222">
+          {getDockerCommand({
+            project: params.project,
+            deviceRegistrationToken,
+          })}
+        </Code>
+      </Card>
+    </Layout>
   );
 };
+
+export default AddDevice;
 
 // TODO: ADD THIS WARNING ABOUT DEFAULT TOKEN BEING DELETED
 
@@ -128,8 +130,6 @@ const CreateDevice = ({
 //     </Popover>
 //   );
 // }
-
-export default CreateDevice;
 
 // class AddDevice extends Component {
 //   constructor(props) {

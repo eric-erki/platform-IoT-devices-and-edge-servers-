@@ -8,7 +8,7 @@ import Card from '../components/card';
 
 const Applications = ({
   route: {
-    data: { applications },
+    data: { params, applications },
   },
 }) => {
   const navigation = useNavigation();
@@ -30,7 +30,11 @@ const Applications = ({
               <Table.Row
                 key={application.id}
                 isSelectable
-                onSelect={() => navigation.navigate(application.name)}
+                onSelect={() =>
+                  navigation.navigate(
+                    `/${params.project}/applications/${application.name}`
+                  )
+                }
               >
                 <Table.TextCell>{application.name}</Table.TextCell>
                 <Table.TextCell>

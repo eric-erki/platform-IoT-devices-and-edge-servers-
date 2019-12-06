@@ -37,19 +37,19 @@ export default mount({
   '/': redirect('/projects'),
 
   '/signup': route({
-    title: 'Sign up',
+    title: 'Sign Up',
     getView: () => import('./containers/signup'),
   }),
   '/login': route({
-    title: 'Log in',
+    title: 'Log In',
     getView: () => import('./containers/login'),
   }),
   '/forgot': route({
-    title: 'Reset password',
+    title: 'Reset Password',
     getView: () => import('./containers/password-reset'),
   }),
   '/recover/:token': route({
-    title: 'Recover password',
+    title: 'Recover Password',
     getData: ({ params }) => ({ params }),
     getView: () => import('./containers/password-recovery'),
   }),
@@ -98,8 +98,8 @@ export default mount({
             },
             getView: () => import('./containers/devices'),
           }),
-          '/add': route({
-            title: 'Add Device',
+          '/register': route({
+            title: 'Register Device',
             getData: async request => {
               const response = await api.defaultDeviceRegistrationToken({
                 projectId: request.params.project,
@@ -109,7 +109,7 @@ export default mount({
                 deviceRegistrationToken: response.data,
               };
             },
-            getView: () => import('./containers/device/add'),
+            getView: () => import('./containers/register-device'),
           }),
           '/:device': compose(
             withView(() => import('./containers/device/index')),
@@ -126,15 +126,15 @@ export default mount({
             mount({
               '/': redirect('overview'),
               '/overview': route({
-                title: 'Device Overview',
+                title: 'Overview - Device',
                 getView: () => import('./containers/device/overview'),
               }),
               '/ssh': route({
-                title: 'Device SSH',
+                title: 'SSH - Device',
                 getView: () => import('./containers/device/ssh'),
               }),
               '/settings': route({
-                title: 'Device Settings',
+                title: 'Settings - Device',
                 getView: () => import('./containers/device/settings'),
               }),
             })
@@ -175,7 +175,7 @@ export default mount({
                 getView: () => import('./containers/iam/member'),
               }),
               '/add': route({
-                title: 'Add member',
+                title: 'Add Member',
                 getData: async request => {
                   const response = await api.roles({
                     projectId: request.params.project,
@@ -214,13 +214,13 @@ export default mount({
                 getView: () => import('./containers/iam/role'),
               }),
               '/create': route({
-                title: 'Create role',
+                title: 'Create Role',
                 getView: () => import('./containers/iam/create-role'),
               }),
             }),
             '/service-accounts': mount({
               '/': route({
-                title: 'Service accounts',
+                title: 'Service Accounts',
                 getData: async request => {
                   const response = await api.serviceAccounts({
                     projectId: request.params.project,
@@ -232,11 +232,11 @@ export default mount({
                 getView: () => import('./containers/iam/service-accounts'),
               }),
               '/:serviceName': route({
-                title: 'Service account',
+                title: 'Service Account',
                 getView: () => import('./containers/iam/service-account'),
               }),
               '/create': route({
-                title: 'Create service account',
+                title: 'Create Service Account',
                 getView: () =>
                   import('./containers/iam/create-service-account'),
               }),
@@ -261,8 +261,57 @@ export default mount({
             title: 'Create Application',
             getView: () => import('./containers/create-application'),
           }),
-          '/:application': route({}),
-          '/:application/deploy': route({}),
+          '/:application': compose(
+            withView(() => import('./containers/application')),
+            withData(async request => {
+              const response = await api.application({
+                projectId: request.params.project,
+                applicationId: request.params.application,
+              });
+              return {
+                application: response.data,
+              };
+            }),
+            mount({
+              '/': redirect('overview'),
+              '/overview': route({
+                title: 'Overview - Application',
+                getView: () => import('./containers/application/overview'),
+              }),
+              '/releases': mount({
+                '/': route({
+                  title: 'Releases - Application',
+                  getData: async request => {
+                    const response = await api.releases({
+                      projectId: request.params.project,
+                      applicationId: request.params.application,
+                    });
+                    return {
+                      releases: response.data,
+                    };
+                  },
+                  getView: () => import('./containers/application/releases'),
+                }),
+                '/create': route({
+                  title: 'Create Release - Application',
+                  getView: () =>
+                    import('./containers/application/create-release'),
+                }),
+                '/:release': route({
+                  title: 'Release - Application',
+                  getView: () => import('./containers/application/release'),
+                }),
+              }),
+              '/scheduling': route({
+                title: 'Scheduling - Application',
+                getView: () => import('./containers/application/scheduling'),
+              }),
+              '/settings': route({
+                title: 'Settings - Application',
+                getView: () => import('./containers/application/settings'),
+              }),
+            })
+          ),
         }),
         '/provisioning': mount({
           '/': route({
@@ -279,12 +328,48 @@ export default mount({
             getView: () => import('./containers/provisioning'),
           }),
           '/device-registration-tokens': mount({
-            '/:token': route({}),
-            '/create': route({}),
+            '/create': route({
+              title: 'Create Device Registration Token',
+              getView: () =>
+                import('./containers/create-device-registration-token'),
+            }),
+            '/:token': compose(
+              withView(() => import('./containers/device-registration-token')),
+              withData(async request => {
+                const response = await api.deviceRegistrationToken({
+                  projectId: request.params.project,
+                  tokenId: request.params.token,
+                });
+                return {
+                  deviceRegistrationToken: response.data,
+                };
+              }),
+              mount({
+                '/': redirect('overview'),
+                '/overview': route({
+                  title: 'Overview - Device Registration Token',
+                  getView: () =>
+                    import('./containers/device-registration-token/overview'),
+                }),
+                '/settings': route({
+                  title: 'Settings - Device Registration Token',
+                  getView: () =>
+                    import('./containers/device-registration-token/settings'),
+                }),
+              })
+            ),
           }),
         }),
         '/settings': route({
-          title: 'Project Settings',
+          title: 'Settings - Project',
+          getData: async request => {
+            const response = await api.project({
+              projectId: request.params.project,
+            });
+            return {
+              project: response.data,
+            };
+          },
           getView: () => import('./containers/project-settings'),
         }),
       })

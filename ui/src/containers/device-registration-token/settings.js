@@ -1,46 +1,65 @@
-import React from 'react';
+import React, { useState } from 'react';
 import useForm from 'react-hook-form';
 import { useNavigation } from 'react-navi';
 
+import api from '../../api';
 import Card from '../../components/card';
 import Field from '../../components/field';
-import { Button, Form } from '../../components/core';
-import api from '../../api';
+import { Row, Button, Form } from '../../components/core';
 
-const DeviceRegistrationTokenSettings = () => {
+const validationSchema = {};
+
+const DeviceRegistrationTokenSettings = ({
+  route: {
+    data: { params, deviceRegistrationToken },
+  },
+}) => {
   const navigation = useNavigation();
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, formState, errors } = useForm({
+    defaultValues: {
+      name: deviceRegistrationToken.name,
+      description: deviceRegistrationToken.description,
+      maxRegistrations: deviceRegistrationToken.maxRegistrations || 'Unlimited',
+    },
+    validationSchema,
+  });
+  const [showDeleteDialog, setShowDeleteDialog] = useState();
 
   const submit = data => {
     api.updateDeviceRegistrationToken(data).then(() => {
-      navigation.navigate(`/${projectId}/provisioning`);
+      navigation.navigate(`/${params.projectId}/provisioning`);
     });
   };
 
   return (
     <Card title="Device Registration Token Settings">
       <Form onSubmit={handleSubmit(submit)}>
-        <Field label="Name" name="name" ref={register} />
+        <Field label="Name" name="name" ref={register} errors={errors.name} />
         <Field
           type="textarea"
           label="Description"
           name="description"
           ref={register}
+          errors={errors.description}
         />
         <Field
           label="Maximum Device Registrations"
           name="maxRegistrations"
           description="Limit the number of devices that can be registered using this token"
           hint="Leave empty to allow unlimited registrations"
+          errors={errors.maxRegistrations}
           ref={register}
         />
-        <Button title="Update Settings" />
+        <Button title="Update Settings" disabled={!formState.dirty} />
+      </Form>
+      <Row marginTop={4}>
         <Button
           title="Delete Device Registration Token"
           variant="tertiary"
-          onClick={() => this.setState({ showDeleteDialog: true })}
+          onClick={() => setShowDeleteDialog(true)}
         />
-        {/* <Dialog
+      </Row>
+      {/* <Dialog
           isShown={this.state.showDeleteDialog}
           title="Delete Device Registration Token"
           intent="danger"
@@ -52,12 +71,11 @@ const DeviceRegistrationTokenSettings = () => {
           <strong>{this.props.deviceRegistrationToken.name}</strong> Device
           Registration Token.
         </Dialog> */}
-      </Form>
     </Card>
   );
 };
 
-// export default DeviceRegistrationTokenSettings;
+export default DeviceRegistrationTokenSettings;
 
 // export default class DeviceRegistrationTokenSettings extends Component {
 //   state = {

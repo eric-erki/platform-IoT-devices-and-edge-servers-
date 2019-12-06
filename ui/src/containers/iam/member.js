@@ -158,7 +158,7 @@ const Member = ({
         fontSize={5}
       >{`${member.user.firstName} ${member.user.lastName}`}</Heading>
       <Text color="whites.7">{member.user.email}</Text>
-      <Text marginTop={5} color="white">
+      <Text marginTop={4} fontWeight={3}>
         Select Individual Roles
       </Text>
       {roleBindings.map(role => (

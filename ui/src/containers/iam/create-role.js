@@ -38,10 +38,12 @@ const CreateRole = ({
 
         <Field label="Description" name="description" ref={register} />
 
-        <Text marginBottom={2}>Config</Text>
+        <Text marginBottom={2} fontWeight={3}>
+          Config
+        </Text>
         <Editor
           width="100%"
-          height="250px"
+          height="180px"
           //value={this.state.config}
           //onChange={value => this.setState({ config: value })}
         />

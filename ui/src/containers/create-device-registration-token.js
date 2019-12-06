@@ -2,10 +2,11 @@ import React from 'react';
 import useForm from 'react-hook-form';
 import { useNavigation } from 'react-navi';
 
-import Card from '../../components/card';
-import Field from '../../components/field';
-import { Button, Form } from '../../components/core';
-import api from '../../api';
+import api from '../api';
+import Layout from '../components/layout';
+import Card from '../components/card';
+import Field from '../components/field';
+import { Row, Button, Form } from '../components/core';
 
 const CreateDeviceRegistrationToken = ({
   route: {
@@ -22,33 +23,35 @@ const CreateDeviceRegistrationToken = ({
   };
 
   return (
-    <Card title="Device Registration Token Settings">
-      <Form onSubmit={handleSubmit(submit)}>
-        <Field label="Name" name="name" ref={register} />
-        <Field
-          label="Description"
-          type="textarea"
-          name="description"
-          ref={register}
-        />
-        <Field
-          label="Maximum Device Registrations"
-          name="maxRegistrations"
-          description="Limit the number of devices that can be registered using this token"
-          hint="Leave empty to allow unlimited registrations"
-          ref={register}
-        />
-        <Button title="Submit" type="submit" />
-      </Form>
+    <Layout alignItems="center">
+      <Card title="Create Device Registration Token">
+        <Form onSubmit={handleSubmit(submit)}>
+          <Field label="Name" name="name" ref={register} />
+          <Field
+            label="Description"
+            type="textarea"
+            name="description"
+            ref={register}
+          />
+          <Field
+            label="Maximum Device Registrations"
+            name="maxRegistrations"
+            description="Limit the number of devices that can be registered using this token"
+            hint="Leave empty to allow unlimited registrations"
+            ref={register}
+          />
+          <Button title="Create Device Registration Token" type="submit" />
+        </Form>
 
-      <Row marginTop={4}>
-        <Button
-          title="Cancel"
-          variant="tertiary"
-          href={`/${params.project}/provisioning`}
-        />
-      </Row>
-    </Card>
+        <Row marginTop={4}>
+          <Button
+            title="Cancel"
+            variant="tertiary"
+            href={`/${params.project}/provisioning`}
+          />
+        </Row>
+      </Card>
+    </Layout>
   );
 };
 

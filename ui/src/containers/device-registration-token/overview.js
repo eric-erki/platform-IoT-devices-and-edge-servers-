@@ -1,70 +1,52 @@
-import React, { Component, Fragment } from 'react';
-import { Pane, majorScale, Heading, Card, Label } from 'evergreen-ui';
+import React from 'react';
 
-import config from '../../config';
-import InnerCard from '../../components/InnerCard';
-import CustomSpinner from '../../components/CustomSpinner';
+import Card from '../../components/card';
+import { Column, Text } from '../../components/core';
 import { EditableLabelTable } from '../../components/EditableLabelTable';
 
-export default class DeviceRegistrationTokenOverview extends Component {
-  render() {
-    var { deviceRegistrationToken } = this.props;
-    var cards = [
-      {
-        title: 'Name',
-        value: deviceRegistrationToken.name,
-      },
-      {
-        title: 'ID',
-        value: deviceRegistrationToken.id,
-      },
-      {
-        title: 'Description',
-        value: deviceRegistrationToken.description,
-      },
-      {
-        title: 'Devices Registered',
-        value: deviceRegistrationToken.deviceCounts.allCount,
-      },
-      {
-        title: 'Maximum Device Registrations',
-        value: deviceRegistrationToken.maxRegistrations,
-      },
-      {
-        title: 'Labels',
-        innerElement: (
-          <EditableLabelTable
-            getEndpoint={`${config.endpoint}/projects/${this.props.projectName}/deviceregistrationtokens/${this.props.deviceRegistrationToken.id}`}
-            setEndpoint={`${config.endpoint}/projects/${this.props.projectName}/deviceregistrationtokens/${this.props.deviceRegistrationToken.id}/labels`}
-            deleteEndpoint={`${config.endpoint}/projects/${this.props.projectName}/deviceregistrationtokens/${this.props.deviceRegistrationToken.id}/labels`}
-          />
-        ),
-      },
-    ];
-    const cardNodes = cards.map(card => (
-      <InnerCard key={card.title}>
-        <Heading paddingTop={majorScale(2)} paddingLeft={majorScale(2)}>
-          {card.title}
-        </Heading>
-        <Card
-          display="flex"
-          flexDirection="column"
-          alignItems="left"
-          padding={majorScale(2)}
-        >
-          {card.innerElement || <Label>{card.value}</Label>}
-        </Card>
-      </InnerCard>
-    ));
+const DeviceRegistrationTokenOverview = ({
+  route: {
+    data: { params, deviceRegistrationToken },
+  },
+}) => {
+  return (
+    <Card title={deviceRegistrationToken.name}>
+      <Column marginBottom={4}>
+        <Text fontWeight={4} fontSize={3} marginBottom={1}>
+          ID
+        </Text>
+        <Text>{deviceRegistrationToken.id}</Text>
+      </Column>
+      <Column marginBottom={4}>
+        <Text fontWeight={4} fontSize={2} marginBottom={1}>
+          Description
+        </Text>
+        <Text>{deviceRegistrationToken.description}</Text>
+      </Column>
+      <Column marginBottom={4}>
+        <Text fontWeight={4} fontSize={2} marginBottom={1}>
+          Devices Registered
+        </Text>
+        <Text>{deviceRegistrationToken.deviceCounts.allCount}</Text>
+      </Column>
+      <Column marginBottom={4}>
+        <Text fontWeight={4} fontSize={2} marginBottom={1}>
+          Maximum Device Registerations
+        </Text>
+        <Text>{deviceRegistrationToken.maxRegistrations || 'Unlimited'}</Text>
+      </Column>
+      <Column>
+        <Text fontWeight={4} fontSize={2} marginBottom={1}>
+          Labels
+        </Text>
+        <EditableLabelTable
+          getEndpoint={`projects/${params.project}/deviceregistrationtokens/${deviceRegistrationToken.id}`}
+          setEndpoint={`projects/${params.project}/deviceregistrationtokens/${deviceRegistrationToken.id}/labels`}
+          deleteEndpoint={`projects/${params.project}/deviceregistrationtokens/${deviceRegistrationToken.id}/labels`}
+        />
+      </Column>
+    </Card>
+  );
+};
 
-    return (
-      <Pane width="70%" display="flex" flexDirection="column">
-        {deviceRegistrationToken ? (
-          <Fragment>{cardNodes}</Fragment>
-        ) : (
-          <CustomSpinner />
-        )}
-      </Pane>
-    );
-  }
-}
+export default DeviceRegistrationTokenOverview;

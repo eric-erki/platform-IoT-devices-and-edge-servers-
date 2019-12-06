@@ -41,7 +41,7 @@ const api = {
 
   updateUser: data => patch('me', data),
 
-  devices: () => {},
+  project: ({ projectId }) => get(`projects/${projectId}`),
 
   projects: () =>
     get(`memberships?full`).then(({ data }) =>
@@ -114,6 +114,9 @@ const api = {
   applications: ({ projectId }) =>
     get(`projects/${projectId}/applications?full`),
 
+  application: ({ projectId, applicationId }) =>
+    get(`projects/${projectId}/applications/${applicationId}?full`),
+
   createApplication: ({ projectId, data: { name, description } }) =>
     post(`projects/${projectId}/applications`, { name, description }).then(
       response => {
@@ -121,6 +124,20 @@ const api = {
         return response;
       }
     ),
+
+  updateApplication: ({
+    projectId,
+    applicationId,
+    data: { name, description, settings },
+  }) =>
+    put(`projects/${projectId}/applications/${applicationId}`, {
+      name,
+      description,
+      settings,
+    }),
+
+  deleteApplication: ({ projectId, applicationId }) =>
+    del(`projects/${projectId}/applications/${applicationId}`),
 
   roles: ({ projectId }) => get(`projects/${projectId}/roles`),
 
@@ -171,6 +188,9 @@ const api = {
         return response;
       }
     ),
+
+  releases: ({ projectId, applicationId }) =>
+    get(`projects/${projectId}/applications/${applicationId}/releases?full`),
 
   createRelease: ({ projectId, applicationId, rawConfig }) =>
     post(`projects/${projectId}/applications/${applicationId}/releases`, {

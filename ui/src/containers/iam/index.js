@@ -8,15 +8,15 @@ import { Row } from '../../components/core';
 const tabs = [
   {
     title: 'Members',
-    to: '/iam/members',
+    to: 'iam/members',
   },
   {
     title: 'Service Accounts',
-    to: '/iam/service-accounts',
+    to: 'iam/service-accounts',
   },
   {
     title: 'Roles',
-    to: '/iam/roles',
+    to: 'iam/roles',
   },
 ];
 
@@ -30,7 +30,7 @@ const Iam = ({ route }) => {
         <Tabs
           content={tabs.map(({ to, title }) => ({
             title,
-            href: `/${route.data.params.project}${to}`,
+            href: `/${route.data.params.project}/${to}`,
           }))}
         />
       </Row>

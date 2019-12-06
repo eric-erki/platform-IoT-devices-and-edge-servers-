@@ -15,13 +15,12 @@ const Projects = ({
   return (
     <Layout title="Select project" alignItems="center">
       <Card
-        size="full"
+        size="large"
         title="Projects"
         actions={[
           {
             href: '/projects/create',
-            title: 'Create',
-            variant: 'primary',
+            title: 'Create Project',
           },
         ]}
       >

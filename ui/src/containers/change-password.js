@@ -3,9 +3,9 @@ import useForm from 'react-hook-form';
 import { toaster } from 'evergreen-ui';
 
 import api from '../api';
-import Card from './card';
-import Field from './field';
-import { Form, Button } from './core';
+import Card from '../components/card';
+import Field from '../components/field';
+import { Form, Button } from '../components/core';
 
 const ChangePassword = () => {
   const { register, handleSubmit } = useForm();
@@ -32,12 +32,15 @@ const ChangePassword = () => {
     <Card title="Change Password" border>
       <Form onSubmit={handleSubmit(submit)}>
         <Field
+          required
+          autoFocus
           type="password"
           label="Current Password"
           name="currentPassword"
           ref={register}
         />
         <Field
+          required
           type="password"
           label="New Password"
           name="password"

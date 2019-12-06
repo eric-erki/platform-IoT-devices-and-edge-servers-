@@ -30,7 +30,7 @@ const Provisioning = ({
         size="full"
         actions={[
           {
-            href: 'deviceregistrationtokens/create',
+            href: 'device-registration-tokens/create',
             title: 'Create Device Registration Token',
           },
         ]}
@@ -56,7 +56,7 @@ const Provisioning = ({
                 isSelectable
                 onSelect={() =>
                   navigation.navigate(
-                    `deviceregistrationtokens/${token.name}/overview`
+                    `provisioning/device-registration-tokens/${token.name}/overview`
                   )
                 }
                 flexGrow={1}
@@ -74,7 +74,7 @@ const Provisioning = ({
                 <Table.TextCell flexBasis={50}>
                   {typeof token.maxRegistrations === 'number'
                     ? token.maxRegistrations
-                    : 'unlimited'}
+                    : 'Unlimited'}
                 </Table.TextCell>
                 <Table.TextCell flexBasis={150}>
                   {renderLabels(token.labels, labelColorMap)}
@@ -89,48 +89,3 @@ const Provisioning = ({
 };
 
 export default Provisioning;
-
-// class Provisioning extends Component {
-//   constructor(props) {
-//     super(props);
-
-//     const palletteArray = Object.values(this.props.theme.palette);
-
-//     this.labelColors = [
-//       ...palletteArray.map(colors => colors.base),
-//       ...palletteArray.map(colors => colors.dark),
-//     ];
-
-//     this.state = {
-//       deviceRegistrationTokens: [],
-//     };
-//   }
-
-//   componentDidMount() {
-//     axios
-//       .get(
-//         `${config.endpoint}/projects/${this.props.projectName}/deviceregistrationtokens?full`,
-//         {
-//           withCredentials: true,
-//         }
-//       )
-//       .then(response => {
-
-//         this.setState({
-//           deviceRegistrationTokens: response.data,
-//           labelColorMap,
-//         });
-//       })
-//       .catch(error => {
-//         console.log(error);
-//       });
-//   }
-
-//   render() {
-//     return (
-
-//     );
-//   }
-// }
-
-// export default withTheme(Provisioning);

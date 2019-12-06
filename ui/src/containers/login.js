@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigation } from 'react-navi';
 import { useDispatch } from 'react-redux';
 import useForm from 'react-hook-form';
 import * as yup from 'yup';
+import { Alert } from 'evergreen-ui';
 
 import { login } from '../actions';
 import Card from '../components/card';
@@ -23,22 +24,28 @@ const Login = () => {
   });
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const [backendError, setBackendError] = useState();
 
   const submit = data => {
-    dispatch(login(data)).then(() => navigation.navigate('/'));
+    dispatch(login(data))
+      .then(() => navigation.navigate('/'))
+      .catch(error => {
+        setBackendError('Invalid Username/Password');
+        console.log(error);
+      });
   };
 
   return (
     <Column flex={1} alignItems="center" paddingTop={9}>
-      {/* {submitError && (
+      {backendError && (
         <Alert
-          marginBottom={majorScale(2)}
-          paddingTop={majorScale(2)}
-          paddingBottom={majorScale(2)}
+          marginBottom={16}
+          paddingTop={16}
+          paddingBottom={16}
           intent="warning"
-          title={submitError}
+          title={backendError}
         />
-      )} */}
+      )}
       <Card
         logo
         title="Log in"

@@ -6,7 +6,7 @@ import { createGlobalStyle } from 'styled-components/macro';
 import theme from '../theme';
 import { Box } from './core';
 import NotFound from './not-found';
-//import Spinner from './spinner';
+import Spinner from './spinner';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -45,7 +45,7 @@ const Page = ({ children, light }) => {
       <>
         <GlobalStyle theme={theme} />
         <Box>
-          {/* <Spinner show={!!loadingRoute} delay={200} /> */}
+          <Spinner show={!!loadingRoute} />
           <main>
             <NotFoundBoundary render={NotFound}>{children}</NotFoundBoundary>
           </main>

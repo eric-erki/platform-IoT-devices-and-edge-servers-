@@ -9,10 +9,10 @@ import { Row, Text } from './core';
 import Dialog from './dialog';
 import Popover from './popover';
 import Avatar from './avatar';
-import CliDownload from './cli-download';
-import ChangePassword from './change-password';
-import EditProfile from './edit-profile';
-import UserAccessKeys from './user-access-keys';
+import CliDownload from '../containers/cli-download';
+import ChangePassword from '../containers/change-password';
+import Profile from '../containers/profile';
+import UserAccessKeys from '../containers/user-access-keys';
 
 const MenuItem = styled.button`
   background: none;
@@ -46,7 +46,7 @@ const Divider = styled.div`
 
 const AvatarMenu = () => {
   const [showCLI, setShowCLI] = React.useState();
-  const [showEditProfile, setShowEditProfile] = React.useState();
+  const [showUserProfile, setShowUserProfile] = React.useState();
   const [showUserAccessKeys, setShowUserAccessKeys] = React.useState();
   const [showChangePassword, setShowChangePassword] = React.useState();
   const dispatch = useDispatch();
@@ -59,8 +59,8 @@ const AvatarMenu = () => {
       <Dialog show={showCLI} onClose={() => setShowCLI(false)}>
         <CliDownload />
       </Dialog>
-      <Dialog show={showEditProfile} onClose={() => setShowEditProfile(false)}>
-        <EditProfile user={user} />
+      <Dialog show={showUserProfile} onClose={() => setShowUserProfile(false)}>
+        <Profile user={user} close={() => setShowUserProfile(false)} />
       </Dialog>
       <Dialog
         show={showUserAccessKeys}
@@ -80,7 +80,6 @@ const AvatarMenu = () => {
             <Text
               fontSize={4}
               fontWeight={3}
-              color="white"
               paddingX={3}
               marginX={1}
               paddingTop={2}
@@ -89,7 +88,6 @@ const AvatarMenu = () => {
             </Text>
             <Text
               fontSize={2}
-              color="white"
               marginBottom={1}
               paddingX={3}
               marginX={1}
@@ -101,10 +99,10 @@ const AvatarMenu = () => {
             <MenuItem
               onClick={() => {
                 close();
-                setShowEditProfile(true);
+                setShowUserProfile(true);
               }}
             >
-              Edit Profile
+              Profile
             </MenuItem>
             <MenuItem
               onClick={() => {

@@ -11,12 +11,14 @@ const Overlay = styled(Column)`
   left: 0;
   width: 100%;
   height: 100%;
+  padding: 64px;
   align-items: center;
   justify-content: center;
 `;
 
 const Container = styled(Column)`
   position: relative;
+  overflow: hidden;
 `;
 
 const CloseButton = styled.button`
@@ -27,9 +29,9 @@ const CloseButton = styled.button`
   margin: 0;
   padding: 0;
   position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 3px;
+  top: 8px;
+  right: 8px;
+  padding: 2px;
   border-radius: 999px;
   cursor: pointer;
   border: 1px solid white;
@@ -88,7 +90,7 @@ const Dialog = ({ children, show, onClose }) => {
       <Container ref={node}>
         {children}
         <CloseButton onClick={onClose}>
-          <Icon icon="cross" size={14} />
+          <Icon icon="cross" size={12} />
         </CloseButton>
       </Container>
     </Overlay>

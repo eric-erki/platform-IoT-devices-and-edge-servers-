@@ -41,8 +41,6 @@ const CreateApplication = ({
       });
   };
 
-  const cancel = () => navigation.navigate(`/${params.project}/applications`);
-
   return (
     <Layout alignItems="center">
       <Card title="Create Application">
@@ -73,7 +71,11 @@ const CreateApplication = ({
           />
           <Button type="submit" title="Create Application" />
           <Row marginTop={4}>
-            <Button title="Cancel" variant="tertiary" onClick={cancel} />
+            <Button
+              title="Cancel"
+              variant="tertiary"
+              href={`/${params.project}/applications`}
+            />
           </Row>
         </Form>
       </Card>

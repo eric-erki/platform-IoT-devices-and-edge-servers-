@@ -1,9 +1,25 @@
 import React, { forwardRef } from 'react';
 
-import { Input } from './core';
+import { Column, Input, Textarea, Label } from './core';
 
-const Field = forwardRef(({ label, ...props }, ref) => (
-  <Input placeholder={label} marginBottom={4} {...props} ref={ref} />
-));
+const getComponent = type => {
+  switch (type) {
+    case 'textarea':
+      return Textarea;
+    default:
+      return Input;
+  }
+};
+
+const Field = forwardRef(({ label, type, name, ...props }, ref) => {
+  const Component = getComponent(type);
+
+  return (
+    <Column marginBottom={4}>
+      <Label marginBottom={2}>{label}</Label>
+      <Component id={name} name={name} type={type} {...props} ref={ref} />
+    </Column>
+  );
+});
 
 export default Field;

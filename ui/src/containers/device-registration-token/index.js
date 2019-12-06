@@ -1,37 +1,41 @@
 import React from 'react';
-import { Tab, Tablist } from 'evergreen-ui';
+import { View } from 'react-navi';
+
+import Layout from '../../components/layout';
+import Tabs from '../../components/tabs';
+import { Row } from '../../components/core';
 
 const tabs = [
   {
-    label: 'Overview',
-    href: 'overview',
+    title: 'Overview',
+    to: 'overview',
   },
   {
-    label: 'Settings',
-    href: 'settings',
+    title: 'Settings',
+    to: 'settings',
   },
 ];
 
-const DeviceRegistrationToken = () => {
-  const navigation = useNavigation();
+const DeviceRegistrationToken = ({ route }) => {
+  if (!route) {
+    return null;
+  }
 
   return (
-    <Tablist border="default">
-      {tabs.map(tab => (
-        <Tab
-          key={tab.href}
-          id={tab.href}
-          onSelect={() =>
-            navigation.navigate(
-              `/${projectName}/provisioning/deviceregistrationtokens/${tokenName}/${tab.href}`
-            )
-          }
-          isSelected={false}
-        >
-          {tab.label}
-        </Tab>
-      ))}
-    </Tablist>
+    <Layout
+      title={`Device Registration Token / ${route.data.deviceRegistrationToken.name}`}
+      alignItems="center"
+    >
+      <Row marginBottom={4}>
+        <Tabs
+          content={tabs.map(({ to, title }) => ({
+            title,
+            href: `/${route.data.params.project}/provisioning/device-registration-tokens/${route.data.deviceRegistrationToken.name}/${to}`,
+          }))}
+        />
+      </Row>
+      <View />
+    </Layout>
   );
 };
 

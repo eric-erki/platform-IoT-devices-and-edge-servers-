@@ -29,10 +29,10 @@ const Input = styled.input`
 Input.defaultProps = {
   color: 'white',
   bg: 'background',
-  fontSize: 2,
   padding: 3,
   borderRadius: 1,
   boxShadow: 0,
+  fontSize: 2,
 };
 
 export default Input;

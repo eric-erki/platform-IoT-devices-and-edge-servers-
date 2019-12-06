@@ -54,7 +54,7 @@ const CreateServiceAccount = ({
         <Button
           title="Cancel"
           variant="tertiary"
-          href={`/${params.project}/iam/serviceaccounts/`}
+          href={`/${params.project}/iam/service-accounts/`}
         />
       </Row>
     </Card>

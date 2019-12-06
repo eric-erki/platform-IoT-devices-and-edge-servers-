@@ -1,18 +1,16 @@
 import React from 'react';
 import AceEditor from 'react-ace';
 import 'brace/mode/yaml';
-import 'brace/theme/chrome';
+import 'brace/theme/twilight';
 
 const Editor = ({ readOnly, onChange, value, width, height }) => (
   <AceEditor
     // ref={this.editorRef}
     highlightActiveLine
-    focus
     // annotations={getAnnotations(error)
     // markers={getMarkers(error)}
     fontSize={14}
     mode="yaml"
-    theme="chrome"
     showPrintMargin={false}
     width={width}
     height={height}
@@ -22,6 +20,8 @@ const Editor = ({ readOnly, onChange, value, width, height }) => (
     readOnly={readOnly}
     value={value}
     onChange={onChange}
+    theme="twilight"
+    style={{ borderRadius: '4px' }}
     // onLoad={this.handleLoad}
   />
 );

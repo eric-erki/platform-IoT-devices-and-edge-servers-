@@ -253,7 +253,7 @@ const Devices = ({ route }) => {
           },
           {
             title: 'Add Device',
-            href: `${route.data.params.project}/devices/add`,
+            href: `/${route.data.params.project}/devices/add`,
           },
         ]}
       >

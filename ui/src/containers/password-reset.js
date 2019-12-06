@@ -60,10 +60,10 @@ const PasswordReset = () => {
             errors={errors.email}
             ref={register}
           />
-          <Button width="100%" justifyContent="center" title="Send email" />
+          <Button title="Send email" />
         </Form>
 
-        <Row marginTop={4} alignItems="center">
+        <Row marginTop={4}>
           <Button href="/login" variant="tertiary" title="Log in" />
         </Row>
       </Card>

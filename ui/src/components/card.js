@@ -45,6 +45,7 @@ const Card = ({
     border={border ? 0 : undefined}
     borderColor="white"
     boxShadow={1}
+    overflow="auto"
   >
     {logo && (
       <Link href="https://deviceplane.com" marginX="auto" marginBottom={6}>

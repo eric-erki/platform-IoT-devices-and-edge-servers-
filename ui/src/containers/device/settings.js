@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import useForm from 'react-hook-form';
 import { useNavigation } from 'react-navi';
+import * as yup from 'yup';
 import { Alert, toaster, Badge } from 'evergreen-ui';
 
 import api from '../../api';
@@ -10,12 +11,21 @@ import Field from '../../components/field';
 import Dialog from '../../components/dialog';
 import { Row, Text, Form, Button } from '../../components/core';
 
+const validationSchema = yup.object().shape({
+  name: yup.string().required(),
+});
+
 const DeviceSettings = ({
   route: {
     data: { params, device },
   },
 }) => {
-  const { register, handleSubmit, errors } = useForm();
+  const { register, handleSubmit, formState, errors } = useForm({
+    validationSchema,
+    defaultValues: {
+      name: device.name,
+    },
+  });
   const navigation = useNavigation();
   const [backendError, setBackendError] = useState();
   const [showDialog, setShowDialog] = useState();
@@ -83,8 +93,12 @@ const DeviceSettings = ({
           {device.id}
         </Text>
         <Form onSubmit={handleSubmit(submit)}>
-          <Field label="Name" name="name" ref={register} />
-          <Button type="submit" title="Update Settings" />
+          <Field label="Name" name="name" ref={register} errors={errors.name} />
+          <Button
+            type="submit"
+            title="Update Settings"
+            disabled={!formState.dirty}
+          />
         </Form>
         <Row marginTop={4}>
           <Button
@@ -100,10 +114,7 @@ const DeviceSettings = ({
             You are about to remove the <strong>{device.name}</strong> device.
           </Text>
 
-          <Row marginTop={4}>
-            <Button title="Remove Device" onClick={submitDelete} />
-            <Button title="Cancel" variant="tertiary" />
-          </Row>
+          <Button marginTop={4} title="Remove Device" onClick={submitDelete} />
         </Card>
       </Dialog>
     </>

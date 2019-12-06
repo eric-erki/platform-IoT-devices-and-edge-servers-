@@ -1,23 +1,35 @@
 import React, { useState } from 'react';
 import useForm from 'react-hook-form';
+import * as yup from 'yup';
 
 import Editor from '../../components/editor';
 import Card from '../../components/card';
 import Field from '../../components/field';
 import { Row, Text, Button, Form } from '../../components/core';
 
+const validationSchema = yup.object().shape({
+  name: yup.string().required(),
+  description: yup.string(),
+});
+
 const Role = ({
   route: {
     data: { role },
   },
 }) => {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, errors, formState } = useForm({
+    validationSchema,
+    defaultValues: {
+      name: role.name,
+      description: role.description,
+    },
+  });
   const [showDeleteDialog, setShowDeleteDialog] = useState();
 
   const submit = () => {};
 
   return (
-    <Card title={`Role / ${role.name}`}>
+    <Card title={role.name}>
       <Form onSubmit={handleSubmit(submit)}>
         {/* {this.state.backendError && (
           <Alert
@@ -28,13 +40,25 @@ const Role = ({
             title={this.state.backendError}
           />
         )} */}
-        <Field autoFocus required label="Name" name="name" ref={register} />
-
-        <Field label="Description" name="description" ref={register} />
+        <Field
+          autoFocus
+          required
+          label="Name"
+          name="name"
+          ref={register}
+          errors={errors.name}
+        />
+        <Field
+          type="textarea"
+          label="Description"
+          name="description"
+          ref={register}
+          errors={errors.description}
+        />
         <Text marginBottom={2}>Config</Text>
         <Editor
           width="100%"
-          height="200px"
+          height="160px"
           //value={this.state.config}
           //onChange={value => this.setState({ config: value, unchanged: false })}
         />
@@ -42,7 +66,7 @@ const Role = ({
           marginTop={4}
           title="Update role"
           type="submit"
-          //disabled={this.state.unchanged}
+          disabled={!formState.dirty}
         />
       </Form>
       <Row marginTop={4}>

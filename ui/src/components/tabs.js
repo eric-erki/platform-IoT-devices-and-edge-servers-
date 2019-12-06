@@ -22,20 +22,9 @@ const styles = `
     &:hover {
         background-color: black;
     }
-
     &:not(:last-child) {
-        margin-right: 24px;
+        margin-right: 18px;
     }
-
-    // &:first-child {
-    // border-top-left-radius: 4px;
-    // border-bottom-left-radius: 4px;
-    // }
-
-    // &:last-child {
-    // border-top-right-radius: 4px;
-    // border-bottom-right-radius: 4px;
-    // }
 `;
 
 const LinkTab = styled.a`

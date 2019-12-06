@@ -1,13 +1,17 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigation } from 'react-navi';
 import useForm from 'react-hook-form';
 
-import { Checkbox, toaster } from 'evergreen-ui';
+import { Checkbox, toaster, Alert } from 'evergreen-ui';
 
 import api from '../../api';
+import utils from '../../utils';
 import Card from '../../components/card';
 import Field from '../../components/field';
 import { Text, Row, Form, Button } from '../../components/core';
+
+const createRoleBindings = roles =>
+  roles.map(({ id, name }) => ({ id, name, hasRoleBinding: false }));
 
 const AddMember = ({
   route: {
@@ -16,56 +20,51 @@ const AddMember = ({
 }) => {
   const navigation = useNavigation();
   const { register, handleSubmit } = useForm();
+  const [roleBindings, setRoleBindings] = useState([]);
+  const [backendError, setBackendError] = useState();
 
-  const submit = data => {
-    api.addMember(data).then(({ userId }) => {
-      const roleBindings = roleBindings;
-      var noError = true;
+  useEffect(() => {
+    setRoleBindings(createRoleBindings(roles));
+  }, []);
 
-      for (var i = 0; i < roleBindings.length; i++) {
+  const submit = async data => {
+    try {
+      const { userId } = await api.addMember({
+        projectId: params.project,
+        data,
+      });
+
+      let noError = true;
+
+      for (let i = 0; i < roleBindings.length; i++) {
         const roleId = roleBindings[i].id;
         if (roleBindings[i].hasRoleBinding && noError) {
-          noError = this.addRole(userId, roleId);
+          noError = await addRole(userId, roleId);
         }
       }
 
       if (noError) {
-        navigation.navigate(`/${params.project}/iam/members/`);
+        navigation.navigate(`/${params.project}/iam/members`);
         toaster.success('Member was added successfully.');
       } else {
         toaster.warning(
           'Member was added successfully, but role bindings for the member were not updated properly. Please check the roles of the member.'
         );
       }
-    });
-    // .catch(error => {
-    //   if (utils.is4xx(error.response.status)) {
-    //     this.setState({
-    //       backendError: utils.convertErrorMessage(error.response.data),
-    //     });
-    //   } else {
-    //     console.log(error);
-    //     toaster.danger('Member was not added.');
-    //   }
-    // });
-  };
-
-  const createRoleBindings = allRoles => {
-    var roleBindings = [];
-    for (var i = 0; i < allRoles.length; i++) {
-      roleBindings.push({
-        id: allRoles[i].id,
-        name: allRoles[i].name,
-        hasRoleBinding: false,
-      });
+    } catch (error) {
+      if (utils.is4xx(error.response.status)) {
+        setBackendError(utils.convertErrorMessage(error.response.data));
+      } else {
+        console.log(error);
+        toaster.danger('Member was not added.');
+      }
     }
-    return roleBindings;
   };
 
   const handleAddRoleBindings = event => {
-    var updatedRoleBindings = [];
-    var hasRole = false;
-    for (var i = 0; i < roleBindings.length; i++) {
+    const updatedRoleBindings = [];
+    let hasRole = false;
+    for (let i = 0; i < roleBindings.length; i++) {
       hasRole = roleBindings[i].hasRoleBinding;
       if (roleBindings[i].id === event.target.id) {
         hasRole = event.target.checked;
@@ -76,16 +75,16 @@ const AddMember = ({
         hasRoleBinding: hasRole,
       });
     }
-    this.setState({
-      roleBindings: updatedRoleBindings,
-    });
+    setRoleBindings(updatedRoleBindings);
   };
 
-  const addRole = (userId, roleId) => {
-    api.createRoleBindings({ userId, roleId }).catch(error => {
+  const addRole = async (userId, roleId) => {
+    try {
+      await api.createRoleBindings({ userId, roleId });
+    } catch (error) {
       console.log(error);
       return false;
-    });
+    }
 
     return true;
   };
@@ -93,17 +92,24 @@ const AddMember = ({
   return (
     <Card title="Add Member">
       <Form onSubmit={handleSubmit(submit)}>
-        {/* {backendError && (
-      <Alert
-        marginBottom={majorScale(2)}
-        paddingTop={majorScale(2)}
-        paddingBottom={majorScale(2)}
-        intent="warning"
-        title={backendError}
-      />
-    )} */}
-        <Field label="Email" type="email" name="email" ref={register} />
-        <Text marginBottom={2}>Choose Individual Roles</Text>
+        {backendError && (
+          <Alert
+            marginBottom={16}
+            paddingTop={16}
+            paddingBottom={16}
+            intent="warning"
+            title={backendError}
+          />
+        )}
+        <Field
+          autoFocus
+          required
+          label="Email"
+          type="email"
+          name="email"
+          ref={register}
+        />
+        <Text fontWeight={3}>Choose Individual Roles</Text>
         {roleBindings.map(role => (
           <Checkbox
             key={role.id}
@@ -113,10 +119,14 @@ const AddMember = ({
             onChange={handleAddRoleBindings}
           />
         ))}
-        <Button type="submit" title="Add Member" />
+        <Button marginTop={2} type="submit" title="Add Member" />
       </Form>
       <Row marginTop={4}>
-        <Button title="Cancel" href={`/${params.project}/iam/members`} />
+        <Button
+          title="Cancel"
+          variant="tertiary"
+          href={`/${params.project}/iam/members`}
+        />
       </Row>
     </Card>
   );

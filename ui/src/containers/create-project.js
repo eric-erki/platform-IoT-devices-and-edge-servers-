@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigation } from 'react-navi';
 import * as yup from 'yup';
 import useForm from 'react-hook-form';
+import { toaster, Alert } from 'evergreen-ui';
 
+import api from '../api';
+import utils from '../utils';
 import Layout from '../components/layout';
 import Card from '../components/card';
 import Field from '../components/field';
 import { Button, Row, Form } from '../components/core';
-import api from '../api';
 
 const validationSchema = yup.object().shape({
   name: yup.string().required(),
@@ -18,26 +20,47 @@ const ProjectCreate = () => {
   const { register, handleSubmit, errors } = useForm({
     validationSchema,
   });
+  const [backendError, setBackendError] = useState();
 
   const submit = data => {
-    api.createProject(data).then(response => navigation.navigate(`/`));
+    api
+      .createProject(data)
+      .then(() => navigation.navigate(`/`))
+      .catch(error => {
+        if (utils.is4xx(error.response.status)) {
+          setBackendError(utils.convertErrorMessage(error.response.data));
+        } else {
+          toaster.danger('Project was not created.');
+          console.log(error);
+        }
+      });
   };
 
   return (
-    <Layout title="Create Project" alignItems="center">
+    <Layout alignItems="center">
       <Card width={10} title="Create project">
         <Form onSubmit={handleSubmit(submit)}>
-          {/* {error && (
+          {backendError && (
             <Alert
-              marginBottom={majorScale(2)}
-              paddingTop={majorScale(2)}
-              paddingBottom={majorScale(2)}
+              marginBottom={16}
+              paddingTop={16}
+              paddingBottom={16}
               intent="warning"
-              title={error}
+              title={backendError}
             />
-          )} */}
-          <Field required autoFocus label="Name" name="name" ref={register} />
-          <Button width="100%" type="submit" title="Create project" />
+          )}
+          <Field
+            required
+            autoFocus
+            label="Name"
+            name="name"
+            ref={register}
+            errors={errors.name}
+          />
+          <Button type="submit" title="Create project" />
+          <Row marginTop={4}>
+            <Button title="Cancel" variant="tertiary" href="/projects" />
+          </Row>
         </Form>
       </Card>
     </Layout>
