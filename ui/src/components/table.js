@@ -2,7 +2,7 @@ import React from 'react';
 import { useTable, useSortBy } from 'react-table';
 import styled from 'styled-components';
 
-import { Column, Row } from './core';
+import { Box, Column, Row } from './core';
 
 const Container = styled(Column)``;
 
@@ -22,10 +22,18 @@ Header.defaultProps = {
 };
 
 const Cell = styled(Row)`
-  flex: 1;
+  flex: 1 0 0%;
+  overflow: hidden;
+`;
+
+const CellContent = styled(Box)`
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 `;
 
 const TableRow = styled(Row)`
+  align-items: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.4);
   cursor: ${props => (props.selectable ? 'pointer' : 'default')};
 
@@ -60,6 +68,10 @@ const Table = ({ columns, data, onRowSelect }) => {
     useSortBy
   );
 
+  if (rows.length === 0) {
+    return <Row marginTop={-5} />;
+  }
+
   return (
     <Container {...getTableProps()}>
       <Header flex={1}>
@@ -67,10 +79,16 @@ const Table = ({ columns, data, onRowSelect }) => {
           <Row flex={1} {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map(column => (
               <Cell {...column.getHeaderProps(column.getSortByToggleProps())}>
-                {column.render('Header')}
-                <span>
-                  {column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}
-                </span>
+                <CellContent>
+                  {column.render('Header')}
+                  <span>
+                    {column.isSorted
+                      ? column.isSortedDesc
+                        ? ' 🔽'
+                        : ' 🔼'
+                      : ''}
+                  </span>
+                </CellContent>
               </Cell>
             ))}
           </Row>
@@ -86,7 +104,9 @@ const Table = ({ columns, data, onRowSelect }) => {
               onClick={() => onRowSelect(data[row.index])}
             >
               {row.cells.map(cell => (
-                <Cell {...cell.getCellProps()}>{cell.render('Cell')}</Cell>
+                <Cell {...cell.getCellProps()}>
+                  <CellContent>{cell.render('Cell')}</CellContent>
+                </Cell>
               ))}
             </TableRow>
           );

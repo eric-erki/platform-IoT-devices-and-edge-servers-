@@ -9,7 +9,6 @@ const Members = ({
     data: { params, members },
   },
 }) => {
-  console.log(members);
   const navigation = useNavigation();
   const columns = useMemo(
     () => [
@@ -46,9 +45,9 @@ const Members = ({
       <Table
         columns={columns}
         data={tableData}
-        onRowSelect={({ name }) =>
-          navigation.navigate(`/${params.project}/iam/roles/${name}`)
-        }
+        onRowSelect={({ user }) => {
+          navigation.navigate(`/${params.project}/iam/members/${user.id}`);
+        }}
       />
     </Card>
   );

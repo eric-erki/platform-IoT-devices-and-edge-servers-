@@ -55,6 +55,7 @@ export default mount({
   }),
   '/confirm/:token': route({
     title: 'Confirmation',
+    getData: ({ params }) => ({ params }),
     getView: () => import('./containers/confirm'),
   }),
   '/projects': compose(
@@ -231,8 +232,21 @@ export default mount({
                 },
                 getView: () => import('./containers/iam/service-accounts'),
               }),
-              '/:serviceName': route({
+              '/:service': route({
                 title: 'Service Account',
+                getData: async request => {
+                  const { data: serviceAccount } = await api.serviceAccount({
+                    projectId: request.params.project,
+                    serviceId: request.params.service,
+                  });
+                  const { data: roles } = await api.roles({
+                    projectId: request.params.project,
+                  });
+                  return {
+                    serviceAccount,
+                    roles,
+                  };
+                },
                 getView: () => import('./containers/iam/service-account'),
               }),
               '/create': route({

@@ -26,6 +26,9 @@ const api = {
       company,
     }),
 
+  completeRegistration: ({ registrationTokenValue }) =>
+    post('completeregistration', { registrationTokenValue }),
+
   resetPassword: ({ email }) => post('recoverpassword', { email }),
 
   verifyPasswordResetToken: ({ token }) =>
@@ -125,18 +128,9 @@ const api = {
       }
     ),
 
-  // change to patch? or update this put call?
-  updateApplication: ({
-    projectId,
-    applicationId,
-    data: { name, description, settings, schedulingRule },
-  }) =>
-    put(`projects/${projectId}/applications/${applicationId}`, {
-      name,
-      description,
-      settings,
-      schedulingRule,
-    }),
+  // change to patch?
+  updateApplication: ({ projectId, applicationId, data }) =>
+    put(`projects/${projectId}/applications/${applicationId}`, data),
 
   deleteApplication: ({ projectId, applicationId }) =>
     del(`projects/${projectId}/applications/${applicationId}`),
@@ -183,16 +177,59 @@ const api = {
   serviceAccounts: ({ projectId }) =>
     get(`projects/${projectId}/serviceaccounts?full`),
 
+  serviceAccount: ({ projectId, serviceId }) =>
+    get(`projects/${projectId}/serviceaccounts/${serviceId}?full`),
+
   createServiceAccount: ({ projectId, data }) =>
     post(`projects/${projectId}/serviceaccounts`, data).then(response => {
       segment.track('Service Account Created');
       return response;
     }),
 
+  updateServiceAccount: ({
+    projectId,
+    serviceId,
+    data: { name, description },
+  }) =>
+    put(`projects/${projectId}/serviceaccounts/${serviceId}`, {
+      name,
+      description,
+    }),
+
+  deleteServiceAccount: ({ projectId, serviceId }) =>
+    del(`projects/${projectId}/serviceaccounts/${serviceId}`),
+
+  addServiceAccountRoleBindings: ({ projectId, serviceId, roleId }) =>
+    post(
+      `projects/${projectId}/serviceaccounts/${serviceId}/roles/${roleId}/serviceaccountrolebindings`,
+      {}
+    ),
+
+  removeServiceAccountRoleBindings: ({ projectId, serviceId, roleId }) =>
+    del(
+      `projects/${projectId}/serviceaccounts/${serviceId}/roles/${roleId}/serviceaccountrolebindings`
+    ),
+
+  serviceAccountAccessKeys: ({ projectId, serviceId }) =>
+    get(
+      `projects/${projectId}/serviceaccounts/${serviceId}/serviceaccountaccesskeys`
+    ),
+
+  createServiceAccountAccessKey: ({ projectId, serviceId }) =>
+    post(
+      `projects/${projectId}/serviceaccounts/${serviceId}/serviceaccountaccesskeys`,
+      {}
+    ),
+
+  deleteServiceAccountAccessKey: ({ projectId, serviceId, accessKeyId }) =>
+    del(
+      `projects/${projectId}/serviceaccounts/${serviceId}/serviceaccountaccesskeys/${accessKeyId}`
+    ),
+
   releases: ({ projectId, applicationId }) =>
     get(`projects/${projectId}/applications/${applicationId}/releases?full`),
 
-  createRelease: ({ projectId, applicationId, rawConfig }) =>
+  createRelease: ({ projectId, applicationId, data: { rawConfig } }) =>
     post(`projects/${projectId}/applications/${applicationId}/releases`, {
       rawConfig,
     }).then(response => {
@@ -203,11 +240,11 @@ const api = {
   latestReleases: ({ projectId, applicationId }) =>
     get(`projects/${projectId}/applications/${applicationId}/releases/latest`),
 
-  accessKeys: () => get(`useraccesskeys`),
+  userAccessKeys: () => get(`useraccesskeys`),
 
-  createAccessKey: () => post(`useraccesskeys`, {}),
+  createUserAccessKey: () => post(`useraccesskeys`, {}),
 
-  deleteAccessKey: ({ id }) => del(`useraccesskeys/${id}`),
+  deleteUserAccessKey: ({ id }) => del(`useraccesskeys/${id}`),
 };
 
 export default api;

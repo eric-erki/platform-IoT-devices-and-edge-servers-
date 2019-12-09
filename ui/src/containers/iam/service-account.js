@@ -1,174 +1,123 @@
-import React, { Component } from 'react';
-import axios from 'axios';
-import {
-  Pane,
-  Table,
-  Dialog,
-  majorScale,
-  Button,
-  Heading,
-  Alert,
-  toaster,
-  Checkbox,
-  Code,
-} from 'evergreen-ui';
+import React, { useState, useMemo, useEffect } from 'react';
+import useForm from 'react-hook-form';
+import { useNavigation } from 'react-navi';
+import { Alert, toaster, Checkbox, Code } from 'evergreen-ui';
 
+import api from '../../api';
 import utils from '../../utils';
-import config from '../../config';
 import Card from '../../components/card';
 import Field from '../../components/field';
-import { Form } from '../../components/core';
+import Dialog from '../../components/dialog';
+import Table from '../../components/table';
+import { Text, Row, Button, Form, Heading } from '../../components/core';
 
-export default class ServiceAccount extends Component {
-  state = {
-    serviceAccount: null,
-    name: '',
-    nameValidationMessage: null,
-    description: '',
-    allRoles: [],
-    roleBindings: [],
-    unchanged: true,
-    showDeleteDialog: false,
-  };
-
-  componentDidMount() {
-    axios
-      .get(
-        `${config.endpoint}/projects/${this.props.projectName}/serviceaccounts/${this.props.serviceAccountName}?full`,
-        {
-          withCredentials: true,
-        }
-      )
-      .then(response => {
-        this.setState({
-          serviceAccount: response.data,
-          name: response.data.name,
-          description: response.data.description,
-          roleBindings: this.createRoleBindings(
-            response.data,
-            this.state.allRoles
-          ),
-        });
-      })
-      .catch(error => {
-        console.log(error);
-      });
-    axios
-      .get(`${config.endpoint}/projects/${this.props.projectName}/roles`, {
-        withCredentials: true,
-      })
-      .then(response => {
-        this.setState({
-          allRoles: response.data,
-          roleBindings: this.createRoleBindings(
-            this.state.serviceAccount,
-            response.data
-          ),
-        });
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  }
-
-  createRoleBindings = (serviceAccount, allRoles) => {
-    var roleBindings = [];
-    if (serviceAccount !== null) {
-      for (var i = 0; i < allRoles.length; i++) {
-        var hasRole = false;
-        if (serviceAccount.roles && serviceAccount.roles.length > 0) {
-          for (var j = 0; j < serviceAccount.roles.length; j++) {
-            if (allRoles[i].id === serviceAccount.roles[j].id) {
-              hasRole = true;
-              break;
-            }
+const createRoleBindings = (serviceAccount, allRoles) => {
+  let roleBindings = [];
+  if (serviceAccount !== null) {
+    for (let i = 0; i < allRoles.length; i++) {
+      let hasRole = false;
+      if (serviceAccount.roles && serviceAccount.roles.length > 0) {
+        for (let j = 0; j < serviceAccount.roles.length; j++) {
+          if (allRoles[i].id === serviceAccount.roles[j].id) {
+            hasRole = true;
+            break;
           }
         }
-        roleBindings.push({
-          id: allRoles[i].id,
-          name: allRoles[i].name,
-          hasRoleBinding: hasRole,
-        });
       }
-    }
-    return roleBindings;
-  };
-
-  handleUpdateName = event => {
-    this.setState({
-      name: event.target.value,
-      unchanged: false,
-    });
-  };
-
-  handleUpdateDescription = event => {
-    this.setState({
-      description: event.target.value,
-      unchanged: false,
-    });
-  };
-
-  handleUpdateRoles = event => {
-    const currentRoleBindings = this.state.roleBindings;
-    var newRoleBindings = [];
-    var hasRole = false;
-    for (var i = 0; i < currentRoleBindings.length; i++) {
-      hasRole = currentRoleBindings[i].hasRoleBinding;
-      if (currentRoleBindings[i].id === event.target.id) {
-        hasRole = event.target.checked;
-      }
-      newRoleBindings.push({
-        id: currentRoleBindings[i].id,
-        name: currentRoleBindings[i].name,
+      roleBindings.push({
+        id: allRoles[i].id,
+        name: allRoles[i].name,
         hasRoleBinding: hasRole,
       });
     }
-    this.setState({
-      roleBindings: newRoleBindings,
-      unchanged: false,
-    });
+  }
+  return roleBindings;
+};
+
+const ServiceAccount = ({
+  route: {
+    data: { params, serviceAccount, roles },
+  },
+}) => {
+  const { register, handleSubmit, errors, formState } = useForm({
+    defaultValues: {
+      name: serviceAccount.name,
+      description: serviceAccount.description,
+    },
+  });
+  const navigation = useNavigation();
+  const [roleBindings, setRoleBindings] = useState(
+    createRoleBindings(serviceAccount, roles)
+  );
+  const [showDeleteDialog, setShowDeleteDialog] = useState();
+
+  const handleUpdateRoles = event => {
+    let newRoleBindings = [];
+    let hasRole = false;
+    for (let i = 0; i < roleBindings.length; i++) {
+      hasRole = roleBindings[i].hasRoleBinding;
+      if (roleBindings[i].id === event.target.id) {
+        hasRole = event.target.checked;
+      }
+      newRoleBindings.push({
+        id: roleBindings[i].id,
+        name: roleBindings[i].name,
+        hasRoleBinding: hasRole,
+      });
+    }
+    setRoleBindings(newRoleBindings);
   };
 
-  handleUpdate() {
-    var noError = true;
-    var nameValidationMessage = utils.checkName(
-      'service account',
-      this.state.name
-    );
-
-    //always set validation message for name
-    this.setState({
-      nameValidationMessage: nameValidationMessage,
-    });
-
-    if (nameValidationMessage !== null) {
-      return;
-    }
-
-    axios
-      .put(
-        `${config.endpoint}/projects/${this.props.projectName}/serviceaccounts/${this.state.serviceAccount.id}`,
-        {
-          name: this.state.name,
-          description: this.state.description,
-        },
-        {
-          withCredentials: true,
-        }
-      )
-      .catch(error => {
-        noError = false;
-        console.log(error);
+  const addRole = async roleId => {
+    try {
+      await api.addServiceAccountRoleBindings({
+        projectId: params.project,
+        serviceId: serviceAccount.id,
+        roleId,
       });
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+    return true;
+  };
+
+  const removeRole = async roleId => {
+    try {
+      await api.removeServiceAccountRoleBindings({
+        projectId: params.project,
+        serviceId: serviceAccount.id,
+        roleId,
+      });
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+    return true;
+  };
+
+  const submit = async data => {
+    let noError = true;
+
+    try {
+      await api.updateServiceAccount({
+        projectId: params.project,
+        serviceId: serviceAccount.id,
+        data,
+      });
+    } catch (error) {
+      noError = false;
+      console.log(error);
+    }
 
     const updatedRoleBindings = this.state.roleBindings;
     const currentRoles = this.state.serviceAccount.roles;
-    var addRoleBindings = [];
-    var removeRoleBindings = [];
+    let addRoleBindings = [];
+    let removeRoleBindings = [];
 
-    for (var i = 0; i < updatedRoleBindings.length; i++) {
-      var addRole = false;
-      var removeRole = false;
+    for (let i = 0; i < updatedRoleBindings.length; i++) {
+      let addRole = false;
+      let removeRole = false;
       // add role binding to service account
       if (updatedRoleBindings[i].hasRoleBinding) {
         addRole = true;
@@ -197,17 +146,17 @@ export default class ServiceAccount extends Component {
       }
     }
 
-    for (var k = 0; k < addRoleBindings.length; k++) {
+    for (let k = 0; k < addRoleBindings.length; k++) {
       const roleId = addRoleBindings[k].id;
       if (noError) {
-        noError = this.addRole(roleId);
+        noError = await addRole(roleId);
       }
     }
 
-    for (var l = 0; l < removeRoleBindings.length; l++) {
+    for (let l = 0; l < removeRoleBindings.length; l++) {
       const roleId = removeRoleBindings[l].id;
       if (noError) {
-        noError = this.removeRole(roleId);
+        noError = await removeRole(roleId);
       }
     }
 
@@ -216,302 +165,217 @@ export default class ServiceAccount extends Component {
     } else {
       toaster.danger('Service account was not updated.');
     }
-  }
-
-  addRole = roleId => {
-    axios
-      .post(
-        `${config.endpoint}/projects/${this.props.projectName}/serviceaccounts/${this.state.serviceAccount.id}/roles/${roleId}/serviceaccountrolebindings`,
-        {},
-        {
-          withCredentials: true,
-        }
-      )
-      .catch(error => {
-        console.log(error);
-        return false;
-      });
-    return true;
   };
 
-  removeRole = roleId => {
-    axios
-      .delete(
-        `${config.endpoint}/projects/${this.props.projectName}/serviceaccounts/${this.state.serviceAccount.id}/roles/${roleId}/serviceaccountrolebindings`,
-        {
-          withCredentials: true,
-        }
-      )
-      .catch(error => {
-        console.log(error);
-        return false;
+  const submitDelete = async () => {
+    try {
+      await api.deleteServiceAccount({
+        projectId: params.project,
+        serviceId: serviceAccount.id,
       });
-    return true;
+      toaster.success('Successfully deleted service account.');
+      navigation.navigate(`/${params.project}/iam/service-accounts`);
+    } catch (error) {
+      toaster.danger('Service account was not deleted.');
+      console.log(error);
+    }
+    showDeleteDialog(false);
   };
 
-  handleDelete() {
-    axios
-      .delete(
-        `${config.endpoint}/projects/${this.props.projectName}/serviceaccounts/${this.state.serviceAccount.id}`,
-        {
-          withCredentials: true,
-        }
-      )
-      .then(response => {
-        this.setState({
-          showDeleteDialog: false,
-        });
-        toaster.success('Successfully deleted service account.');
-        this.props.history.push(
-          `/${this.props.projectName}/iam/serviceaccounts`
-        );
-      })
-      .catch(error => {
-        this.setState({
-          showDeleteDialog: false,
-        });
-        console.log(error);
-        toaster.danger('Service account was not deleted.');
-      });
-  }
-
-  render() {
-    const serviceAccount = this.state.serviceAccount;
-    const roleBindings = this.state.roleBindings;
-    return (
-      <Card title={`Service Account / ${serviceAccount.name}`}>
-        <Form>
-          <Field label="Name" name="name" />
-          <Field label="Description" name="description" type="textarea" />
-          <Heading size={500} paddingTop={majorScale(2)}>
-            Choose Individual Roles
-          </Heading>
-          {roleBindings.map(role => (
-            <Checkbox
-              key={role.id}
-              id={role.id}
-              label={role.name}
-              checked={role.hasRoleBinding}
-              onChange={event => this.handleUpdateRoles(event)}
-            />
-          ))}
-          <Button
-            marginTop={majorScale(2)}
-            appearance="primary"
-            disabled={this.state.unchanged}
-            onClick={() => this.handleUpdate()}
-          >
-            Update Service Account
-          </Button>
-          <ServiceAccountAccessKeys
-            projectName={this.props.projectName}
-            serviceAccount={serviceAccount}
-            history={this.props.history}
+  return (
+    <Card title={serviceAccount.name} size="large">
+      <Form onSubmit={handleSubmit(submit)}>
+        <Field label="Name" name="name" ref={register} errors={errors.name} />
+        <Field
+          type="textarea"
+          label="Description"
+          name="description"
+          ref={register}
+          errors={errors.description}
+        />
+        <Text fontSize={2} marginBottom={2}>
+          Choose Individual Roles
+        </Text>
+        {roleBindings.map(role => (
+          <Checkbox
+            key={role.id}
+            id={role.id}
+            label={role.name}
+            checked={role.hasRoleBinding}
+            onChange={handleUpdateRoles}
           />
-          >
-          <Button onClick={() => this.setState({ showDeleteDialog: true })}>
-            Delete Service Account...
-          </Button>
-          {/* <Dialog
-                isShown={this.state.showDeleteDialog}
-                title="Delete Service Account"
-                intent="danger"
-                onCloseComplete={() =>
-                  this.setState({ showDeleteDialog: false })
-                }
-                onConfirm={() => this.handleDelete()}
-                confirmLabel="Delete Service Account"
-              >
-                You are about to delete the{' '}
-                <strong>{this.props.serviceAccountName}</strong> service
-                account.
-              </Dialog> */}
-        </Form>
-      </Card>
-    );
-  }
-}
+        ))}
+        <Button
+          title="Update Service Account"
+          type="submit"
+          marginTop={4}
+          disabled={!formState.dirty}
+        />
+        <Row marginTop={4}>
+          <Button
+            title="Delete Service Account"
+            variant="tertiary"
+            onClick={() => setShowDeleteDialog(true)}
+          />
+        </Row>
+      </Form>
+      <ServiceAccountAccessKeys
+        projectId={params.project}
+        serviceAccount={serviceAccount}
+      />
 
-class ServiceAccountAccessKeys extends Component {
-  state = {
-    accessKeys: null,
-    newAccessKey: null,
-    showAccessKeyCreated: false,
-    backendError: null,
+      <Dialog
+        show={showDeleteDialog}
+        title="Delete Service Account"
+        onClose={() => setShowDeleteDialog(false)}
+      >
+        <Card title="Delete Service Account">
+          <Text>
+            You are about to delete the <strong>{serviceAccount.name}</strong>{' '}
+            service account.
+          </Text>
+          <Button title="Delete Service Account" onClick={submitDelete} />
+          <Row marginTop={4}>
+            <Button title="Cancel" variant="tertiary" />
+          </Row>
+        </Card>
+      </Dialog>
+    </Card>
+  );
+};
+
+export default ServiceAccount;
+
+const ServiceAccountAccessKeys = ({ projectId, serviceAccount }) => {
+  const [accessKeys, setAccessKeys] = useState([]);
+  const [newAccessKey, setNewAccessKey] = useState();
+  const [showAccessKeyCreated, setShowAccessKeyCreated] = useState();
+  const [backendError, setBackendError] = useState();
+
+  const columns = useMemo(
+    () => [
+      { Header: 'Access Key ID', accessor: 'id' },
+      {
+        Header: 'Created At',
+        accessor: 'createdAt',
+      },
+      {
+        Header: ' ',
+        Cell: ({ row }) => (
+          <Button
+            title="Delete Access Key"
+            onClick={() => deleteAccessKey(row.original.id)}
+          />
+        ),
+      },
+    ],
+    []
+  );
+  const tableData = useMemo(() => accessKeys, [accessKeys]);
+
+  const fetchAccessKeys = async () => {
+    try {
+      const response = await api.serviceAccountAccessKeys({
+        projectId,
+        serviceId: serviceAccount.id,
+      });
+      setAccessKeys(response.data);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  componentDidMount() {
-    this.loadAccessKeys();
-  }
+  useEffect(() => {
+    fetchAccessKeys();
+  }, []);
 
-  loadAccessKeys() {
-    axios
-      .get(
-        `${config.endpoint}/projects/${this.props.projectName}/serviceaccounts/${this.props.serviceAccount.id}/serviceaccountaccesskeys`,
-        {
-          withCredentials: true,
-        }
-      )
-      .then(response => {
-        this.setState({
-          accessKeys: response.data,
-        });
-      })
-      .catch(error => {
+  const createAccessKey = async () => {
+    setBackendError(null);
+    try {
+      const response = await api.createServiceAccountAccessKey({
+        projectId,
+        serviceId: serviceAccount.id,
+      });
+      setNewAccessKey(response.data.value);
+      setShowAccessKeyCreated(true);
+    } catch (error) {
+      if (utils.is4xx(error.response.status)) {
+        setBackendError(utils.convertErrorMessage(error.response.data));
+      } else {
+        toaster.danger('Access key was not created successfully.');
         console.log(error);
-      });
-  }
-
-  createAccessKey() {
-    axios
-      .post(
-        `${config.endpoint}/projects/${this.props.projectName}/serviceaccounts/${this.props.serviceAccount.id}/serviceaccountaccesskeys`,
-        {},
-        {
-          withCredentials: true,
-        }
-      )
-      .then(response => {
-        this.setState({
-          showAccessKeyCreated: true,
-          newAccessKey: response.data.value,
-        });
-      })
-      .catch(error => {
-        if (utils.is4xx(error.response.status)) {
-          this.setState({
-            backendError: utils.convertErrorMessage(error.response.data),
-          });
-        } else {
-          toaster.danger('Access key was not created successfully.');
-          console.log(error);
-        }
-      });
-  }
-
-  deleteAccessKey = event => {
-    axios
-      .delete(
-        `${config.endpoint}/projects/${this.props.projectName}/serviceaccounts/${this.props.serviceAccount.id}/serviceaccountaccesskeys/${event.target.id}`,
-        {
-          withCredentials: true,
-        }
-      )
-      .then(response => {
-        toaster.success('Successfully deleted access key.');
-        this.loadAccessKeys();
-      })
-      .catch(error => {
-        if (utils.is4xx(error.response.status)) {
-          this.setState({
-            backendError: utils.convertErrorMessage(error.response.data),
-          });
-        } else {
-          toaster.danger('Access key was not deleted.');
-          console.log(error);
-        }
-      });
+      }
+    }
   };
 
-  closeAccessKeyDialog() {
-    this.setState({
-      showAccessKeyCreated: false,
-    });
-    this.loadAccessKeys();
-  }
+  const deleteAccessKey = async id => {
+    setBackendError(null);
+    try {
+      await api.deleteServiceAccountAccessKey({
+        projectId,
+        serviceId: serviceAccount.id,
+        accessKeyId: id,
+      });
+      toaster.success('Successfully deleted access key.');
+      fetchAccessKeys();
+    } catch (error) {
+      if (utils.is4xx(error.response.status)) {
+        setBackendError(utils.convertErrorMessage(error.response.data));
+      } else {
+        toaster.danger('Access key was not deleted.');
+        console.log(error);
+      }
+    }
+  };
 
-  render() {
-    const accessKeys = this.state.accessKeys;
-    return (
-      <React.Fragment>
-        <Pane
-          borderTop="default"
-          marginRight={majorScale(4)}
-          marginLeft={majorScale(4)}
-          marginBottom={majorScale(4)}
-        >
-          <Pane
-            display="flex"
-            flexDirection="row"
-            justifyContent="space-between"
-            alignItems="center"
-            paddingTop={majorScale(2)}
-            paddingBottom={majorScale(2)}
+  const closeAccessKeyDialog = () => {
+    showAccessKeyCreated(false);
+    fetchAccessKeys();
+  };
+
+  return (
+    <>
+      <Row
+        alignItems="flex-end"
+        borderTop={0}
+        borderColor="white"
+        marginTop={4}
+        justifyContent="space-between"
+        paddingTop={4}
+        marginBottom={2}
+      >
+        <Heading fontSize={4}>Access Keys</Heading>
+        <Button title="Create Access Key" onClick={createAccessKey} />
+      </Row>
+      {backendError && (
+        <Alert
+          marginBottom={16}
+          paddingTop={16}
+          paddingBottom={16}
+          intent="warning"
+          title={backendError}
+        />
+      )}
+      <Table columns={columns} data={tableData} />
+      <Dialog
+        show={showAccessKeyCreated}
+        title="Access Key Created"
+        onClose={closeAccessKeyDialog}
+      >
+        <Card title="Access Key Created" border>
+          <Text fontWeight={3} marginBottom={2}>
+            Access Key
+          </Text>
+          <Code>{newAccessKey}</Code>
+
+          <Alert
+            intent="warning"
+            title="Save the info above! This is the only time you'll be able to use it."
           >
-            <Heading>Access Keys</Heading>
-            <Button appearance="primary" onClick={() => this.createAccessKey()}>
-              Create Access Key
-            </Button>
-          </Pane>
-          {this.state.backendError && (
-            <Alert
-              marginBottom={majorScale(2)}
-              paddingTop={majorScale(2)}
-              paddingBottom={majorScale(2)}
-              intent="warning"
-              title={this.state.backendError}
-            />
-          )}
-          {accessKeys && accessKeys.length > 0 && (
-            <Table>
-              <Table.Head>
-                <Table.TextHeaderCell>Access Key ID</Table.TextHeaderCell>
-                <Table.TextHeaderCell>Created At</Table.TextHeaderCell>
-                <Table.TextHeaderCell></Table.TextHeaderCell>
-              </Table.Head>
-              <Table.Body>
-                {accessKeys.map(accessKey => (
-                  <Table.Row key={accessKey.id}>
-                    <Table.TextCell>{accessKey.id}</Table.TextCell>
-                    <Table.TextCell>{accessKey.createdAt}</Table.TextCell>
-                    <Table.TextCell>
-                      <Button
-                        iconBefore="trash"
-                        intent="danger"
-                        id={accessKey.id}
-                        onClick={event => this.deleteAccessKey(event)}
-                      >
-                        Delete Access Key
-                      </Button>
-                    </Table.TextCell>
-                  </Table.Row>
-                ))}
-              </Table.Body>
-            </Table>
-          )}
-        </Pane>
-        <Pane>
-          <Dialog
-            isShown={this.state.showAccessKeyCreated}
-            title="Access Key Created"
-            onCloseComplete={() => this.closeAccessKeyDialog()}
-            hasFooter={false}
-          >
-            <Pane display="flex" flexDirection="column">
-              <Heading
-                paddingTop={majorScale(2)}
-                paddingBottom={majorScale(2)}
-              >{`Access Key: `}</Heading>
-              <Pane marginBottom={majorScale(4)}>
-                <Code>{this.state.newAccessKey}</Code>
-              </Pane>
-            </Pane>
-            <Alert
-              intent="warning"
-              title="Save the info above! This is the only time you'll be able to use it."
-            >
-              {`If you lose it, you'll need to create a new access key.`}
-            </Alert>
-            <Button
-              marginTop={16}
-              appearance="primary"
-              onClick={() => this.closeAccessKeyDialog()}
-            >
-              Close
-            </Button>
-          </Dialog>
-        </Pane>
-      </React.Fragment>
-    );
-  }
-}
+            {`If you lose it, you'll need to create a new access key.`}
+          </Alert>
+        </Card>
+      </Dialog>
+    </>
+  );
+};

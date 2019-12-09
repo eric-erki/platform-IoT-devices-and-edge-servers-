@@ -1,28 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { toaster, Alert, Table } from 'evergreen-ui';
+import React, { useState, useEffect, useMemo } from 'react';
+import { toaster, Alert } from 'evergreen-ui';
 
 import api from '../api';
 import utils from '../utils';
 import Card from '../components/card';
-import { Row, Column, Button } from '../components/core';
+import Table from '../components/table';
+import { Column, Button } from '../components/core';
 
 const UserAccessKeys = () => {
   const [accessKeys, setAccessKeys] = useState([]);
   const [backendError, setBackendError] = useState();
 
-  const loadAccessKeys = () => {
+  const fetchAccessKeys = () => {
     api
-      .accessKeys()
+      .userAccessKeys()
       .then(({ data }) => setAccessKeys(data))
       .catch(console.error);
   };
 
-  useEffect(loadAccessKeys, []);
+  useEffect(() => {
+    fetchAccessKeys();
+  }, []);
 
   const createAccessKey = () => {
     api
-      .createAccessKey()
-      .then(loadAccessKeys)
+      .createUserAccessKey()
+      .then(fetchAccessKeys)
       .catch(error => {
         if (utils.is4xx(error.response.status)) {
           setBackendError(utils.convertErrorMessage(error.response.data));
@@ -33,12 +36,12 @@ const UserAccessKeys = () => {
       });
   };
 
-  const deleteAccessKey = id => () => {
+  const deleteAccessKey = id => {
     api
-      .deleteAccessKey(id)
+      .deleteUserAccessKey({ id })
       .then(() => {
         toaster.success('Successfully deleted access key.');
-        loadAccessKeys();
+        fetchAccessKeys();
       })
       .catch(error => {
         if (utils.is4xx(error.response.status)) {
@@ -49,6 +52,31 @@ const UserAccessKeys = () => {
         }
       });
   };
+
+  const columns = useMemo(
+    () => [
+      {
+        Header: 'Access Key ID',
+        accessor: 'id',
+      },
+      {
+        Header: 'Created At',
+        accessor: 'createdAt',
+      },
+      {
+        Header: ' ',
+        Cell: ({ row }) => (
+          <Button
+            title="Delete Access Key"
+            variant="tertiary"
+            onClick={() => deleteAccessKey(row.original.id)}
+          />
+        ),
+      },
+    ],
+    []
+  );
+  const tableData = useMemo(() => accessKeys, [accessKeys]);
 
   return (
     <>
@@ -67,28 +95,7 @@ const UserAccessKeys = () => {
             title={backendError}
           />
         )}
-        <Table>
-          <Table.Head>
-            <Table.TextHeaderCell>Access Key ID</Table.TextHeaderCell>
-            <Table.TextHeaderCell>Created At</Table.TextHeaderCell>
-            <Table.TextHeaderCell></Table.TextHeaderCell>
-          </Table.Head>
-          <Table.Body>
-            {accessKeys.map(accessKey => (
-              <Table.Row key={accessKey.id}>
-                <Table.TextCell>{accessKey.id}</Table.TextCell>
-                <Table.TextCell>{accessKey.createdAt}</Table.TextCell>
-                <Table.TextCell>
-                  <Button
-                    title="Delete Access Key"
-                    variant="tertiary"
-                    onClick={deleteAccessKey(accessKey.id)}
-                  />
-                </Table.TextCell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
+        <Table columns={columns} data={tableData} />
       </Card>
     </>
   );

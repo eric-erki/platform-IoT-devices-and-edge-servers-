@@ -8,7 +8,7 @@ import Card from '../components/card';
 import Field from '../components/field';
 import { Form, Button } from '../components/core';
 
-const ChangePassword = () => {
+const ChangePassword = ({ close }) => {
   const { register, handleSubmit } = useForm();
   const [backendError, setBackendError] = useState();
 
@@ -17,9 +17,11 @@ const ChangePassword = () => {
       .updateUser(data)
       .then(() => {
         toaster.success('Password updated.');
+        close();
       })
       .catch(error => {
-        if (utils.is4xx(error.response.status)) {
+        console.log(error.response);
+        if (utils.is4xx(error.response.status) && error.response.data) {
           setBackendError(utils.convertErrorMessage(error.response.data));
         } else {
           toaster.danger('Password was not updated.');

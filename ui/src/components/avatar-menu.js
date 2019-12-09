@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { space, layout, color, border, typography } from 'styled-system';
-import { useNavigation } from 'react-navi';
+import { useNavigation, useActive } from 'react-navi';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { logout } from '../actions';
@@ -72,7 +72,10 @@ const AvatarMenu = () => {
         show={showChangePassword}
         onClose={() => setShowChangePassword(false)}
       >
-        <ChangePassword user={user} />
+        <ChangePassword
+          user={user}
+          close={() => setShowChangePassword(false)}
+        />
       </Dialog>
       <Popover
         content={({ close }) => (
@@ -130,9 +133,11 @@ const AvatarMenu = () => {
               Download CLI
             </MenuItem>
             <Divider />
-            <MenuItem onClick={() => navigation.navigate('/projects')}>
-              Switch Project
-            </MenuItem>
+            {!useActive('/projects') && (
+              <MenuItem onClick={() => navigation.navigate('/projects')}>
+                Switch Project
+              </MenuItem>
+            )}
             <MenuItem
               onClick={async () => {
                 await navigation.navigate('/login');

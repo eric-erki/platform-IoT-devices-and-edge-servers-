@@ -35,51 +35,53 @@ const Card = ({
   logo,
   actions = [],
   children,
-}) => (
-  <Container
-    bg="black"
-    color="white"
-    variant={size}
-    borderRadius={2}
-    padding={6}
-    border={border ? 0 : undefined}
-    borderColor="white"
-    boxShadow={1}
-    overflow="auto"
-  >
-    {logo && (
-      <Link href="https://deviceplane.com" marginX="auto" marginBottom={6}>
-        <Logo size={50} />
-      </Link>
-    )}
-    {top}
-    {title && (
-      <Row
-        justifyContent="space-between"
-        alignItems="flex-end"
-        marginBottom={5}
-        borderColor="white"
-      >
-        <Heading fontSize={5}>{title}</Heading>
-        <Row>
-          {actions.map(
-            ({ href, variant = 'primary', title, onClick, show = true }) =>
-              show && (
-                <Button
-                  key={title}
-                  title={title}
-                  href={href}
-                  variant={variant}
-                  onClick={onClick}
-                  marginLeft={4}
-                />
-              )
-          )}
+}) => {
+  return (
+    <Container
+      bg="black"
+      color="white"
+      variant={size}
+      borderRadius={2}
+      padding={6}
+      border={border ? 0 : undefined}
+      borderColor="white"
+      boxShadow={1}
+      overflow="auto"
+    >
+      {logo && (
+        <Link href="https://deviceplane.com" marginX="auto" marginBottom={6}>
+          <Logo size={50} />
+        </Link>
+      )}
+      {top}
+      {title && (
+        <Row
+          justifyContent="space-between"
+          alignItems="flex-end"
+          marginBottom={5}
+          borderColor="white"
+        >
+          <Heading fontSize={5}>{title}</Heading>
+          <Row>
+            {actions.map(
+              ({ href, variant = 'primary', title, onClick, show = true }) =>
+                show && (
+                  <Button
+                    key={title}
+                    title={title}
+                    href={href}
+                    variant={variant}
+                    onClick={onClick}
+                    marginLeft={4}
+                  />
+                )
+            )}
+          </Row>
         </Row>
-      </Row>
-    )}
-    {children}
-  </Container>
-);
+      )}
+      {children}
+    </Container>
+  );
+};
 
 export default Card;
