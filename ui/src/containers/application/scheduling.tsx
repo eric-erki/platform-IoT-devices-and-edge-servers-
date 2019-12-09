@@ -1,16 +1,14 @@
-import React, { Component } from 'react';
+// @ts-nocheck
+
+import React, { useState } from 'react';
 import {
-  Button,
-  Pane,
-  Heading,
-  majorScale,
   Alert,
   toaster,
   // @ts-ignore
 } from 'evergreen-ui';
-import axios from 'axios';
+import { useNavigation } from 'react-navi';
 
-import config from '../../config';
+import api from '../../api';
 import utils from '../../utils';
 import { DevicesFilterButtons } from '../../components/DevicesFilterButtons';
 import {
@@ -19,6 +17,8 @@ import {
   DevicesFilter,
   LabelValueCondition,
 } from '../../components/DevicesFilter';
+import Card from '../../components/card';
+import { Button, Row } from '../../components/core';
 
 interface Props {
   application: any;
@@ -32,138 +32,96 @@ interface State {
   showFilterDialog: boolean;
 }
 
-export default class ApplicationScheduling extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
+const Scheduling = ({
+  route: {
+    data: { params, application },
+  },
+}) => {
+  const [schedulingRule, setSchedulingRule] = useState(
+    application.schedulingRule
+  );
+  const [backendError, setBackendError] = useState();
+  const [showFilterDialog, setShowFilterDialog] = useState();
+  const navigation = useNavigation();
 
-    this.state = {
-      schedulingRule: this.props.application.schedulingRule,
-      backendError: null,
-      showFilterDialog: false,
-    };
-  }
+  const submit = async () => {
+    setBackendError(null);
 
-  handleSubmit = () => {
-    this.setState({
-      backendError: null,
-    });
-
-    axios
-      .put(
-        `${config.endpoint}/projects/${this.props.projectName}/applications/${this.props.application.name}`,
-        {
-          name: this.props.application.name,
-          description: this.props.application.description,
-          schedulingRule: this.state.schedulingRule,
-        },
-        {
-          withCredentials: true,
-        }
-      )
-      .then(response => {
-        toaster.success('Scheduling rule updated successfully.');
-        this.props.history.push(
-          `/${this.props.projectName}/applications/${this.props.application.name}`
-        );
-      })
-      .catch(error => {
-        if (utils.is4xx(error.response.status)) {
-          this.setState({
-            backendError: utils.convertErrorMessage(error.response.data),
-          });
-        } else {
-          console.log(error);
-        }
+    try {
+      await api.updateApplication({
+        projectId: params.project,
+        applicationId: application.name,
       });
+
+      toaster.success('Scheduling rule updated successfully.');
+      navigation.navigate(
+        `/${params.project}/applications/${application.name}`
+      );
+    } catch (error) {
+      if (utils.is4xx(error.response.status)) {
+        setBackendError(utils.convertErrorMessage(error.response.data));
+      } else {
+        console.log(error);
+      }
+    }
   };
 
-  filterDevices() {
+  const filterDevices = () => {
     // TODO: fetch devices and show them
-  }
-
-  removeFilter = (index: number) => {
-    this.setState(
-      {
-        schedulingRule: this.state.schedulingRule.filter((_, i) => i !== index),
-      },
-      this.filterDevices
-    );
   };
 
-  addFilter = (filter: Filter) => {
-    this.setState(
-      {
-        showFilterDialog: false,
-        schedulingRule: [...this.state.schedulingRule, filter],
-      },
-      this.filterDevices
-    );
+  const removeFilter = (index: number) => {
+    setSchedulingRule(schedulingRule.filter((_, i) => i !== index));
+    filterDevices();
   };
 
-  clearFilters = () => {
-    this.setState(
-      {
-        schedulingRule: [],
-      },
-      this.filterDevices
-    );
+  const addFilter = (filter: Filter) => {
+    setShowFilterDialog(false);
+    setSchedulingRule([...schedulingRule, filter]);
+    filterDevices();
   };
 
-  render() {
-    return (
-      <Pane width="50%">
-        <Pane>
-          <Pane padding={majorScale(4)}>
-            {this.state.backendError && (
-              <Alert
-                marginBottom={majorScale(2)}
-                paddingTop={majorScale(2)}
-                paddingBottom={majorScale(2)}
-                intent="warning"
-                title={this.state.backendError}
-              />
-            )}
-            <Pane
-              display={'flex'}
-              justifyContent={'space-between'}
-              alignItems={'center'}
-              paddingBottom={majorScale(2)}
-            >
-              <Heading size={600}>Scheduling</Heading>
-              <Button
-                iconBefore="plus"
-                onClick={() => this.setState({ showFilterDialog: true })}
-              >
-                Add Filter
-              </Button>
-            </Pane>
-            <Pane
-              backgroundColor={'#E4E7EB'}
-              borderRadius={'5px'}
-              minHeight={'60px'}
-            >
-              <DevicesFilterButtons
-                query={this.state.schedulingRule}
-                canRemoveFilter={true}
-                removeFilter={this.removeFilter}
-              />
-            </Pane>
-            <DevicesFilter
-              whitelistedConditions={[LabelValueCondition]}
-              show={this.state.showFilterDialog}
-              onClose={() => this.setState({ showFilterDialog: false })}
-              onSubmit={this.addFilter}
-            />
-            <Button
-              marginTop={majorScale(2)}
-              appearance="primary"
-              onClick={() => this.handleSubmit()}
-            >
-              Submit
-            </Button>
-          </Pane>
-        </Pane>
-      </Pane>
-    );
-  }
-}
+  const clearFilters = () => {
+    setSchedulingRule([]);
+    filterDevices();
+  };
+
+  return (
+    <Card
+      title="Scheduling"
+      actions={[
+        {
+          title: 'Add Filter',
+          onClick: () => setShowFilterDialog(true),
+          variant: 'secondary',
+        },
+      ]}
+    >
+      {backendError && (
+        <Alert
+          marginBottom={16}
+          paddingTop={16}
+          paddingBottom={16}
+          intent="warning"
+          title={backendError}
+        />
+      )}
+      <Row backgroundColor={'#E4E7EB'} borderRadius={'5px'} minHeight={'60px'}>
+        <DevicesFilterButtons
+          query={schedulingRule}
+          canRemoveFilter={true}
+          removeFilter={removeFilter}
+        />
+      </Row>
+      <DevicesFilter
+        whitelistedConditions={[LabelValueCondition]}
+        show={showFilterDialog}
+        onClose={() => setShowFilterDialog(false)}
+        onSubmit={addFilter}
+      />
+      <Button title="Submit" marginTop={4} onClick={submit} />
+    </Card>
+  );
+};
+
+export default Scheduling;

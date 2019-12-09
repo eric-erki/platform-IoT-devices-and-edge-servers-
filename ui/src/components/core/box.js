@@ -1,8 +1,16 @@
 import styled from 'styled-components';
-import { space, layout, color, border, flexbox, variant } from 'styled-system';
+import {
+  space,
+  layout,
+  color,
+  border,
+  flexbox,
+  typography,
+  variant,
+} from 'styled-system';
 
 export const Box = styled.div`
-  ${space} ${layout} ${color} ${border}
+  ${space} ${layout} ${color} ${border} ${typography}
 `;
 
 export const Row = styled(Box)`

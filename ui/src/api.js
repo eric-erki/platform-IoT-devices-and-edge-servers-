@@ -125,15 +125,17 @@ const api = {
       }
     ),
 
+  // change to patch? or update this put call?
   updateApplication: ({
     projectId,
     applicationId,
-    data: { name, description, settings },
+    data: { name, description, settings, schedulingRule },
   }) =>
     put(`projects/${projectId}/applications/${applicationId}`, {
       name,
       description,
       settings,
+      schedulingRule,
     }),
 
   deleteApplication: ({ projectId, applicationId }) =>
@@ -181,13 +183,11 @@ const api = {
   serviceAccounts: ({ projectId }) =>
     get(`projects/${projectId}/serviceaccounts?full`),
 
-  createServiceAccount: ({ project, serviceAccount }) =>
-    post(`projects/${project}/serviceaccounts`, serviceAccount).then(
-      response => {
-        segment.track('Service Account Created');
-        return response;
-      }
-    ),
+  createServiceAccount: ({ projectId, data }) =>
+    post(`projects/${projectId}/serviceaccounts`, data).then(response => {
+      segment.track('Service Account Created');
+      return response;
+    }),
 
   releases: ({ projectId, applicationId }) =>
     get(`projects/${projectId}/applications/${applicationId}/releases?full`),

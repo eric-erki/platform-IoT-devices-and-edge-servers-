@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useNavigation } from 'react-navi';
 import { Table } from 'evergreen-ui';
 
@@ -10,6 +10,8 @@ const ServiceAccounts = ({
   },
 }) => {
   const navigation = useNavigation();
+  const columns = useMemo(() => [{ Header: 'Name', accessor: 'name' }], []);
+  const tableData = useMemo(() => serviceAccounts, [serviceAccounts]);
 
   return (
     <Card
@@ -22,22 +24,13 @@ const ServiceAccounts = ({
         },
       ]}
     >
-      <Table>
-        <Table.Head>
-          <Table.TextHeaderCell>Service Account</Table.TextHeaderCell>
-        </Table.Head>
-        <Table.Body>
-          {serviceAccounts.map(serviceAccount => (
-            <Table.Row
-              key={serviceAccount.id}
-              isSelectable
-              onSelect={() => navigation.navigate(serviceAccount.name)}
-            >
-              <Table.TextCell>{serviceAccount.name}</Table.TextCell>
-            </Table.Row>
-          ))}
-        </Table.Body>
-      </Table>
+      <Table
+        columns={columns}
+        data={tableData}
+        onRowSelect={({ name }) =>
+          navigation.navigate(`/${params.project}/iam/service-accounts/${name}`)
+        }
+      />
     </Card>
   );
 };

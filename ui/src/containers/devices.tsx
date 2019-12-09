@@ -1,8 +1,7 @@
 // @ts-nocheck
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
-  Table,
   Badge,
   TextDropdownButton,
   Menu,
@@ -16,6 +15,7 @@ import api from '../api.js';
 import { labelColors } from '../theme';
 import Layout from '../components/layout';
 import Card from '../components/card';
+import Table from '../components/table';
 import { Text, Button } from '../components/core';
 import {
   DevicesFilter,
@@ -52,6 +52,45 @@ const Devices = ({ route }) => {
   const [orderedColumn, setOrderedColumn] = useState();
   const [order, setOrder] = useState();
   const [labelColorMap, setLabelColorMap] = useState({});
+
+  const columns = useMemo(
+    () => [
+      {
+        Header: 'Status',
+        Cell: ({ row }) =>
+          row.status === 'offline' ? (
+            <Badge color="red">offline</Badge>
+          ) : (
+            <Badge color="green">online</Badge>
+          ),
+        sortType: 'basic',
+      },
+      {
+        Header: 'Name',
+        accessor: 'name',
+      },
+      {
+        Header: 'IP Address',
+        Cell: ({ row }) =>
+          row.info.hasOwnProperty('ipAddress') ? row.info.ipAddress : '',
+      },
+      {
+        Header: 'OS',
+        Cell: ({ row }) =>
+          row.info.hasOwnProperty('osRelease') &&
+          row.info.osRelease.hasOwnProperty('prettyName')
+            ? row.info.osRelease.prettyName
+            : '-',
+      },
+      {
+        Header: 'Labels',
+        Cell: ({ row }) =>
+          row.labels ? renderLabels(row.labels, labelColorMap) : null,
+      },
+    ],
+    []
+  );
+  const tableData = useMemo(() => devices, [devices]);
 
   const fetchDevices = (queryString: string) => {
     return api
@@ -257,82 +296,18 @@ const Devices = ({ route }) => {
           },
         ]}
       >
-        <DevicesFilterButtons
-          query={filterQuery}
-          canRemoveFilter={true}
-          removeFilter={removeFilter}
+        {filterQuery.length > 0 && (
+          <DevicesFilterButtons
+            canRemoveFilter
+            query={filterQuery}
+            removeFilter={removeFilter}
+          />
+        )}
+        <Table
+          columns={columns}
+          data={tableData}
+          onRowSelect={({ name }) => navigation.navigate(name)}
         />
-        <Table background="tint2">
-          <Table.Head background="#202020">
-            <Table.TextHeaderCell flexBasis={90} flexShrink={0} flexGrow={0}>
-              {renderOrderedTableHeader('Status', 'status')}
-            </Table.TextHeaderCell>
-            <Table.TextHeaderCell>
-              {renderOrderedTableHeader('Name', 'name')}
-            </Table.TextHeaderCell>
-            <Table.TextHeaderCell flexBasis={120} flexShrink={0} flexGrow={0}>
-              {renderOrderedTableHeader('IP Address', 'ipAddress')}
-            </Table.TextHeaderCell>
-            <Table.TextHeaderCell flexBasis={120} flexShrink={0} flexGrow={0}>
-              OS
-              {/* In the future, we can add nesting and use osRelease.prettyName */}
-            </Table.TextHeaderCell>
-            <Table.TextHeaderCell flexGrow={2}>Labels</Table.TextHeaderCell>
-          </Table.Head>
-          <Table.Body>
-            {devices.map(device => (
-              <Table.Row
-                key={device.id}
-                isSelectable
-                onSelect={() => navigation.navigate(device.name)}
-                flexGrow={1}
-                height="auto"
-                paddingY={16}
-                alignItems="flex-start"
-              >
-                <Table.TextCell
-                  flexBasis={90}
-                  flexShrink={0}
-                  flexGrow={0}
-                  alignItems="center"
-                  paddingRight="0"
-                  marginY={8}
-                >
-                  {device.status === 'offline' ? (
-                    <Badge color="red">offline</Badge>
-                  ) : (
-                    <Badge color="green">online</Badge>
-                  )}
-                </Table.TextCell>
-                <Table.TextCell marginY={8}>{device.name}</Table.TextCell>
-                <Table.TextCell
-                  flexBasis={120}
-                  flexShrink={0}
-                  flexGrow={0}
-                  marginY={8}
-                >
-                  {device.info.hasOwnProperty('ipAddress')
-                    ? device.info.ipAddress
-                    : ''}
-                </Table.TextCell>
-                <Table.TextCell
-                  marginY={8}
-                  flexBasis={120}
-                  flexShrink={0}
-                  flexGrow={0}
-                >
-                  {device.info.hasOwnProperty('osRelease') &&
-                  device.info.osRelease.hasOwnProperty('prettyName')
-                    ? device.info.osRelease.prettyName
-                    : '-'}
-                </Table.TextCell>
-                <Table.TextCell flexGrow={2}>
-                  {renderLabels(device.labels, labelColorMap)}
-                </Table.TextCell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
       </Card>
 
       <DevicesFilter

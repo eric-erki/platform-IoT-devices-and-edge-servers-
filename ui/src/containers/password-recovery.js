@@ -4,6 +4,7 @@ import useForm from 'react-hook-form';
 import { toaster, Alert } from 'evergreen-ui';
 
 import api from '../api';
+import utils from '../utils';
 import Card from '../components/card';
 import Field from '../components/field';
 import { Column, Button, Form, Link } from '../components/core';
@@ -24,6 +25,7 @@ const PasswordRecovery = ({
   const navigation = useNavigation();
   const { register, handleSubmit, errors } = useForm();
   const [invalidToken, setInvalidToken] = useState();
+  const [backendError, setBackendError] = useState();
 
   useEffect(() => {
     api
@@ -47,18 +49,14 @@ const PasswordRecovery = ({
         navigation.navigate(`/login`);
       })
       .catch(error => {
-        // if (utils.is4xx(error.response.status)) {
-        //   this.setState({
-        //     passwordRecoveryError: utils.convertErrorMessage(
-        //       error.response.data
-        //     )
-        //   });
-        // } else {
-        toaster.danger(
-          'Something went wrong with changing your password. Please contact us at support@deviceplane.com.'
-        );
-        console.log(error);
-        //}
+        if (utils.is4xx(error.response.status)) {
+          setBackendError(utils.convertErrorMessage(error.response.data));
+        } else {
+          toaster.danger(
+            'Something went wrong with changing your password. Please contact us at support@deviceplane.com.'
+          );
+          console.log(error);
+        }
       });
   };
 
@@ -79,15 +77,15 @@ const PasswordRecovery = ({
   return (
     <Column flex={1} alignItems="center" paddingTop={9}>
       <Card title="Recover Password" logo>
-        {/* {this.state.passwordRecoveryError && (
-      <Alert
-        marginBottom={majorScale(2)}
-        paddingTop={majorScale(2)}
-        paddingBottom={majorScale(2)}
-        intent="warning"
-        title={this.state.passwordRecoveryError}
-      />
-    )} */}
+        {backendError && (
+          <Alert
+            marginBottom={16}
+            paddingTop={16}
+            paddingBottom={16}
+            intent="warning"
+            title={backendError}
+          />
+        )}
         <Form onSubmit={handleSubmit(submit)}>
           <Field
             required
@@ -96,8 +94,9 @@ const PasswordRecovery = ({
             name="password"
             hint="Password must be at least 8 characters, contain at least one lower case letter, one upper case letter, and no spaces."
             ref={register}
+            errors={errors.password}
           />
-          <Button justifyContent="center">Submit</Button>
+          <Button title="Submit" type="submit" />
         </Form>
       </Card>
     </Column>

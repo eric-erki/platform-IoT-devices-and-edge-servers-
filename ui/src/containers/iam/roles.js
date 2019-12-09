@@ -1,8 +1,8 @@
-import React from 'react';
-import { Table } from 'evergreen-ui';
+import React, { useMemo } from 'react';
 import { useNavigation } from 'react-navi';
 
 import Card from '../../components/card';
+import Table from '../../components/table';
 
 const Roles = ({
   route: {
@@ -10,6 +10,8 @@ const Roles = ({
   },
 }) => {
   const navigation = useNavigation();
+  const columns = useMemo(() => [{ Header: 'Name', accessor: 'name' }], []);
+  const tableData = useMemo(() => roles, [roles]);
 
   return (
     <Card
@@ -22,24 +24,13 @@ const Roles = ({
         },
       ]}
     >
-      <Table>
-        <Table.Head>
-          <Table.TextHeaderCell>Name</Table.TextHeaderCell>
-        </Table.Head>
-        <Table.Body>
-          {roles.map(role => (
-            <Table.Row
-              key={role.id}
-              isSelectable
-              onSelect={() =>
-                navigation.navigate(`/${params.project}/iam/roles/${role.name}`)
-              }
-            >
-              <Table.TextCell>{role.name}</Table.TextCell>
-            </Table.Row>
-          ))}
-        </Table.Body>
-      </Table>
+      <Table
+        columns={columns}
+        data={tableData}
+        onRowSelect={({ name }) =>
+          navigation.navigate(`/${params.project}/iam/roles/${name}`)
+        }
+      />
     </Card>
   );
 };

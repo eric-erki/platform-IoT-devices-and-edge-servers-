@@ -1,8 +1,6 @@
-import React, { Fragment, Component } from "react";
-import {
-  Pane,
-  minorScale,
-} from "evergreen-ui";
+import React from 'react';
+
+import { Row, Box } from '../components/core';
 
 export function buildLabelColorMap(oldLabelColorMap, labelColors, items) {
   var x = [];
@@ -16,24 +14,18 @@ export function buildLabelColorMap(oldLabelColorMap, labelColors, items) {
   var labelColorMap = Object.assign({}, oldLabelColorMap);
   labelKeys.forEach((key, i) => {
     if (!labelColorMap[key]) {
-      labelColorMap[key] = labelColors[i % (labelColors.length - 1)]
+      labelColorMap[key] = labelColors[i % (labelColors.length - 1)];
     }
   });
   return labelColorMap;
-};
+}
 
 export function renderLabels(labels, labelColorMap) {
   return (
-    <Pane display="flex" flexWrap="wrap">
+    <Row flexWrap="wrap">
       {Object.keys(labels).map((key, i) => (
-        <Pane
-          display="flex"
-          marginRight={minorScale(2)}
-          marginY={minorScale(1)}
-          overflow="hidden"
-          key={key}
-        >
-          <Pane
+        <Row marginRight={2} marginY={2} overflow="hidden" key={key}>
+          <Box
             backgroundColor={labelColorMap[key]}
             paddingX={6}
             paddingY={2}
@@ -45,8 +37,8 @@ export function renderLabels(labels, labelColorMap) {
             whiteSpace="nowrap"
           >
             {key}
-          </Pane>
-          <Pane
+          </Box>
+          <Box
             backgroundColor="#E4E7EB"
             paddingX={6}
             paddingY={2}
@@ -57,9 +49,9 @@ export function renderLabels(labels, labelColorMap) {
             whiteSpace="nowrap"
           >
             {labels[key]}
-          </Pane>
-        </Pane>
+          </Box>
+        </Row>
       ))}
-    </Pane>
+    </Row>
   );
 }

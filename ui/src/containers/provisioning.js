@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { Table, majorScale } from 'evergreen-ui';
+import React, { useEffect, useState, useMemo } from 'react';
 import moment from 'moment';
 import { useNavigation } from 'react-navi';
 
@@ -7,15 +6,45 @@ import { labelColors } from '../theme';
 import { buildLabelColorMap, renderLabels } from '../helpers/labels';
 import Layout from '../components/layout';
 import Card from '../components/card';
+import Table from '../components/table';
 
 const Provisioning = ({
   route: {
     data: { params, deviceRegistrationTokens },
   },
 }) => {
-  console.log(deviceRegistrationTokens);
   const navigation = useNavigation();
   const [labelColorMap, setLabelColorMap] = useState();
+  const columns = useMemo(
+    () => [
+      { Header: 'Name', accessor: 'name' },
+      {
+        Header: 'Created At',
+        Cell: ({ row }) =>
+          row.createdAt ? moment(row.createdAt).fromNow() : '-',
+      },
+      {
+        Header: 'Devices Registered',
+        accessor: 'deviceCounts.allCount',
+      },
+      {
+        Header: 'Registration Limit',
+        Cell: ({ row }) =>
+          typeof row.maxRegistrations === 'number'
+            ? row.maxRegistrations
+            : 'Unlimited',
+      },
+      {
+        Header: 'Labels',
+        Cell: ({ row }) =>
+          row.labels ? renderLabels(row.labels, labelColorMap) : null,
+      },
+    ],
+    []
+  );
+  const tableData = useMemo(() => deviceRegistrationTokens, [
+    deviceRegistrationTokens,
+  ]);
 
   useEffect(() => {
     setLabelColorMap(
@@ -35,30 +64,11 @@ const Provisioning = ({
           },
         ]}
       >
-        <Table>
-          <Table.Head>
-            <Table.TextHeaderCell flexBasis={100}>Name</Table.TextHeaderCell>
-            <Table.TextHeaderCell flexBasis={50}>
-              Created At
-            </Table.TextHeaderCell>
-            <Table.TextHeaderCell flexBasis={50}>
-              Devices Registered
-            </Table.TextHeaderCell>
-            <Table.TextHeaderCell flexBasis={50}>
-              Registration Limit
-            </Table.TextHeaderCell>
-            <Table.TextHeaderCell flexBasis={150}>Labels</Table.TextHeaderCell>
-          </Table.Head>
-          <Table.Body>
-            {deviceRegistrationTokens.map(token => (
+        <Table data={tableData} columns={columns} />
+        {/* {deviceRegistrationTokens.map(token => (
               <Table.Row
                 key={token.id}
                 isSelectable
-                onSelect={() =>
-                  navigation.navigate(
-                    `provisioning/device-registration-tokens/${token.name}/overview`
-                  )
-                }
                 flexGrow={1}
                 height="auto"
                 paddingY={majorScale(1)}
@@ -66,23 +76,19 @@ const Provisioning = ({
               >
                 <Table.TextCell flexBasis={100}>{token.name}</Table.TextCell>
                 <Table.TextCell flexBasis={50}>
-                  {token.createdAt ? moment(token.createdAt).fromNow() : '-'}
+                  
                 </Table.TextCell>
                 <Table.TextCell flexBasis={50}>
                   {token.deviceCounts.allCount}
                 </Table.TextCell>
                 <Table.TextCell flexBasis={50}>
-                  {typeof token.maxRegistrations === 'number'
-                    ? token.maxRegistrations
-                    : 'Unlimited'}
+                 
                 </Table.TextCell>
                 <Table.TextCell flexBasis={150}>
-                  {renderLabels(token.labels, labelColorMap)}
+                  
                 </Table.TextCell>
               </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
+            ))} */}
       </Card>
     </Layout>
   );
