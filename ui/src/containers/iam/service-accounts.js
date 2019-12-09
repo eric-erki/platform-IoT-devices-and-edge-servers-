@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { useNavigation } from 'react-navi';
-import { Table } from 'evergreen-ui';
 
 import Card from '../../components/card';
+import Table from '../../components/table';
 
 const ServiceAccounts = ({
   route: {
