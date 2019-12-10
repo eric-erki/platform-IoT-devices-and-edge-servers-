@@ -23,7 +23,7 @@ const CreateRole = ({
   };
 
   return (
-    <Card title="Create role">
+    <Card title="Create Role">
       <Form onSubmit={handleSubmit(submit)}>
         {/* {this.state.backendError && (
               <Alert
