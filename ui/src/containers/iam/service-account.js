@@ -11,93 +11,31 @@ import Popup from '../../components/popup';
 import Table from '../../components/table';
 import { Text, Row, Button, Form } from '../../components/core';
 
-const createRoleBindings = (serviceAccount, allRoles) => {
-  let roleBindings = [];
-  if (serviceAccount !== null) {
-    for (let i = 0; i < allRoles.length; i++) {
-      let hasRole = false;
-      if (serviceAccount.roles && serviceAccount.roles.length > 0) {
-        for (let j = 0; j < serviceAccount.roles.length; j++) {
-          if (allRoles[i].id === serviceAccount.roles[j].id) {
-            hasRole = true;
-            break;
-          }
-        }
-      }
-      roleBindings.push({
-        id: allRoles[i].id,
-        name: allRoles[i].name,
-        hasRoleBinding: hasRole,
-      });
-    }
-  }
-  return roleBindings;
-};
-
 const ServiceAccount = ({
   route: {
     data: { params, serviceAccount, roles },
   },
 }) => {
-  const { register, handleSubmit, errors, formState } = useForm({
+  const { register, handleSubmit, errors, formState, setValue } = useForm({
     defaultValues: {
       name: serviceAccount.name,
       description: serviceAccount.description,
+      roles: roles.reduce(
+        (obj, role) => ({
+          ...obj,
+          [role.name]: !!serviceAccount.roles.find(
+            ({ name }) => name === role.name
+          ),
+        }),
+        {}
+      ),
     },
   });
   const navigation = useNavigation();
-  const [roleBindings, setRoleBindings] = useState(
-    createRoleBindings(serviceAccount, roles)
-  );
   const [showDeletePopup, setShowDeletePopup] = useState();
 
-  const handleUpdateRoles = event => {
-    let newRoleBindings = [];
-    let hasRole = false;
-    for (let i = 0; i < roleBindings.length; i++) {
-      hasRole = roleBindings[i].hasRoleBinding;
-      if (roleBindings[i].id === event.target.id) {
-        hasRole = event.target.checked;
-      }
-      newRoleBindings.push({
-        id: roleBindings[i].id,
-        name: roleBindings[i].name,
-        hasRoleBinding: hasRole,
-      });
-    }
-    setRoleBindings(newRoleBindings);
-  };
-
-  const addRole = async roleId => {
-    try {
-      await api.addServiceAccountRoleBindings({
-        projectId: params.project,
-        serviceId: serviceAccount.id,
-        roleId,
-      });
-    } catch (error) {
-      console.log(error);
-      return false;
-    }
-    return true;
-  };
-
-  const removeRole = async roleId => {
-    try {
-      await api.removeServiceAccountRoleBindings({
-        projectId: params.project,
-        serviceId: serviceAccount.id,
-        roleId,
-      });
-    } catch (error) {
-      console.log(error);
-      return false;
-    }
-    return true;
-  };
-
   const submit = async data => {
-    let noError = true;
+    let error = false;
 
     try {
       await api.updateServiceAccount({
@@ -105,64 +43,46 @@ const ServiceAccount = ({
         serviceId: serviceAccount.id,
         data,
       });
-    } catch (error) {
-      noError = false;
-      console.log(error);
+    } catch (e) {
+      error = true;
+      console.log(e);
     }
 
-    const currentRoles = serviceAccount.roles;
-    let addRoleBindings = [];
-    let removeRoleBindings = [];
-
-    for (let i = 0; i < roleBindings.length; i++) {
-      let willAddRole = false;
-      let willRemoveRole = false;
-      // add role binding to service account
-      if (roleBindings[i].hasRoleBinding) {
-        willAddRole = true;
-      }
-      //check if role binding already exists on service account
-      if (currentRoles && currentRoles.length > 0) {
-        for (let j = 0; j < currentRoles.length; j++) {
-          if (roleBindings[i].id === currentRoles[j].id) {
-            if (roleBindings[i].hasRoleBinding) {
-              //if role binding already exists on service account, do not re-add role to service account
-              willAddRole = false;
-              break;
-            } else {
-              //if role binding already exists on service account, remove the role binding
-              willRemoveRole = true;
-              break;
-            }
+    const roleArray = Object.keys(data.roles);
+    for (let i = 0; i < roleArray.length; i++) {
+      const role = roleArray[i];
+      const roleChosen = data.roles[role];
+      if (serviceAccount.roles[role] !== roleChosen) {
+        if (roleChosen) {
+          try {
+            await api.addServiceAccountRoleBindings({
+              projectId: params.project,
+              serviceId: serviceAccount.id,
+              roleId: role,
+            });
+          } catch (e) {
+            error = true;
+            console.log(e);
+          }
+        } else {
+          try {
+            await api.removeServiceAccountRoleBindings({
+              projectId: params.project,
+              serviceId: serviceAccount.id,
+              roleId: role,
+            });
+          } catch (e) {
+            error = true;
+            console.log(e);
           }
         }
       }
-      if (willAddRole) {
-        addRoleBindings.push(roleBindings[i]);
-      }
-      if (willRemoveRole) {
-        removeRoleBindings.push(roleBindings[i]);
-      }
     }
 
-    for (let k = 0; k < addRoleBindings.length; k++) {
-      const roleId = addRoleBindings[k].id;
-      if (noError) {
-        noError = await addRole(roleId);
-      }
-    }
-
-    for (let l = 0; l < removeRoleBindings.length; l++) {
-      const roleId = removeRoleBindings[l].id;
-      if (noError) {
-        noError = await removeRole(roleId);
-      }
-    }
-
-    if (noError) {
-      toaster.success('Service account updated successfully.');
-    } else {
+    if (error) {
       toaster.danger('Service account was not updated.');
+    } else {
+      toaster.success('Service account updated successfully.');
     }
   };
 
@@ -212,13 +132,13 @@ const ServiceAccount = ({
             <Text fontSize={2} marginBottom={2}>
               Choose Individual Roles
             </Text>
-            {roleBindings.map(role => (
-              <Checkbox
+            {roles.map(role => (
+              <Field
                 key={role.id}
-                id={role.id}
-                label={role.name}
-                checked={role.hasRoleBinding}
-                onChange={handleUpdateRoles}
+                name={`roles[${role.name}]`}
+                as={<Checkbox label={role.name} />}
+                register={register}
+                setValue={setValue}
               />
             ))}
             <Button

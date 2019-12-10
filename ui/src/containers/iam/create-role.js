@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigation } from 'react-navi';
 import useForm from 'react-hook-form';
+import { Alert, toaster } from 'evergreen-ui';
 
 import api from '../../api';
+import utils from '../../utils';
 import Card from '../../components/card';
 import Editor from '../../components/editor';
 import Field from '../../components/field';
@@ -13,39 +15,51 @@ const CreateRole = ({
     data: { params },
   },
 }) => {
-  const { handleSubmit, register } = useForm();
+  const { handleSubmit, register, setValue } = useForm();
   const navigation = useNavigation();
+  const [backendError, setBackendError] = useState();
 
-  const submit = data => {
-    api
-      .createRole(data)
-      .then(() => navigation.navigate(`/${params.project}/iam/roles`));
+  const submit = async data => {
+    try {
+      await api.createRole({ projectId: params.project, data });
+      navigation.navigate(`/${params.project}/iam/roles`);
+    } catch (error) {
+      if (utils.is4xx(error.response.status) && error.response.data) {
+        setBackendError(utils.convertErrorMessage(error.response.data));
+      } else {
+        toaster.danger('Role was not created.');
+        console.log(error);
+      }
+    }
   };
 
   return (
     <Card title="Create Role">
+      {backendError && (
+        <Alert
+          marginBottom={16}
+          paddingTop={16}
+          paddingBottom={16}
+          intent="warning"
+          title={backendError}
+        />
+      )}
       <Form onSubmit={handleSubmit(submit)}>
-        {/* {this.state.backendError && (
-              <Alert
-                marginBottom={majorScale(2)}
-                paddingTop={majorScale(2)}
-                paddingBottom={majorScale(2)}
-                intent="warning"
-                title={this.state.backendError}
-              />
-            )} */}
         <Field required autoFocus label="Name" name="name" ref={register} />
 
-        <Field label="Description" name="description" ref={register} />
+        <Field
+          type="textarea"
+          label="Description"
+          name="description"
+          ref={register}
+        />
 
-        <Text marginBottom={2} fontWeight={3}>
-          Config
-        </Text>
-        <Editor
-          width="100%"
-          height="180px"
-          //value={this.state.config}
-          //onChange={value => this.setState({ config: value })}
+        <Field
+          as={<Editor width="100%" height="160px" />}
+          label="Config"
+          name="config"
+          register={register}
+          setValue={setValue}
         />
         <Button marginTop={4} title="Create" type="submit" />
       </Form>

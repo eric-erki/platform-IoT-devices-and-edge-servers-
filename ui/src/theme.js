@@ -7,6 +7,7 @@ const colors = {
   black: '#000',
   white: '#fff',
   transparent: 'transparent',
+  inputBackground: '#181818',
 
   blacks: [
     'rgba(0,0,0,.05)',

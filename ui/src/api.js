@@ -137,11 +137,13 @@ const api = {
 
   role: ({ projectId, roleId }) => get(`projects/${projectId}/roles/${roleId}`),
 
-  createRole: ({ project, role }) =>
-    post(`projects/${project}/roles`, role).then(response => {
-      segment.track('Role Created');
-      return response;
-    }),
+  createRole: ({ projectId, data: { name, description, config } }) =>
+    post(`projects/${projectId}/roles`, { name, description, config }).then(
+      response => {
+        segment.track('Role Created');
+        return response;
+      }
+    ),
 
   updateRole: ({ projectId, roleId, data: { name, description, config } }) =>
     put(`projects/${projectId}/roles/${roleId}`, { name, description, config }),

@@ -47,9 +47,9 @@ const Member = ({
     const roleArray = Object.keys(data.roles);
     for (let i = 0; i < roleArray.length; i++) {
       const role = roleArray[i];
-      const hasRole = data.roles[role];
-      if (member.roles[role] !== hasRole) {
-        if (hasRole) {
+      const roleChosen = data.roles[role];
+      if (member.roles[role] !== roleChosen) {
+        if (roleChosen) {
           try {
             await api.addMembershipRoleBindings({
               projectId: params.project,

@@ -24,10 +24,25 @@ const Field = forwardRef(
 
       switch (type) {
         case 'textarea':
-          return <Textarea name={name} id={name} ref={ref} {...props} />;
+          return (
+            <Textarea
+              name={name}
+              autoComplete="off"
+              id={name}
+              ref={ref}
+              {...props}
+            />
+          );
         default:
           return (
-            <Input type={type} name={name} id={name} ref={ref} {...props} />
+            <Input
+              autoComplete="off"
+              type={type}
+              name={name}
+              id={name}
+              ref={ref}
+              {...props}
+            />
           );
       }
     };
