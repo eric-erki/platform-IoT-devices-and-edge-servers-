@@ -2634,8 +2634,17 @@ func (s *Service) registerDevice(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Service) getBundle(w http.ResponseWriter, r *http.Request, projectID, deviceID string) {
+	// TODO: this call isn't necessary since project was already fetched earlier
+	project, err := s.projects.GetProject(r.Context(), projectID)
+	if err != nil {
+		log.WithError(err).Error("get project")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	s.st.Incr("get_bundle", []string{
 		fmt.Sprintf("project:%s", projectID),
+		fmt.Sprintf("project:%s", project.Name),
 	}, 1)
 
 	if err := s.devices.UpdateDeviceLastSeenAt(r.Context(), deviceID, projectID); err != nil {
