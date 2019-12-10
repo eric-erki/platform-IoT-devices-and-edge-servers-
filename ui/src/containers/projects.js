@@ -31,7 +31,7 @@ const Projects = ({
   const tableData = useMemo(() => projects, [projects]);
 
   return (
-    <Layout title="Select project" alignItems="center">
+    <Layout title="Select Project" alignItems="center">
       <Card
         size="large"
         title="Projects"

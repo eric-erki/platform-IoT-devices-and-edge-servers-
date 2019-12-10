@@ -107,7 +107,7 @@ const Role = ({
         />
         <Button
           marginTop={4}
-          title="Update role"
+          title="Update Role"
           type="submit"
           disabled={!formState.dirty}
         />

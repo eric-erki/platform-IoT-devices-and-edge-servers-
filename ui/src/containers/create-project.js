@@ -57,7 +57,7 @@ const ProjectCreate = () => {
             ref={register}
             errors={errors.name}
           />
-          <Button type="submit" title="Create project" />
+          <Button type="submit" title="Create Project" />
           <Row marginTop={4}>
             <Button title="Cancel" variant="tertiary" href="/projects" />
           </Row>

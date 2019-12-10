@@ -15,7 +15,7 @@ const ServiceAccounts = ({
 
   return (
     <Card
-      title="Service accounts"
+      title="Service Accounts"
       size="large"
       actions={[
         {

@@ -47,7 +47,7 @@ const PasswordReset = () => {
           There is no user with that email address.
         </Alert>
       )}
-      <Card logo width={10} title="Reset password">
+      <Card logo width={10} title="Reset Password">
         <Text marginBottom={3}>
           You will receive an email with a link to reset your password.
         </Text>
