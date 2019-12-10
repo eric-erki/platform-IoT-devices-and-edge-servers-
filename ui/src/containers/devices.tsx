@@ -280,19 +280,23 @@ const Devices = ({ route }) => {
         title="Devices"
         size="full"
         actions={[
-          {
-            title: 'Clear Filters',
-            onClick: clearFilters,
-            variant: 'tertiary',
-          },
+          ...(filterQuery.length
+            ? [
+                {
+                  title: 'Clear Filters',
+                  onClick: clearFilters,
+                  variant: 'tertiary',
+                },
+              ]
+            : []),
           {
             title: 'Add Filter',
             variant: 'secondary',
             onClick: () => setShowFilterDialog(true),
           },
           {
-            title: 'Add Device',
-            href: `/${route.data.params.project}/devices/add`,
+            title: 'Register Device',
+            href: `/${route.data.params.project}/devices/register`,
           },
         ]}
       >

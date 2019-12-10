@@ -9254,6 +9254,11 @@ react-helmet-async@^1.0.2, react-helmet-async@^1.0.4:
     react-fast-compare "^2.0.4"
     shallowequal "^1.1.0"
 
+react-hook-form-input@^1.1.6:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/react-hook-form-input/-/react-hook-form-input-1.1.6.tgz#d68d6b34614fc75a32daed1be3064c72ca351eea"
+  integrity sha512-xHTSSXMZkiGm3PC6iwWFX7HNzTbNWPmrdRugJgrmdwDvhoIeKGd+Yx70JkFi4Il/vgfszpYwv1mC9W79jubmjA==
+
 react-hook-form@^3.28.2:
   version "3.28.2"
   resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-3.28.2.tgz#eade3f0d5b1fcb9a95ac34b34fb10561712ff1da"

@@ -145,10 +145,11 @@ const api = {
       return response;
     }),
 
-  updateRole: ({ project, role: { id, ...data } }) =>
-    put(`projects/${project}/roles/${id}`, data),
+  updateRole: ({ projectId, roleId, data: { name, description, config } }) =>
+    put(`projects/${projectId}/roles/${roleId}`, { name, description, config }),
 
-  deleteRole: ({ project, id }) => del(`projects/${project}/roles/${id}`),
+  deleteRole: ({ projectId, roleId }) =>
+    del(`projects/${projectId}/roles/${roleId}`),
 
   memberships: ({ projectId }) => get(`projects/${projectId}/memberships?full`),
 
@@ -164,12 +165,12 @@ const api = {
   removeMember: ({ projectId, userId }) =>
     del(`projects/${projectId}/memberships/${userId}`),
 
-  addRoleBindings: ({ projectId, userId, roleId }) =>
+  addMembershipRoleBindings: ({ projectId, userId, roleId }) =>
     post(
       `projects/${projectId}/memberships/${userId}/roles/${roleId}/membershiprolebindings`
     ),
 
-  removeRoleBindings: ({ projectId, userId, roleId }) =>
+  removeMembershipRoleBindings: ({ projectId, userId, roleId }) =>
     del(
       `projects/${projectId}/memberships/${userId}/roles/${roleId}/membershiprolebindings`
     ),
@@ -228,6 +229,11 @@ const api = {
 
   releases: ({ projectId, applicationId }) =>
     get(`projects/${projectId}/applications/${applicationId}/releases?full`),
+
+  release: ({ projectId, applicationId, releaseId }) =>
+    get(
+      `projects/${projectId}/applications/${applicationId}/releases/${releaseId}?full`
+    ),
 
   createRelease: ({ projectId, applicationId, data: { rawConfig } }) =>
     post(`projects/${projectId}/applications/${applicationId}/releases`, {

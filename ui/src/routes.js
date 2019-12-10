@@ -313,6 +313,16 @@ export default mount({
                 }),
                 '/:release': route({
                   title: 'Release - Application',
+                  getData: async request => {
+                    const response = await api.release({
+                      projectId: request.params.project,
+                      applicationId: request.params.application,
+                      releaseId: request.params.release,
+                    });
+                    return {
+                      release: response.data,
+                    };
+                  },
                   getView: () => import('./containers/application/release'),
                 }),
               }),

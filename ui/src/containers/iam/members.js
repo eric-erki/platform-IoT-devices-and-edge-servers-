@@ -29,7 +29,7 @@ const Members = ({
           row: {
             original: { roles },
           },
-        }) => roles.map(({ name }) => name).join(','),
+        }) => roles.map(({ name }) => name).join(', '),
       },
     ],
     []

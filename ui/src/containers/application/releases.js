@@ -1,30 +1,16 @@
-import React, { useState } from 'react';
+import React, { useMemo } from 'react';
 import moment from 'moment';
-import { Table, Alert } from 'evergreen-ui';
+import { useNavigation } from 'react-navi';
 
-import Editor from '../../components/editor';
 import Card from '../../components/card';
-import Dialog from '../../components/dialog';
-import { Text, Button, Link } from '../../components/core';
-import Release from './release';
+import Table from '../../components/table';
 
-const getReleasedBy = release => {
+const ReleasedBy = ({ release }) => {
   if (release) {
     if (release.createdByUser) {
-      const memberUrl = '../../iam/members/' + release.createdByUser.id;
-      return (
-        <Link color="neutral" href={memberUrl}>
-          {release.createdByUser.firstName} {release.createdByUser.lastName}
-        </Link>
-      );
+      return `${release.createdByUser.firstName} ${release.createdByUser.lastName}`;
     } else if (release.createdByServiceAccount) {
-      const serviceAccountUrl =
-        '../../iam/serviceaccounts/' + release.createdByServiceAccount.name;
-      return (
-        <Link href={serviceAccountUrl}>
-          {release.createdByServiceAccount.name}
-        </Link>
-      );
+      return release.createdByServiceAccount.name;
     }
   }
   return '-';
@@ -35,57 +21,52 @@ const Releases = ({
     data: { params, application, releases },
   },
 }) => {
-  const [selectedRelease, setSelectedRelease] = useState();
+  const navigation = useNavigation();
+  const columns = useMemo(
+    () => [
+      { Header: 'Release ID', accessor: 'id' },
+      {
+        Header: 'Released by',
+        Cell: ({ row: { original } }) => <ReleasedBy release={original} />,
+      },
+      {
+        Header: 'Started',
+        Cell: ({
+          row: {
+            original: { createdAt },
+          },
+        }) => moment(createdAt).fromNow(),
+      },
+      {
+        Header: 'Device count',
+        accessor: 'deviceCounts.allCount',
+      },
+    ],
+    []
+  );
+  const tableData = useMemo(() => releases, [releases]);
 
   return (
-    <>
-      <Card
-        title="Releases"
-        size="large"
-        actions={[
-          {
-            title: 'Create Release',
-            href: `/${params.project}/applications/${application.name}/releases/create`,
-          },
-        ]}
-      >
-        <Table>
-          <Table.Head>
-            <Table.TextHeaderCell flexGrow={3} flexShrink={3}>
-              Release
-            </Table.TextHeaderCell>
-            <Table.TextHeaderCell flexGrow={2} flexShrink={2}>
-              Released By
-            </Table.TextHeaderCell>
-            <Table.TextHeaderCell>Started</Table.TextHeaderCell>
-            <Table.TextHeaderCell>Device Count</Table.TextHeaderCell>
-          </Table.Head>
-          <Table.Body>
-            {releases.map(release => (
-              <Table.Row
-                key={release.id}
-                isSelectable
-                onSelect={() => setSelectedRelease(release)}
-              >
-                <Table.TextCell flexGrow={3} flexShrink={3}>
-                  {release.id}
-                </Table.TextCell>
-                <Table.TextCell flexGrow={2} flexShrink={2}>
-                  {this.getReleasedBy(release)}
-                </Table.TextCell>
-                <Table.TextCell>
-                  {moment(release.createdAt).fromNow()}
-                </Table.TextCell>
-                <Table.TextCell>{release.deviceCounts.allCount}</Table.TextCell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
-      </Card>
-      <Dialog show={!!selectedRelease} onClose={() => setSelectedRelease(null)}>
-        <Release release={selectedRelease} />
-      </Dialog>
-    </>
+    <Card
+      title="Releases"
+      size="large"
+      actions={[
+        {
+          title: 'Create Release',
+          href: `/${params.project}/applications/${application.name}/releases/create`,
+        },
+      ]}
+    >
+      <Table
+        columns={columns}
+        data={tableData}
+        onRowSelect={({ id }) =>
+          navigation.navigate(
+            `/${params.project}/applications/${application.name}/releases/${id}`
+          )
+        }
+      />
+    </Card>
   );
 };
 

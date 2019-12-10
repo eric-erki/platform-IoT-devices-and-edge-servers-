@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { variant } from 'styled-system';
 
 import Logo from './icons/logo';
-import { Column, Row, Heading, Button, Link } from './core';
+import { Column, Row, Text, Button, Link } from './core';
 
 const Container = styled(Column)`
   ${variant({
@@ -46,7 +46,6 @@ const Card = ({
       border={border ? 0 : undefined}
       borderColor="white"
       boxShadow={1}
-      overflow="auto"
     >
       {logo && (
         <Link href="https://deviceplane.com" marginX="auto" marginBottom={6}>
@@ -61,7 +60,9 @@ const Card = ({
           marginBottom={5}
           borderColor="white"
         >
-          <Heading fontSize={5}>{title}</Heading>
+          <Text fontSize={5} fontWeight={3}>
+            {title}
+          </Text>
           <Row>
             {actions.map(
               ({ href, variant = 'primary', title, onClick, show = true }) =>

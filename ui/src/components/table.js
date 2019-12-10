@@ -38,7 +38,7 @@ const TableRow = styled(Row)`
   cursor: ${props => (props.selectable ? 'pointer' : 'default')};
 
   &:hover {
-    background-color: ${props => (props.selectable ? '#141414' : 'black')};
+    background-color: ${props => (props.selectable ? '#161616' : 'black')};
   }
 
   &:first-child {

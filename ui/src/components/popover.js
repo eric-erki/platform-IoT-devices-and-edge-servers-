@@ -6,7 +6,7 @@ import { Column } from './core';
 
 const Container = styled(Column)`
   position: relative;
-  z-index: 2;
+  z-index: 999;
 `;
 
 const Content = styled(Column)`

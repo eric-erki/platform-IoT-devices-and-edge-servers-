@@ -64,31 +64,15 @@ const Provisioning = ({
           },
         ]}
       >
-        <Table data={tableData} columns={columns} />
-        {/* {deviceRegistrationTokens.map(token => (
-              <Table.Row
-                key={token.id}
-                isSelectable
-                flexGrow={1}
-                height="auto"
-                paddingY={majorScale(1)}
-                alignItems="flex-start"
-              >
-                <Table.TextCell flexBasis={100}>{token.name}</Table.TextCell>
-                <Table.TextCell flexBasis={50}>
-                  
-                </Table.TextCell>
-                <Table.TextCell flexBasis={50}>
-                  {token.deviceCounts.allCount}
-                </Table.TextCell>
-                <Table.TextCell flexBasis={50}>
-                 
-                </Table.TextCell>
-                <Table.TextCell flexBasis={150}>
-                  
-                </Table.TextCell>
-              </Table.Row>
-            ))} */}
+        <Table
+          data={tableData}
+          columns={columns}
+          onRowSelect={({ name }) =>
+            navigation.navigate(
+              `/${params.project}/provisioning/device-registration-tokens/${name}`
+            )
+          }
+        />
       </Card>
     </Layout>
   );

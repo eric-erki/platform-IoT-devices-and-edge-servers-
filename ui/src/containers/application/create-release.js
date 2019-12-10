@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import useForm from 'react-hook-form';
 import { useNavigation } from 'react-navi';
 import { toaster, Alert } from 'evergreen-ui';
 
@@ -6,6 +7,7 @@ import api from '../../api';
 import utils from '../../utils';
 import Card from '../../components/card';
 import Editor from '../../components/editor';
+import Field from '../../components/field';
 import { Form, Row, Button } from '../../components/core';
 
 const CreateRelease = ({
@@ -13,36 +15,33 @@ const CreateRelease = ({
     data: { params, application },
   },
 }) => {
+  const { register, handleSubmit, setValue } = useForm();
   const navigation = useNavigation();
-  const [rawConfig, setRawConfig] = useState();
   const [backendError, setBackendError] = useState();
 
-  const handleSubmit = event => {
-    event.preventDefault();
-    api
-      .createRelease({
+  const submit = async data => {
+    try {
+      await api.createRelease({
         projectId: params.project,
         applicationId: application.id,
-        data: { rawConfig },
-      })
-      .then(() => {
-        navigation.navigate(
-          `/${params.project}/applications/${params.application}`
-        );
-      })
-      .catch(error => {
-        if (utils.is4xx(error.response.status)) {
-          setBackendError(utils.convertErrorMessage(error.response.data));
-        } else {
-          toaster.danger('Release was not created.');
-          console.log(error);
-        }
+        data,
       });
+      navigation.navigate(
+        `/${params.project}/applications/${application.name}`
+      );
+    } catch (error) {
+      if (utils.is4xx(error.response.status)) {
+        setBackendError(utils.convertErrorMessage(error.response.data));
+      } else {
+        toaster.danger('Release was not created.');
+        console.log(error);
+      }
+    }
   };
 
   return (
     <Card title="Create Release">
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit(submit)}>
         {backendError && (
           <Alert
             marginBottom={16}
@@ -52,11 +51,12 @@ const CreateRelease = ({
             title={backendError}
           />
         )}
-        <Editor
-          width="100%"
-          height="300px"
-          value={rawConfig}
-          onChange={setRawConfig}
+        <Field
+          as={<Editor width="100%" height="300px" />}
+          label="Config"
+          name="rawConfig"
+          register={register}
+          setValue={setValue}
         />
         <Button marginTop={4} type="submit" title="Create Release" />
       </Form>

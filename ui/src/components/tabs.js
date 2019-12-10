@@ -18,6 +18,7 @@ const styles = `
     padding: 8px;
     user-select: none;
     font-weight: 500;
+    cursor: pointer;
 
     &:hover {
         background-color: black;
@@ -32,7 +33,6 @@ const LinkTab = styled.a`
 
   color: ${props => (props.active ? '#57e3ff' : 'white')};
   background-color: ${props => (props.active ? 'black' : 'transparent')};
-  cursor: ${props => (props.active ? 'default' : 'pointer')};
 `;
 
 const ButtonTab = styled.button`
@@ -40,7 +40,6 @@ const ButtonTab = styled.button`
 
   color: ${props => (props.active ? '#57e3ff' : 'white')};
   background-color: ${props => (props.active ? 'black' : 'transparent')};
-  cursor: ${props => (props.active ? 'default' : 'pointer')};
 `;
 
 const Tab = ({ title, href, onClick, active = true }) => {

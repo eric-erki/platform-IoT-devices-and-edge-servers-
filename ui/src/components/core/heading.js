@@ -10,7 +10,9 @@ const defaultProps = {
 };
 
 const H1 = styled.h1`
-    ${typography} ${color} ${space} ${layout} 
+  word-break: break-word;
+  text-transform: none;
+  ${typography} ${color} ${space} ${layout} 
 `;
 
 H1.defaultProps = {
@@ -19,8 +21,9 @@ H1.defaultProps = {
 };
 
 const H2 = styled.h2`
-    margin: 0;
-    ${typography} ${color} ${space} ${layout} 
+  margin: 0;
+  word-break: break-word;
+  ${typography} ${color} ${space} ${layout} 
 `;
 
 H2.defaultProps = {
@@ -29,7 +32,8 @@ H2.defaultProps = {
 };
 
 const H3 = styled.h3`
-    ${typography} ${color} ${space} ${layout} 
+  word-break: break-word;
+  ${typography} ${color} ${space} ${layout} 
 `;
 
 H3.defaultProps = {

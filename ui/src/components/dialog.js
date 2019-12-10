@@ -6,7 +6,7 @@ import { Column } from './core';
 
 const Overlay = styled(Column)`
   position: absolute;
-  z-index: 2;
+  z-index: 999;
   top: 0;
   left: 0;
   width: 100%;
@@ -19,6 +19,7 @@ const Overlay = styled(Column)`
 const Container = styled(Column)`
   position: relative;
   overflow: hidden;
+  z-index: 999;
 `;
 
 const CloseButton = styled.button`

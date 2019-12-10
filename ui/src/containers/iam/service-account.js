@@ -110,39 +110,38 @@ const ServiceAccount = ({
       console.log(error);
     }
 
-    const updatedRoleBindings = this.state.roleBindings;
-    const currentRoles = this.state.serviceAccount.roles;
+    const currentRoles = serviceAccount.roles;
     let addRoleBindings = [];
     let removeRoleBindings = [];
 
-    for (let i = 0; i < updatedRoleBindings.length; i++) {
-      let addRole = false;
-      let removeRole = false;
+    for (let i = 0; i < roleBindings.length; i++) {
+      let willAddRole = false;
+      let willRemoveRole = false;
       // add role binding to service account
-      if (updatedRoleBindings[i].hasRoleBinding) {
-        addRole = true;
+      if (roleBindings[i].hasRoleBinding) {
+        willAddRole = true;
       }
       //check if role binding already exists on service account
       if (currentRoles && currentRoles.length > 0) {
-        for (var j = 0; j < currentRoles.length; j++) {
-          if (updatedRoleBindings[i].id === currentRoles[j].id) {
-            if (updatedRoleBindings[i].hasRoleBinding) {
+        for (let j = 0; j < currentRoles.length; j++) {
+          if (roleBindings[i].id === currentRoles[j].id) {
+            if (roleBindings[i].hasRoleBinding) {
               //if role binding already exists on service account, do not re-add role to service account
-              addRole = false;
+              willAddRole = false;
               break;
             } else {
               //if role binding already exists on service account, remove the role binding
-              removeRole = true;
+              willRemoveRole = true;
               break;
             }
           }
         }
       }
-      if (addRole) {
-        addRoleBindings.push(updatedRoleBindings[i]);
+      if (willAddRole) {
+        addRoleBindings.push(roleBindings[i]);
       }
-      if (removeRole) {
-        removeRoleBindings.push(updatedRoleBindings[i]);
+      if (willRemoveRole) {
+        removeRoleBindings.push(roleBindings[i]);
       }
     }
 
@@ -179,7 +178,7 @@ const ServiceAccount = ({
       toaster.danger('Service account was not deleted.');
       console.log(error);
     }
-    showDeleteDialog(false);
+    setShowDeleteDialog(false);
   };
 
   return (
@@ -211,14 +210,15 @@ const ServiceAccount = ({
           marginTop={4}
           disabled={!formState.dirty}
         />
-        <Row marginTop={4}>
-          <Button
-            title="Delete Service Account"
-            variant="tertiary"
-            onClick={() => setShowDeleteDialog(true)}
-          />
-        </Row>
       </Form>
+      <Row marginTop={4}>
+        <Button
+          title="Delete Service Account"
+          variant="tertiary"
+          onClick={() => setShowDeleteDialog(true)}
+        />
+      </Row>
+
       <ServiceAccountAccessKeys
         projectId={params.project}
         serviceAccount={serviceAccount}
@@ -229,14 +229,22 @@ const ServiceAccount = ({
         title="Delete Service Account"
         onClose={() => setShowDeleteDialog(false)}
       >
-        <Card title="Delete Service Account">
+        <Card title="Delete Service Account" border>
           <Text>
             You are about to delete the <strong>{serviceAccount.name}</strong>{' '}
             service account.
           </Text>
-          <Button title="Delete Service Account" onClick={submitDelete} />
+          <Button
+            marginTop={4}
+            title="Delete Service Account"
+            onClick={submitDelete}
+          />
           <Row marginTop={4}>
-            <Button title="Cancel" variant="tertiary" />
+            <Button
+              title="Cancel"
+              variant="tertiary"
+              onClick={() => setShowDeleteDialog(false)}
+            />
           </Row>
         </Card>
       </Dialog>

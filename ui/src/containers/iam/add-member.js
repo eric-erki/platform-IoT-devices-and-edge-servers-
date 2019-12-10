@@ -2,16 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useNavigation } from 'react-navi';
 import useForm from 'react-hook-form';
 
-import { Checkbox, toaster, Alert } from 'evergreen-ui';
+import { toaster, Alert } from 'evergreen-ui';
 
 import api from '../../api';
 import utils from '../../utils';
 import Card from '../../components/card';
 import Field from '../../components/field';
-import { Text, Row, Form, Button } from '../../components/core';
-
-const createRoleBindings = roles =>
-  roles.map(({ id, name }) => ({ id, name, hasRoleBinding: false }));
+import { Text, Row, Form, Button, Checkbox } from '../../components/core';
 
 const AddMember = ({
   route: {
@@ -19,74 +16,58 @@ const AddMember = ({
   },
 }) => {
   const navigation = useNavigation();
-  const { register, handleSubmit } = useForm();
-  const [roleBindings, setRoleBindings] = useState([]);
+  const { register, handleSubmit, setValue } = useForm({
+    defaultValues: {
+      roles: roles.reduce((obj, role) => ({ ...obj, [role.name]: false }), {}),
+    },
+  });
   const [backendError, setBackendError] = useState();
-
-  useEffect(() => {
-    setRoleBindings(createRoleBindings(roles));
-  }, []);
 
   const submit = async data => {
     try {
-      const { userId } = await api.addMember({
+      const {
+        data: { userId },
+      } = await api.addMember({
         projectId: params.project,
-        data,
+        data: { email: data.email },
       });
 
-      let noError = true;
+      let error = false;
 
-      for (let i = 0; i < roleBindings.length; i++) {
-        const roleId = roleBindings[i].id;
-        if (roleBindings[i].hasRoleBinding && noError) {
-          noError = await addRole(userId, roleId);
+      const roleArray = Object.keys(data.roles);
+      for (let i = 0; i < roleArray.length; i++) {
+        const role = roleArray[i];
+        const hasRole = data.roles[role];
+        if (hasRole) {
+          try {
+            await api.addMembershipRoleBindings({
+              projectId: params.project,
+              userId,
+              roleId: role,
+            });
+          } catch (error) {
+            error = true;
+            console.log(error);
+          }
         }
       }
 
-      if (noError) {
+      if (error) {
+        toaster.warning(
+          'Member was added successfully, but roles for the member were not updated properly. Please check the roles of the member.'
+        );
+      } else {
         navigation.navigate(`/${params.project}/iam/members`);
         toaster.success('Member was added successfully.');
-      } else {
-        toaster.warning(
-          'Member was added successfully, but role bindings for the member were not updated properly. Please check the roles of the member.'
-        );
       }
     } catch (error) {
-      if (utils.is4xx(error.response.status)) {
+      if (utils.is4xx(error.response.status) && error.response.data) {
         setBackendError(utils.convertErrorMessage(error.response.data));
       } else {
         console.log(error);
         toaster.danger('Member was not added.');
       }
     }
-  };
-
-  const handleAddRoleBindings = event => {
-    const updatedRoleBindings = [];
-    let hasRole = false;
-    for (let i = 0; i < roleBindings.length; i++) {
-      hasRole = roleBindings[i].hasRoleBinding;
-      if (roleBindings[i].id === event.target.id) {
-        hasRole = event.target.checked;
-      }
-      updatedRoleBindings.push({
-        id: roleBindings[i].id,
-        name: roleBindings[i].name,
-        hasRoleBinding: hasRole,
-      });
-    }
-    setRoleBindings(updatedRoleBindings);
-  };
-
-  const addRole = async (userId, roleId) => {
-    try {
-      await api.createRoleBindings({ userId, roleId });
-    } catch (error) {
-      console.log(error);
-      return false;
-    }
-
-    return true;
   };
 
   return (
@@ -109,16 +90,19 @@ const AddMember = ({
           name="email"
           ref={register}
         />
-        <Text fontWeight={3}>Choose Individual Roles</Text>
-        {roleBindings.map(role => (
-          <Checkbox
+        <Text fontWeight={3} marginBottom={2}>
+          Choose Individual Roles
+        </Text>
+        {roles.map(role => (
+          <Field
             key={role.id}
-            id={role.id}
-            label={role.name}
-            checked={role.hasRoleBinding}
-            onChange={handleAddRoleBindings}
+            name={`roles[${role.name}]`}
+            as={<Checkbox label={role.name} />}
+            register={register}
+            setValue={setValue}
           />
         ))}
+
         <Button marginTop={2} type="submit" title="Add Member" />
       </Form>
       <Row marginTop={4}>

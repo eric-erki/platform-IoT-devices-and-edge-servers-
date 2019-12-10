@@ -1,25 +1,48 @@
 import React, { forwardRef } from 'react';
+import { RHFInput } from 'react-hook-form-input';
 
 import { Column, Input, Textarea, Label } from './core';
 
-const getComponent = type => {
-  switch (type) {
-    case 'textarea':
-      return Textarea;
-    default:
-      return Input;
+const Field = forwardRef(
+  (
+    { label, type, name, as, setValue, register, onChangeEvent, ...props },
+    ref
+  ) => {
+    const getComponent = () => {
+      if (as) {
+        return (
+          <RHFInput
+            as={as}
+            id={name}
+            name={name}
+            register={register}
+            setValue={setValue}
+            onChangeEvent={data => ({ value: data[0] })}
+          />
+        );
+      }
+
+      switch (type) {
+        case 'textarea':
+          return <Textarea name={name} id={name} ref={ref} {...props} />;
+        default:
+          return (
+            <Input type={type} name={name} id={name} ref={ref} {...props} />
+          );
+      }
+    };
+
+    return (
+      <Column marginBottom={4}>
+        {label && (
+          <Label marginBottom={2} htmlFor={name}>
+            {label}
+          </Label>
+        )}
+        {getComponent()}
+      </Column>
+    );
   }
-};
-
-const Field = forwardRef(({ label, type, name, ...props }, ref) => {
-  const Component = getComponent(type);
-
-  return (
-    <Column marginBottom={4}>
-      <Label marginBottom={2}>{label}</Label>
-      <Component id={name} name={name} type={type} {...props} ref={ref} />
-    </Column>
-  );
-});
+);
 
 export default Field;
