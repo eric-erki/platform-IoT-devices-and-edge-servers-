@@ -45,7 +45,7 @@ const Page = ({ children }) => {
       <>
         <GlobalStyle theme={theme} />
         <Box>
-          <Spinner show={true || !!loadingRoute} />
+          <Spinner show={!!loadingRoute} />
           <main>
             <NotFoundBoundary render={NotFound}>{children}</NotFoundBoundary>
           </main>
