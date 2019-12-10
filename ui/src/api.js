@@ -94,7 +94,7 @@ const api = {
     post(`projects/${projectId}/deviceregistrationtokens`, {
       name,
       description,
-      maxRegistrations,
+      maxRegistrations: Number.parseInt(maxRegistrations),
     }),
 
   updateDeviceRegistrationToken: ({

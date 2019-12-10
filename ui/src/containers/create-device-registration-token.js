@@ -1,32 +1,64 @@
-import React from 'react';
+import React, { useState } from 'react';
 import useForm from 'react-hook-form';
 import { useNavigation } from 'react-navi';
+import * as yup from 'yup';
+import { toaster, Alert } from 'evergreen-ui';
 
 import api from '../api';
+import utils from '../utils';
 import Layout from '../components/layout';
 import Card from '../components/card';
 import Field from '../components/field';
 import { Row, Button, Form } from '../components/core';
+
+const validationSchema = yup.object().shape({
+  name: yup.string().required(),
+  description: yup.string(),
+  maxRegistration: yup.number(),
+});
 
 const CreateDeviceRegistrationToken = ({
   route: {
     data: { params },
   },
 }) => {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit } = useForm({ validationSchema });
   const navigation = useNavigation();
+  const [backendError, setBackendError] = useState();
 
-  const submit = data => {
-    api.createDeviceRegistrationToken(data).then(() => {
-      navigation.navigate(`${params.project}/provisioning`);
-    });
+  const submit = async data => {
+    setBackendError(null);
+    try {
+      await api.createDeviceRegistrationToken({
+        projectId: params.project,
+        data,
+      });
+      toaster.success('Device Registration Token created successfully.');
+      navigation.navigate(`/${params.project}/provisioning`);
+    } catch (error) {
+      if (utils.is4xx(error.response.status) && error.response.data) {
+        setBackendError(utils.convertErrorMessage(error.response.data));
+      } else {
+        toaster.danger('Device Registration Token was not updated.');
+        console.log(error);
+      }
+    }
   };
 
   return (
     <Layout alignItems="center">
       <Card title="Create Device Registration Token">
+        {backendError && (
+          <Alert
+            marginBottom={16}
+            paddingTop={16}
+            paddingBottom={16}
+            intent="warning"
+            title={backendError}
+          />
+        )}
         <Form onSubmit={handleSubmit(submit)}>
-          <Field label="Name" name="name" ref={register} />
+          <Field required autoFocus label="Name" name="name" ref={register} />
           <Field
             label="Description"
             type="textarea"
@@ -34,6 +66,7 @@ const CreateDeviceRegistrationToken = ({
             ref={register}
           />
           <Field
+            type="number"
             label="Maximum Device Registrations"
             name="maxRegistrations"
             description="Limit the number of devices that can be registered using this token"
@@ -56,73 +89,3 @@ const CreateDeviceRegistrationToken = ({
 };
 
 export default CreateDeviceRegistrationToken;
-
-// class  extends Component {
-//   constructor(props) {
-//     super(props);
-//     this.state = {
-//       name: '',
-//       description: '',
-//       maxRegistrations: '',
-//       nameValidationMessage: null,
-//       maxRegistrationsValidationMessage: null,
-//       showDeleteDialog: false,
-//       backendError: null
-//     };
-//   }
-
-//   handleSubmit = () => {
-//     var nameValidationMessage = utils.checkName(
-//       'Device Registration Token',
-//       this.state.name
-//     );
-
-//     //always set validation message for name
-//     this.setState({
-//       nameValidationMessage: nameValidationMessage,
-//       backendError: null
-//     });
-
-//     if (nameValidationMessage !== null) {
-//       return;
-//     }
-
-//     // Convert max registrations to int or undefined
-//     var maxRegistrationsCleaned;
-//     if (this.state.maxRegistrations === '') {
-//       maxRegistrationsCleaned = null;
-//     } else {
-//       maxRegistrationsCleaned = Number(this.state.maxRegistrations);
-
-//       if (isNaN(maxRegistrationsCleaned)) {
-//         this.setState({
-//           maxRegistrationsValidationMessage:
-//             'Max Registrations should either be a number or be left empty.'
-//         });
-//         return;
-//       }
-//     }
-
-//     axios
-//         {
-//
-//         },
-//         {
-//           withCredentials: true
-//         }
-//       )
-//       .then(response => {
-//         toaster.success('Device Registration Token created successfully.');
-
-//       })
-//       .catch(error => {
-//         if (utils.is4xx(error.response.status)) {
-//           this.setState({
-//             backendError: utils.convertErrorMessage(error.response.data)
-//           });
-//         } else {
-//           toaster.danger('Device Registration Token was not updated.');
-//           console.log(error);
-//         }
-//       });
-//   };
