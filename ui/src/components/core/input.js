@@ -9,9 +9,14 @@ import {
 } from 'styled-system';
 
 const Input = styled.input`
-  border: none;
+  border: 1px solid #161616;
   outline: none;
   margin: 0;
+  transition: border-color 150ms;
+
+  &:focus {
+    border-color: ${props => props.theme.colors.white};
+  }
 
   &::placeholder {
     font-size: 16px;
@@ -28,7 +33,7 @@ const Input = styled.input`
 
 Input.defaultProps = {
   color: 'white',
-  bg: 'whites.1',
+  bg: '#161616',
   padding: 3,
   borderRadius: 1,
   boxShadow: 0,
