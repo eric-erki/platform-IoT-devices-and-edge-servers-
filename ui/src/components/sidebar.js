@@ -48,6 +48,10 @@ const SidebarLink = styled(Link)`
     background-color: #181818;
   }
 
+  & span {
+    color: ${props => (props.active ? '#57e3ff' : '#fff')};
+  }
+
   & > div > svg {
     fill: ${props => (props.active ? '#57e3ff' : '#fff')} !important;
   }
@@ -84,8 +88,7 @@ const Sidebar = () => {
               paddingY={4}
               marginBottom={2}
               key={title}
-              color="white"
-              fontWeight={2}
+              fontWeight={3}
               active={useActive(href, { exact: false })}
             >
               <Column alignItems="center">
