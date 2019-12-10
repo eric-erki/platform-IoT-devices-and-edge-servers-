@@ -6,23 +6,21 @@ import Logo from './icons/logo';
 import { Column, Row, Text, Button, Link } from './core';
 
 const Container = styled(Column)`
-  width: 100%;
-
   ${variant({
     variants: {
       small: {
-        maxWidth: 9,
+        width: 9,
       },
       medium: {
-        maxWidth: 11,
+        width: 11,
         boxShadow: 1,
       },
       large: {
-        maxWidth: 12,
+        width: 12,
         boxShadow: 1,
       },
       xlarge: {
-        maxWidth: 13,
+        width: 13,
         boxShadow: 1,
       },
       full: {
@@ -54,6 +52,7 @@ const Card = ({
       border={border ? 0 : undefined}
       borderColor="white"
       boxShadow={1}
+      overflow="hidden"
       {...props}
     >
       {logo && (

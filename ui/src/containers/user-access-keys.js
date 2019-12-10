@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { toaster, Alert } from 'evergreen-ui';
+import { toaster, Alert, Code } from 'evergreen-ui';
 
 import api from '../api';
 import utils from '../utils';
 import Card from '../components/card';
 import Table from '../components/table';
 import Popup from '../components/popup';
-import { Button } from '../components/core';
+import { Text, Button } from '../components/core';
 
 const UserAccessKeys = () => {
   const [accessKeys, setAccessKeys] = useState([]);
+  const [newAccessKey, setNewAccessKey] = useState();
   const [backendError, setBackendError] = useState();
   const [showPopup, setShowPopup] = useState();
 
@@ -27,7 +28,10 @@ const UserAccessKeys = () => {
   const createAccessKey = () => {
     api
       .createUserAccessKey()
-      .then(fetchAccessKeys)
+      .then(response => {
+        setNewAccessKey(response.data.value);
+        setShowPopup(true);
+      })
       .catch(error => {
         if (utils.is4xx(error.response.status)) {
           setBackendError(utils.convertErrorMessage(error.response.data));
@@ -74,6 +78,11 @@ const UserAccessKeys = () => {
             onClick={() => deleteAccessKey(row.original.id)}
           />
         ),
+        style: {
+          flex: 1,
+          display: 'flex',
+          justifyContent: 'center',
+        },
       },
     ],
     []
@@ -85,7 +94,7 @@ const UserAccessKeys = () => {
       <Card
         border
         title="User Access Keys"
-        size="large"
+        size="xlarge"
         actions={[{ title: 'Create Access Key', onClick: createAccessKey }]}
       >
         {backendError && (
@@ -99,7 +108,21 @@ const UserAccessKeys = () => {
         )}
         <Table columns={columns} data={tableData} />
       </Card>
-      <Popup show={true} onClose={() => setShowPopup(false)} />
+      <Popup show={showPopup} onClose={() => setShowPopup(false)}>
+        <Card border title="Access Key Created">
+          <Alert
+            intent="warning"
+            marginBottom={16}
+            paddingTop={16}
+            paddingBottom={16}
+            title="Save this key! This is the only time you'll be able to view it.  If you lose it, you'll need to create a new access key."
+          />
+          <Text fontWeight={3} marginBottom={2}>
+            Access Key
+          </Text>
+          <Code background="white">{newAccessKey}</Code>
+        </Card>
+      </Popup>
     </>
   );
 };

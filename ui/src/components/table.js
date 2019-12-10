@@ -107,7 +107,9 @@ const Table = ({ columns, data, onRowSelect }) => {
             >
               {row.cells.map(cell => (
                 <Cell {...cell.getCellProps()}>
-                  <CellContent>{cell.render('Cell')}</CellContent>
+                  <CellContent style={cell.column.style || {}}>
+                    {cell.render('Cell')}
+                  </CellContent>
                 </Cell>
               ))}
             </TableRow>

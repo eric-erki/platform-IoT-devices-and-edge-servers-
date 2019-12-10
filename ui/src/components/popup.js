@@ -7,7 +7,7 @@ import { Column } from './core';
 
 const Overlay = styled(Column)`
   position: absolute;
-  z-index: 999;
+  z-index: 99;
   top: 0;
   left: 0;
   width: 100%;
@@ -15,12 +15,13 @@ const Overlay = styled(Column)`
   padding: 64px;
   align-items: center;
   justify-content: center;
+  background-color: ${props => props.theme.colors.blacks[5]};
 `;
 
 const Container = styled(Column)`
   position: relative;
   overflow: hidden;
-  z-index: 999;
+  z-index: 9999;
 `;
 
 const CloseButton = styled.button`
@@ -36,12 +37,12 @@ const CloseButton = styled.button`
   padding: 2px;
   border-radius: 999px;
   cursor: pointer;
-  border: 1px solid white;
+  border: 1px solid ${props => props.theme.colors.white};
 
   transition: background-color 200ms;
 
   &:hover {
-    background-color: black;
+    background-color: ${props => props.theme.colors.black};
   }
 
   & > svg {
@@ -88,7 +89,7 @@ const Popup = ({ children, show, onClose }) => {
   }
 
   return (
-    <Overlay bg="blacks.6">
+    <Overlay>
       <Container ref={node}>
         {children}
         <CloseButton onClick={onClose}>

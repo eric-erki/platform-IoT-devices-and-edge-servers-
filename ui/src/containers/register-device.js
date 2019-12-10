@@ -53,7 +53,9 @@ const AddDevice = ({
             is being used.
           </Text>
         </Row>
-        <Text>Run the following command to register your device:</Text>
+        <Text>
+          Run the following command on the device you want to register:
+        </Text>
         <Code fontFamily="mono" color="white" background="#222">
           {getDockerCommand({
             project: params.project,
