@@ -105,7 +105,7 @@ const api = {
     put(`projects/${projectId}/deviceregistrationtokens/${tokenId}`, {
       name,
       description,
-      maxRegistrations,
+      maxRegistrations: Number.parseInt(maxRegistrations),
       settings,
     }),
 

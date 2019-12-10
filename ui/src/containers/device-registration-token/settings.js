@@ -32,9 +32,12 @@ const DeviceRegistrationTokenSettings = ({
       await api.updateDeviceRegistrationToken({
         projectId: params.project,
         tokenId: deviceRegistrationToken.id,
-        data,
+        data: {
+          ...data,
+          settings: deviceRegistrationToken.settings,
+        },
       });
-      navigation.navigate(`/${params.projectId}/provisioning`);
+      navigation.navigate(`/${params.project}/provisioning`);
       toaster.success('Device Registration Token updated successfully.');
     } catch (error) {
       console.log(error);
