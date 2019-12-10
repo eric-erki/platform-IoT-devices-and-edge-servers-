@@ -7,7 +7,7 @@ import api from '../api';
 import utils from '../utils';
 import Card from '../components/card';
 import Field from '../components/field';
-import { Column, Button, Form, Link } from '../components/core';
+import { Column, Button, Form } from '../components/core';
 
 const isTokenExpired = expiration => {
   const expiratonTime = new Date(expiration).getTime();

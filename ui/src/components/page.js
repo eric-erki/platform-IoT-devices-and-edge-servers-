@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useLoadingRoute, NotFoundBoundary } from 'react-navi';
+import { useLoadingRoute, NotFoundBoundary } from 'react-navi';
 import { ThemeProvider } from 'styled-components';
 import { createGlobalStyle } from 'styled-components/macro';
 

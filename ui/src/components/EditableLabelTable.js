@@ -1,37 +1,33 @@
-import React, { Component, Fragment } from "react";
-import axios from "axios";
+import React, { Component, Fragment } from 'react';
+import axios from 'axios';
 import {
   Pane,
   Table,
   Dialog,
   IconButton,
   TextInputField,
-  toaster
-} from "evergreen-ui";
+  toaster,
+} from 'evergreen-ui';
 
-import utils from "../utils";
-import config from "../config";
+import utils from '../utils';
 
 export class EditableLabelTable extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
     this.state = {
-      labels: []
+      labels: [],
     };
   }
 
   componentDidMount() {
     axios
-      .get(
-        this.props.getEndpoint,
-        {
-          withCredentials: true
-        }
-      )
+      .get(this.props.getEndpoint, {
+        withCredentials: true,
+      })
       .then(response => {
         this.setState({
-          labels: this.initializeLabels(response.data.labels)
+          labels: this.initializeLabels(response.data.labels),
         });
       })
       .catch(error => {
@@ -46,10 +42,10 @@ export class EditableLabelTable extends Component {
       labels.push({
         key: labelKeys[i],
         value: keyValues[labelKeys[i]],
-        mode: "default",
+        mode: 'default',
         keyValidationMessage: null,
         valueValidationMessage: null,
-        showRemoveDialog: false
+        showRemoveDialog: false,
       });
     }
     return labels.sort(function(a, b) {
@@ -66,15 +62,15 @@ export class EditableLabelTable extends Component {
   createNewLabel = () => {
     var labels = this.state.labels;
     labels.push({
-      key: "",
-      value: "",
-      mode: "new",
+      key: '',
+      value: '',
+      mode: 'new',
       keyValidationMessage: null,
       valueValidationMessage: null,
-      showRemoveDialog: false
+      showRemoveDialog: false,
     });
     this.setState({
-      labels: labels
+      labels: labels,
     });
   };
 
@@ -83,62 +79,62 @@ export class EditableLabelTable extends Component {
       var labels = this.state.labels;
       labels[i][property] = event.target.value;
       this.setState({
-        labels: labels
+        labels: labels,
       });
     };
   };
 
   setEdit = i => {
     var editLabels = this.state.labels;
-    editLabels[i]["mode"] = "edit";
+    editLabels[i]['mode'] = 'edit';
     this.setState({
-      labels: editLabels
+      labels: editLabels,
     });
   };
 
   cancelEdit = i => {
     var editLabels = this.state.labels;
-    editLabels[i]["mode"] = "default";
+    editLabels[i]['mode'] = 'default';
     this.setState({
-      labels: editLabels
+      labels: editLabels,
     });
   };
 
   setShowRemoveDialog = i => {
     var showRemoveDialogLabels = this.state.labels;
-    showRemoveDialogLabels[i]["showRemoveDialog"] = true;
+    showRemoveDialogLabels[i]['showRemoveDialog'] = true;
     this.setState({
-      labels: showRemoveDialogLabels
+      labels: showRemoveDialogLabels,
     });
   };
 
   hideShowRemoveDialog = i => {
     var showRemoveDialogLabels = this.state.labels;
-    showRemoveDialogLabels[i]["showRemoveDialog"] = false;
+    showRemoveDialogLabels[i]['showRemoveDialog'] = false;
     this.setState({
-      labels: showRemoveDialogLabels
+      labels: showRemoveDialogLabels,
     });
   };
 
   setLabel = (key, value, i) => {
     var updatedLabels = this.state.labels;
-    var keyValidationMessage = utils.checkName("key", key);
-    var valueValidationMessage = utils.checkName("value", value);
+    var keyValidationMessage = utils.checkName('key', key);
+    var valueValidationMessage = utils.checkName('value', value);
 
     if (keyValidationMessage === null) {
       for (var j = 0; j < updatedLabels.length; j++) {
-        if (i !== j && key === updatedLabels[j]["key"]) {
-          keyValidationMessage = "Key already exists.";
+        if (i !== j && key === updatedLabels[j]['key']) {
+          keyValidationMessage = 'Key already exists.';
           break;
         }
       }
     }
 
-    updatedLabels[i]["keyValidationMessage"] = keyValidationMessage;
-    updatedLabels[i]["valueValidationMessage"] = valueValidationMessage;
+    updatedLabels[i]['keyValidationMessage'] = keyValidationMessage;
+    updatedLabels[i]['valueValidationMessage'] = valueValidationMessage;
 
     this.setState({
-      labels: updatedLabels
+      labels: updatedLabels,
     });
 
     if (
@@ -152,17 +148,17 @@ export class EditableLabelTable extends Component {
           this.props.setEndpoint,
           {
             key: key,
-            value: value
+            value: value,
           },
           {
-            withCredentials: true
+            withCredentials: true,
           }
         )
         .then(response => {
           var updatedLabels = this.state.labels;
-          updatedLabels[i]["mode"] = "default";
+          updatedLabels[i]['mode'] = 'default';
           this.setState({
-            labels: updatedLabels
+            labels: updatedLabels,
           });
         })
         .catch(error => {
@@ -172,42 +168,39 @@ export class EditableLabelTable extends Component {
   };
 
   deleteLabel = (key, i) => {
-    if (key !== "") {
+    if (key !== '') {
       axios
-        .delete(
-          this.props.deleteEndpoint + `/${key}`,
-          {
-            withCredentials: true
-          }
-        )
+        .delete(this.props.deleteEndpoint + `/${key}`, {
+          withCredentials: true,
+        })
         .then(response => {
           var removedLabels = this.state.labels;
           removedLabels.splice(i, 1);
           this.setState({
-            labels: removedLabels
+            labels: removedLabels,
           });
         })
         .catch(error => {
           var hideRemoveDialogLabels = this.state.labels;
-          hideRemoveDialogLabels[i]["showRemoveDialog"] = false;
+          hideRemoveDialogLabels[i]['showRemoveDialog'] = false;
           this.setState({
-            labels: hideRemoveDialogLabels
+            labels: hideRemoveDialogLabels,
           });
-          toaster.danger("Label was not removed.");
+          toaster.danger('Label was not removed.');
           console.log(error);
         });
     } else {
       var removedLabels = this.state.labels;
       removedLabels.splice(i, 1);
       this.setState({
-        labels: removedLabels
+        labels: removedLabels,
       });
     }
   };
 
   renderLabel(Label, i) {
     switch (Label.mode) {
-      case "default":
+      case 'default':
         return (
           <Fragment key={Label.key}>
             <Table.Row>
@@ -239,13 +232,12 @@ export class EditableLabelTable extends Component {
                 onConfirm={() => this.deleteLabel(Label.key, i)}
                 confirmLabel="Remove Label"
               >
-                You are about to remove label <strong>{Label.key}</strong>
-                .
+                You are about to remove label <strong>{Label.key}</strong>.
               </Dialog>
             </Pane>
           </Fragment>
         );
-      case "edit":
+      case 'edit':
         return (
           <Table.Row key={Label.key} height="auto">
             <Table.TextCell>{Label.key}</Table.TextCell>
@@ -254,7 +246,7 @@ export class EditableLabelTable extends Component {
                 label=""
                 name={`edit-${Label.key}`}
                 value={Label.value}
-                onChange={event => this.handleUpdate(i, "value")(event)}
+                onChange={event => this.handleUpdate(i, 'value')(event)}
                 isInvalid={Label.valueValidationMessage !== null}
                 validationMessage={Label.valueValidationMessage}
                 marginTop={8}
@@ -267,9 +259,7 @@ export class EditableLabelTable extends Component {
                   icon="floppy-disk"
                   height={24}
                   appearance="minimal"
-                  onClick={() =>
-                    this.setLabel(Label.key, Label.value, i)
-                  }
+                  onClick={() => this.setLabel(Label.key, Label.value, i)}
                 />
                 <IconButton
                   icon="cross"
@@ -281,7 +271,7 @@ export class EditableLabelTable extends Component {
             </Table.TextCell>
           </Table.Row>
         );
-      case "new":
+      case 'new':
         return (
           <Table.Row key={`new-${i}`} height="auto">
             <Table.TextCell>
@@ -289,7 +279,7 @@ export class EditableLabelTable extends Component {
                 label=""
                 name={`new-key-${i}`}
                 value={Label.key}
-                onChange={event => this.handleUpdate(i, "key")(event)}
+                onChange={event => this.handleUpdate(i, 'key')(event)}
                 isInvalid={Label.keyValidationMessage !== null}
                 validationMessage={Label.keyValidationMessage}
                 marginTop={8}
@@ -301,7 +291,7 @@ export class EditableLabelTable extends Component {
                 label=""
                 name={`new-value-${i}`}
                 value={Label.value}
-                onChange={event => this.handleUpdate(i, "value")(event)}
+                onChange={event => this.handleUpdate(i, 'value')(event)}
                 isInvalid={Label.valueValidationMessage !== null}
                 validationMessage={Label.valueValidationMessage}
                 marginTop={8}
@@ -314,9 +304,7 @@ export class EditableLabelTable extends Component {
                   icon="floppy-disk"
                   height={24}
                   appearance="minimal"
-                  onClick={() =>
-                    this.setLabel(Label.key, Label.value, i)
-                  }
+                  onClick={() => this.setLabel(Label.key, Label.value, i)}
                 />
                 <IconButton
                   icon="cross"
@@ -346,9 +334,7 @@ export class EditableLabelTable extends Component {
           ></Table.TextHeaderCell>
         </Table.Head>
         <Table.Body>
-          {this.state.labels.map((label, i) =>
-            this.renderLabel(label, i)
-          )}
+          {this.state.labels.map((label, i) => this.renderLabel(label, i))}
           <Table.Row key="add">
             <Table.TextCell>
               <IconButton

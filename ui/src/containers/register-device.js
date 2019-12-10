@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Code } from 'evergreen-ui';
 
 import config from '../config';

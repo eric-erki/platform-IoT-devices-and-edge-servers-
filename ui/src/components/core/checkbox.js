@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { color, space, layout } from 'styled-system';
+import { space } from 'styled-system';
 
 const HiddenCheckbox = styled.input.attrs({ type: 'checkbox' })`
   // Hide checkbox visually but remain accessible to screen readers.

@@ -1,5 +1,4 @@
 import React from 'react';
-import { useCurrentRoute, useNavigation } from 'react-navi';
 import { Table, Badge } from 'evergreen-ui';
 
 import config from '../../config';

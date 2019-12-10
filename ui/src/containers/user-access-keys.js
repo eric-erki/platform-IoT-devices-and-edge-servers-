@@ -5,7 +5,7 @@ import api from '../api';
 import utils from '../utils';
 import Card from '../components/card';
 import Table from '../components/table';
-import { Column, Button } from '../components/core';
+import { Button } from '../components/core';
 
 const UserAccessKeys = () => {
   const [accessKeys, setAccessKeys] = useState([]);

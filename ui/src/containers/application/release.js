@@ -5,7 +5,6 @@ import { Alert } from 'evergreen-ui';
 
 import api from '../../api';
 import utils from '../../utils';
-import config from '../../config';
 import Editor from '../../components/editor';
 import Card from '../../components/card';
 import Dialog from '../../components/dialog';

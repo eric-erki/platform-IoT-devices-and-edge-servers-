@@ -2,7 +2,7 @@ import React from 'react';
 
 import Editor from '../../components/editor';
 import Card from '../../components/card';
-import { Column, Text, Link, Heading } from '../../components/core';
+import { Column, Text, Link } from '../../components/core';
 import { DevicesFilterButtons } from '../../components/DevicesFilterButtons';
 
 const ApplicationOverview = ({

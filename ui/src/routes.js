@@ -1,13 +1,4 @@
-import {
-  lazy,
-  mount,
-  route,
-  redirect,
-  map,
-  compose,
-  withView,
-  withData,
-} from 'navi';
+import { mount, route, redirect, map, compose, withView, withData } from 'navi';
 
 import store from './store';
 import api from './api';
