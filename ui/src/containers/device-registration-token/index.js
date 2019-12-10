@@ -23,17 +23,16 @@ const DeviceRegistrationToken = ({ route }) => {
 
   return (
     <Layout
-      title={`Device Registration Token / ${route.data.deviceRegistrationToken.name}`}
-      alignItems="center"
-    >
-      <Row marginBottom={4}>
+      header={
         <Tabs
           content={tabs.map(({ to, title }) => ({
             title,
             href: `/${route.data.params.project}/provisioning/device-registration-tokens/${route.data.deviceRegistrationToken.name}/${to}`,
           }))}
         />
-      </Row>
+      }
+      alignItems="center"
+    >
       <View />
     </Layout>
   );

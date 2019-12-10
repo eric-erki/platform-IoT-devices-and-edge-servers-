@@ -40,7 +40,7 @@ const CreateServiceAccount = ({
   };
 
   return (
-    <Card title="Create Service Account">
+    <Card title="Create Service Account" size="medium">
       <Form onSubmit={handleSubmit(submit)}>
         {backendError && (
           <Alert
@@ -58,7 +58,7 @@ const CreateServiceAccount = ({
           name="description"
           ref={register}
         />
-        <Button title="Create service account" type="submit" />
+        <Button title="Create" type="submit" />
       </Form>
       <Row marginTop={4}>
         <Button

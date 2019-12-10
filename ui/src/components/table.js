@@ -8,23 +8,14 @@ const Container = styled(Column)``;
 
 Container.defaultProps = { borderRadius: 1, borderColor: 'white' };
 
-const Header = styled(Row)`
-  border-top-left-radius: 3px;
-  border-top-right-radius: 3px;
-`;
-
-Header.defaultProps = {
-  fontSize: 1,
-  fontWeight: 4,
-  color: 'black',
-  borderColor: 'white',
-  bg: 'white',
-};
-
 const Cell = styled(Row)`
   flex: 1 0 0%;
   overflow: hidden;
 `;
+
+Cell.defaultProps = {
+  padding: 3,
+};
 
 const CellContent = styled(Box)`
   white-space: nowrap;
@@ -34,21 +25,30 @@ const CellContent = styled(Box)`
 
 const TableRow = styled(Row)`
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  border-bottom: 1px solid ${props => props.theme.colors.whites[7]};
   cursor: ${props => (props.selectable ? 'pointer' : 'default')};
+  transition: border-color 150ms, background-color 150ms;
 
-  &:hover {
-    background-color: ${props => (props.selectable ? '#161616' : 'black')};
-  }
-
-  &:first-child {
-    border-top-left-radius: 3px;
-    border-top-right-radius: 3px;
-  }
+  ${props =>
+    props.selectable
+      ? `&:hover {
+          border-color: ${props => props.theme.colors.white} !important;
+          color: ${props => props.theme.colors.white};
+          background-color: ${props => props.theme.colors.whites[1]};
+        }`
+      : ''}
 `;
 
-Cell.defaultProps = {
-  padding: 3,
+const Header = styled(Row)`
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+`;
+
+Header.defaultProps = {
+  fontSize: 1,
+  fontWeight: 4,
+  color: 'black',
+  bg: 'white',
 };
 
 const Table = ({ columns, data, onRowSelect }) => {

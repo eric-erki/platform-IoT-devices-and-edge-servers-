@@ -23,7 +23,7 @@ const tabs = [
 const Device = ({ route }) => {
   return (
     <Layout title={route.data.params.device}>
-      <Row marginBottom={4}>
+      <Row marginBottom={5}>
         <Tabs
           content={tabs.map(({ to, title }) => ({
             title,

@@ -31,18 +31,16 @@ const Application = ({ route }) => {
 
   return (
     <Layout
-      title={`Application / ${route.data.application.name}`}
-      alignItems="center"
-    >
-      <Row marginBottom={4}>
+      header={
         <Tabs
           content={tabs.map(({ to, title }) => ({
             title,
             href: `/${route.data.params.project}/applications/${route.data.application.name}/${to}`,
           }))}
         />
-      </Row>
-
+      }
+      alignItems="center"
+    >
       <View />
     </Layout>
   );

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { Icon } from 'evergreen-ui';
+import { motion } from 'framer-motion';
 
 import { Column } from './core';
 
@@ -52,7 +53,7 @@ const CloseButton = styled.button`
   }
 `;
 
-const Dialog = ({ children, show, onClose }) => {
+const Popup = ({ children, show, onClose }) => {
   const node = useRef();
 
   const handleClick = e => {
@@ -98,4 +99,4 @@ const Dialog = ({ children, show, onClose }) => {
   );
 };
 
-export default Dialog;
+export default Popup;

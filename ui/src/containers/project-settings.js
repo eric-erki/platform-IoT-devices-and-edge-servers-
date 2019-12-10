@@ -9,7 +9,7 @@ import utils from '../utils';
 import Layout from '../components/layout';
 import Card from '../components/card';
 import Field from '../components/field';
-import Dialog from '../components/dialog';
+import Popup from '../components/popup';
 import { Text, Row, Button, Form, Input } from '../components/core';
 
 const validationSchema = {
@@ -27,7 +27,7 @@ const ProjectSettings = ({
     defaultValues: { name: project.name, datadogApiKey: project.datadogApiKey },
   });
   const navigation = useNavigation();
-  const [showDeleteDialog, setShowDeleteDialog] = React.useState();
+  const [showDeletePopup, setShowDeletePopup] = React.useState();
   const [confirmation, setConfirmation] = React.useState();
   const [backendError, setBackendError] = React.useState();
 
@@ -67,14 +67,24 @@ const ProjectSettings = ({
         }
       })
       .finally(() => {
-        setShowDeleteDialog(false);
+        setShowDeletePopup(false);
       });
   };
 
   return (
     <Layout alignItems="center">
       <>
-        <Card title="Project Settings">
+        <Card
+          title="Project Settings"
+          size="large"
+          actions={[
+            {
+              title: 'Delete',
+              variant: 'secondary',
+              onClick: () => setShowDeletePopup(true),
+            },
+          ]}
+        >
           <Form onSubmit={handleSubmit(submit)}>
             {backendError && (
               <Alert
@@ -98,24 +108,10 @@ const ProjectSettings = ({
               ref={register}
               errors={errors.datadogApiKey}
             />
-            <Button
-              type="submit"
-              title="Update Settings"
-              disabled={!formState.dirty}
-            />
+            <Button type="submit" title="Update" disabled={!formState.dirty} />
           </Form>
-          <Row marginTop={4}>
-            <Button
-              title="Delete Project"
-              variant="tertiary"
-              onClick={() => setShowDeleteDialog(true)}
-            />
-          </Row>
         </Card>
-        <Dialog
-          show={showDeleteDialog}
-          onClose={() => setShowDeleteDialog(false)}
-        >
+        <Popup show={showDeletePopup} onClose={() => setShowDeletePopup(false)}>
           <Card title="Delete Project" border>
             <Text>
               This action <strong>cannot</strong> be undone. This will
@@ -137,7 +133,7 @@ const ProjectSettings = ({
               />
             </Form>
           </Card>
-        </Dialog>
+        </Popup>
       </>
     </Layout>
   );

@@ -39,7 +39,7 @@ const Members = ({
   return (
     <Card
       title="Members"
-      size="large"
+      size="xlarge"
       actions={[{ href: 'add', title: 'Add member' }]}
     >
       <Table

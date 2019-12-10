@@ -17,6 +17,7 @@ const variants = {
     primary: {
       color: 'black',
       bg: 'primary',
+      border: 0,
       '&:not(:disabled):hover': {
         color: 'primary',
         bg: 'black',
@@ -25,6 +26,7 @@ const variants = {
     secondary: {
       color: 'white',
       bg: 'transparent',
+      border: 0,
       borderColor: 'white',
       '&:not(:disabled):hover': {
         color: 'black',
@@ -51,7 +53,6 @@ const defaultProps = {
   fontSize: 1,
   fontWeight: 4,
   borderRadius: 1,
-  border: 0,
   boxShadow: 0,
   display: 'flex',
   justifyContent: 'center',
@@ -65,14 +66,10 @@ export const Btn = styled.button`
   font-family: inherit;
   cursor: pointer;
   text-transform: capitalize;
-
-  &:disabled {
-    cursor: not-allowed;
-  }
-
   transition: all 250ms;
 
   &:disabled {
+    cursor: not-allowed;
     opacity: .4;
   }
 
@@ -88,16 +85,12 @@ export const LinkButton = styled.a`
   font-family: inherit;
   cursor: pointer;
   text-transform: capitalize;
+  transition: all 250ms;
 
   &:disabled {
     opacity: .4;
-  }
-
-  &:disabled {
     cursor: not-allowed;
   }
-
-  transition: all 250ms;
 
   ${space} ${layout} ${typography} ${color} ${border} ${shadow} ${flexbox}
 

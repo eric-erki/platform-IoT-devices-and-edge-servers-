@@ -38,7 +38,7 @@ const ProjectCreate = () => {
 
   return (
     <Layout alignItems="center">
-      <Card width={10} title="Create project">
+      <Card width={10} title="Create Project">
         <Form onSubmit={handleSubmit(submit)}>
           {backendError && (
             <Alert
@@ -57,7 +57,7 @@ const ProjectCreate = () => {
             ref={register}
             errors={errors.name}
           />
-          <Button type="submit" title="Create Project" />
+          <Button type="submit" title="Create" />
           <Row marginTop={4}>
             <Button title="Cancel" variant="tertiary" href="/projects" />
           </Row>

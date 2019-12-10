@@ -47,7 +47,7 @@ const CreateRole = ({
           //value={this.state.config}
           //onChange={value => this.setState({ config: value })}
         />
-        <Button marginTop={4} title="Create role" type="submit" />
+        <Button marginTop={4} title="Create" type="submit" />
       </Form>
       <Row marginTop={4}>
         <Button

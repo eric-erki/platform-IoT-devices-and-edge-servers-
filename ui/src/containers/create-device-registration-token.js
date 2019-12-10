@@ -47,7 +47,7 @@ const CreateDeviceRegistrationToken = ({
 
   return (
     <Layout alignItems="center">
-      <Card title="Create Device Registration Token">
+      <Card title="Create Device Registration Token" size="medium">
         {backendError && (
           <Alert
             marginBottom={16}
@@ -73,7 +73,7 @@ const CreateDeviceRegistrationToken = ({
             hint="Leave empty to allow unlimited registrations"
             ref={register}
           />
-          <Button title="Create Device Registration Token" type="submit" />
+          <Button title="Create" type="submit" />
         </Form>
 
         <Row marginTop={4}>

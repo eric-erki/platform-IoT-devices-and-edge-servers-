@@ -9,7 +9,7 @@ import utils from '../../utils';
 import Editor from '../../components/editor';
 import Card from '../../components/card';
 import Field from '../../components/field';
-import Dialog from '../../components/dialog';
+import Popup from '../../components/popup';
 import { Row, Text, Button, Form } from '../../components/core';
 
 const validationSchema = yup.object().shape({
@@ -32,7 +32,7 @@ const Role = ({
   });
   const navigation = useNavigation();
   const [backendError, setBackendError] = useState();
-  const [showDeleteDialog, setShowDeleteDialog] = useState();
+  const [showDeletePopup, setShowDeletePopup] = useState();
 
   const submit = async data => {
     setBackendError(null);
@@ -68,71 +68,74 @@ const Role = ({
         console.log(error);
       }
     }
-    setShowDeleteDialog(false);
+    setShowDeletePopup(false);
   };
 
   return (
-    <Card title={role.name}>
-      <Form onSubmit={handleSubmit(submit)}>
-        {backendError && (
-          <Alert
-            marginBottom={16}
-            paddingTop={16}
-            paddingBottom={16}
-            intent="warning"
-            title={backendError}
+    <>
+      <Card
+        title={role.name}
+        actions={[
+          {
+            title: 'Delete',
+            onClick: () => setShowDeletePopup(true),
+            variant: 'secondary',
+          },
+        ]}
+      >
+        <Form onSubmit={handleSubmit(submit)}>
+          {backendError && (
+            <Alert
+              marginBottom={16}
+              paddingTop={16}
+              paddingBottom={16}
+              intent="warning"
+              title={backendError}
+            />
+          )}
+          <Field
+            autoFocus
+            required
+            label="Name"
+            name="name"
+            ref={register}
+            errors={errors.name}
           />
-        )}
-        <Field
-          autoFocus
-          required
-          label="Name"
-          name="name"
-          ref={register}
-          errors={errors.name}
-        />
-        <Field
-          type="textarea"
-          label="Description"
-          name="description"
-          ref={register}
-          errors={errors.description}
-        />
-        <Field
-          as={<Editor width="100%" height="160px" />}
-          label="Config"
-          name="config"
-          register={register}
-          setValue={setValue}
-        />
-        <Button
-          marginTop={4}
-          title="Update Role"
-          type="submit"
-          disabled={!formState.dirty}
-        />
-      </Form>
-      <Row marginTop={4}>
-        <Button
-          variant="tertiary"
-          title="Delete Role"
-          onClick={() => setShowDeleteDialog(true)}
-        />
-      </Row>
-
-      <Dialog
-        show={showDeleteDialog}
+          <Field
+            type="textarea"
+            label="Description"
+            name="description"
+            ref={register}
+            errors={errors.description}
+          />
+          <Field
+            as={<Editor width="100%" height="160px" />}
+            label="Config"
+            name="config"
+            register={register}
+            setValue={setValue}
+          />
+          <Button
+            marginTop={4}
+            title="Update"
+            type="submit"
+            disabled={!formState.dirty}
+          />
+        </Form>
+      </Card>
+      <Popup
+        show={showDeletePopup}
         title="Delete Role"
-        onClose={() => setShowDeleteDialog(false)}
+        onClose={() => setShowDeletePopup(false)}
       >
         <Card title="Delete Role" border>
           <Text>
             You are about to delete the <strong>{role.name}</strong> role.
           </Text>
-          <Button marginTop={4} title="Delete Role" onClick={submitDelete} />
+          <Button marginTop={4} title="Delete" onClick={submitDelete} />
         </Card>
-      </Dialog>
-    </Card>
+      </Popup>
+    </>
   );
 };
 

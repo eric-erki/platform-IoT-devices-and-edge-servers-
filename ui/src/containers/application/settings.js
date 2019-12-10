@@ -7,7 +7,7 @@ import { Alert, toaster } from 'evergreen-ui';
 import api from '../../api';
 import utils from '../../utils';
 import Card from '../../components/card';
-import Dialog from '../../components/dialog';
+import Popup from '../../components/popup';
 import Field from '../../components/field';
 import { Row, Button, Text, Form } from '../../components/core';
 
@@ -29,7 +29,7 @@ const ApplicationSettings = ({
     },
   });
   const [backendError, setBackendError] = useState();
-  const [showDeleteDialog, setShowDeleteDialog] = useState();
+  const [showDeletePopup, setShowDeletePopup] = useState();
   const navigation = useNavigation();
 
   const submit = data => {
@@ -72,12 +72,22 @@ const ApplicationSettings = ({
           console.log(error);
         }
       })
-      .finally(() => setShowDeleteDialog(false));
+      .finally(() => setShowDeletePopup(false));
   };
 
   return (
     <>
-      <Card title="Application Settings">
+      <Card
+        title="Application Settings"
+        size="medium"
+        actions={[
+          {
+            title: 'Delete',
+            onClick: () => setShowDeletePopup(true),
+            variant: 'secondary',
+          },
+        ]}
+      >
         {backendError && (
           <Alert
             marginBottom={16}
@@ -91,7 +101,7 @@ const ApplicationSettings = ({
           <Field
             autoFocus
             required
-            label="Application Name"
+            label="Name"
             name="name"
             ref={register}
             errors={errors.name}
@@ -103,38 +113,18 @@ const ApplicationSettings = ({
             ref={register}
             errors={errors.description}
           />
-          <Button
-            title="Update Settings"
-            type="submit"
-            disabled={!formState.dirty}
-          >
-            Update Settings
-          </Button>
+          <Button title="Update" type="submit" disabled={!formState.dirty} />
         </Form>
-        <Row marginTop={4}>
-          <Button
-            title="Delete Applicaton"
-            variant="tertiary"
-            onClick={() => setShowDeleteDialog(true)}
-          />
-        </Row>
       </Card>
-      <Dialog
-        show={showDeleteDialog}
-        onClose={() => setShowDeleteDialog(false)}
-      >
-        <Card title="Delete Application" border>
+      <Popup show={showDeletePopup} onClose={() => setShowDeletePopup(false)}>
+        <Card title="Delete Application" border size="medium">
           <Text>
             You are about to delete the <strong>{application.name}</strong>{' '}
             application.
           </Text>
-          <Button
-            marginTop={4}
-            title="Delete Application"
-            onClick={submitDelete}
-          />
+          <Button marginTop={4} title="Delete" onClick={submitDelete} />
         </Card>
-      </Dialog>
+      </Popup>
     </>
   );
 };

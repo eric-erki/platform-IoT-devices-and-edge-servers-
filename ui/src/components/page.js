@@ -1,12 +1,9 @@
 import React from 'react';
-import { useLoadingRoute, NotFoundBoundary } from 'react-navi';
-import { ThemeProvider } from 'styled-components';
+import { NotFoundBoundary } from 'react-navi';
 import { createGlobalStyle } from 'styled-components/macro';
 
-import theme from '../theme';
 import { Box } from './core';
 import NotFound from './not-found';
-import Spinner from './spinner';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -22,14 +19,13 @@ const GlobalStyle = createGlobalStyle`
     font-weight: 400;
     line-height: 1.2;
     background-color: #222222;
-
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
   }
 
   body {
     margin: 0;
     padding: 0;
+    text-rendering: optimizelegibility;
+    -webkit-font-smoothing: antialiased;
   }
 
   html, body, main, #root, #root > div  {
@@ -38,20 +34,15 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 const Page = ({ children }) => {
-  const loadingRoute = useLoadingRoute();
-
   return (
-    <ThemeProvider theme={theme}>
-      <>
-        <GlobalStyle theme={theme} />
-        <Box>
-          <Spinner show={!!loadingRoute} />
-          <main>
-            <NotFoundBoundary render={NotFound}>{children}</NotFoundBoundary>
-          </main>
-        </Box>
-      </>
-    </ThemeProvider>
+    <>
+      <GlobalStyle />
+      <Box>
+        <main>
+          <NotFoundBoundary render={NotFound}>{children}</NotFoundBoundary>
+        </main>
+      </Box>
+    </>
   );
 };
 

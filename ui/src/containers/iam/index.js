@@ -25,15 +25,17 @@ const Iam = ({ route }) => {
     return null;
   }
   return (
-    <Layout title="IAM" alignItems="center">
-      <Row marginBottom={4}>
+    <Layout
+      header={
         <Tabs
           content={tabs.map(({ to, title }) => ({
             title,
             href: `/${route.data.params.project}/${to}`,
           }))}
         />
-      </Row>
+      }
+      alignItems="center"
+    >
       <View />
     </Layout>
   );

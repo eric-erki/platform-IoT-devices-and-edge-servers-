@@ -8,7 +8,7 @@ import api from '../../api';
 import utils from '../../utils';
 import Card from '../../components/card';
 import Field from '../../components/field';
-import Dialog from '../../components/dialog';
+import Popup from '../../components/popup';
 import { Row, Text, Form, Button } from '../../components/core';
 
 const validationSchema = yup.object().shape({
@@ -28,7 +28,7 @@ const DeviceSettings = ({
   });
   const navigation = useNavigation();
   const [backendError, setBackendError] = useState();
-  const [showDialog, setShowDialog] = useState();
+  const [showPopup, setShowPopup] = useState();
 
   const submit = data => {
     api
@@ -67,13 +67,16 @@ const DeviceSettings = ({
         }
       })
       .finally(() => {
-        setShowDialog(false);
+        setShowPopup(false);
       });
   };
 
   return (
     <>
-      <Card title="Device Settings">
+      <Card
+        title="Device Settings"
+        actions={[{ title: 'Remove', onClick: () => setShowPopup(true) }]}
+      >
         {backendError && (
           <Alert
             marginBottom={16}
@@ -94,29 +97,18 @@ const DeviceSettings = ({
         </Text>
         <Form onSubmit={handleSubmit(submit)}>
           <Field label="Name" name="name" ref={register} errors={errors.name} />
-          <Button
-            type="submit"
-            title="Update Settings"
-            disabled={!formState.dirty}
-          />
+          <Button type="submit" title="Update" disabled={!formState.dirty} />
         </Form>
-        <Row marginTop={4}>
-          <Button
-            title="Remove Device"
-            variant="tertiary"
-            onClick={() => setShowDialog(true)}
-          />
-        </Row>
       </Card>
-      <Dialog show={showDialog} onClose={() => setShowDialog(false)}>
+      <Popup show={showPopup} onClose={() => setShowPopup(false)}>
         <Card title="Remove Device">
           <Text>
             You are about to remove the <strong>{device.name}</strong> device.
           </Text>
 
-          <Button marginTop={4} title="Remove Device" onClick={submitDelete} />
+          <Button marginTop={4} title="Remove" onClick={submitDelete} />
         </Card>
-      </Dialog>
+      </Popup>
     </>
   );
 };

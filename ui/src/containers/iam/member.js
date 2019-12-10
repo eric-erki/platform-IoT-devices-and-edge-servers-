@@ -5,7 +5,7 @@ import { Alert, toaster } from 'evergreen-ui';
 
 import api from '../../api';
 import Card from '../../components/card';
-import Dialog from '../../components/dialog';
+import Popup from '../../components/popup';
 import Field from '../../components/field';
 import {
   Row,
@@ -32,7 +32,7 @@ const Member = ({
       ),
     },
   });
-  const [showRemoveDialog, setShowRemoveDialog] = useState();
+  const [showRemovePopup, setShowRemovePopup] = useState();
   const navigation = useNavigation();
 
   const removeMember = async () => {
@@ -94,11 +94,18 @@ const Member = ({
 
   return (
     <>
-      <Card>
-        <Heading
-          fontSize={5}
-        >{`${member.user.firstName} ${member.user.lastName}`}</Heading>
-        <Text color="whites.7">{member.user.email}</Text>
+      <Card
+        title={`${member.user.firstName} ${member.user.lastName}`}
+        subtitle={member.user.email}
+        size="medium"
+        actions={[
+          {
+            title: 'Remove',
+            onClick: () => setShowRemovePopup(true),
+            variant: 'secondary',
+          },
+        ]}
+      >
         <Form onSubmit={handleSubmit(submit)}>
           <Text marginTop={4} marginBottom={2} fontWeight={3}>
             Choose Individual Roles
@@ -114,23 +121,16 @@ const Member = ({
           ))}
           <Button
             marginTop={2}
-            title="Update Member"
+            title="Update"
             type="submit"
             disabled={!formState.dirty}
           />
         </Form>
-        <Row marginTop={4}>
-          <Button
-            variant="tertiary"
-            title="Remove Member"
-            onClick={() => setShowRemoveDialog(true)}
-          />
-        </Row>
       </Card>
-      <Dialog
-        show={showRemoveDialog}
+      <Popup
+        show={showRemovePopup}
         title="Remove Member"
-        onClose={() => setShowRemoveDialog(false)}
+        onClose={() => setShowRemovePopup(false)}
       >
         <Card title="Remove Member" border>
           <Text>
@@ -142,7 +142,7 @@ const Member = ({
           </Text>
           <Button marginTop={4} title="Remove Member" onClick={removeMember} />
         </Card>
-      </Dialog>
+      </Popup>
     </>
   );
 };

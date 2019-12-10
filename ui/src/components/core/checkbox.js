@@ -40,6 +40,7 @@ const StyledCheckbox = styled.div`
 const Container = styled.div`
   display: flex;
   align-items: center;
+  user-select: none;
 
   ${space}
 `;

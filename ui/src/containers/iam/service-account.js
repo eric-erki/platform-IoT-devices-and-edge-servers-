@@ -7,7 +7,7 @@ import api from '../../api';
 import utils from '../../utils';
 import Card from '../../components/card';
 import Field from '../../components/field';
-import Dialog from '../../components/dialog';
+import Popup from '../../components/popup';
 import Table from '../../components/table';
 import { Text, Row, Button, Form, Heading } from '../../components/core';
 
@@ -49,7 +49,7 @@ const ServiceAccount = ({
   const [roleBindings, setRoleBindings] = useState(
     createRoleBindings(serviceAccount, roles)
   );
-  const [showDeleteDialog, setShowDeleteDialog] = useState();
+  const [showDeletePopup, setShowDeletePopup] = useState();
 
   const handleUpdateRoles = event => {
     let newRoleBindings = [];
@@ -178,77 +178,74 @@ const ServiceAccount = ({
       toaster.danger('Service account was not deleted.');
       console.log(error);
     }
-    setShowDeleteDialog(false);
+    setShowDeletePopup(false);
   };
 
   return (
-    <Card title={serviceAccount.name} size="large">
-      <Form onSubmit={handleSubmit(submit)}>
-        <Field label="Name" name="name" ref={register} errors={errors.name} />
-        <Field
-          type="textarea"
-          label="Description"
-          name="description"
-          ref={register}
-          errors={errors.description}
-        />
-        <Text fontSize={2} marginBottom={2}>
-          Choose Individual Roles
-        </Text>
-        {roleBindings.map(role => (
-          <Checkbox
-            key={role.id}
-            id={role.id}
-            label={role.name}
-            checked={role.hasRoleBinding}
-            onChange={handleUpdateRoles}
-          />
-        ))}
-        <Button
-          title="Update Service Account"
-          type="submit"
-          marginTop={4}
-          disabled={!formState.dirty}
-        />
-      </Form>
-      <Row marginTop={4}>
-        <Button
-          title="Delete Service Account"
-          variant="tertiary"
-          onClick={() => setShowDeleteDialog(true)}
+    <>
+      <Row flex={1}>
+        <Card
+          title={serviceAccount.name}
+          marginRight={5}
+          actions={[
+            {
+              title: 'Delete',
+              onClick: () => setShowDeletePopup(true),
+              variant: 'secondary',
+            },
+          ]}
+        >
+          <Form onSubmit={handleSubmit(submit)}>
+            <Field
+              label="Name"
+              name="name"
+              ref={register}
+              errors={errors.name}
+            />
+            <Field
+              type="textarea"
+              label="Description"
+              name="description"
+              ref={register}
+              errors={errors.description}
+            />
+            <Text fontSize={2} marginBottom={2}>
+              Choose Individual Roles
+            </Text>
+            {roleBindings.map(role => (
+              <Checkbox
+                key={role.id}
+                id={role.id}
+                label={role.name}
+                checked={role.hasRoleBinding}
+                onChange={handleUpdateRoles}
+              />
+            ))}
+            <Button
+              title="Update"
+              type="submit"
+              marginTop={4}
+              disabled={!formState.dirty}
+            />
+          </Form>
+        </Card>
+
+        <ServiceAccountAccessKeys
+          projectId={params.project}
+          serviceAccount={serviceAccount}
         />
       </Row>
 
-      <ServiceAccountAccessKeys
-        projectId={params.project}
-        serviceAccount={serviceAccount}
-      />
-
-      <Dialog
-        show={showDeleteDialog}
-        title="Delete Service Account"
-        onClose={() => setShowDeleteDialog(false)}
-      >
+      <Popup show={showDeletePopup} onClose={() => setShowDeletePopup(false)}>
         <Card title="Delete Service Account" border>
           <Text>
             You are about to delete the <strong>{serviceAccount.name}</strong>{' '}
             service account.
           </Text>
-          <Button
-            marginTop={4}
-            title="Delete Service Account"
-            onClick={submitDelete}
-          />
-          <Row marginTop={4}>
-            <Button
-              title="Cancel"
-              variant="tertiary"
-              onClick={() => setShowDeleteDialog(false)}
-            />
-          </Row>
+          <Button marginTop={4} title="Delete" onClick={submitDelete} />
         </Card>
-      </Dialog>
-    </Card>
+      </Popup>
+    </>
   );
 };
 
@@ -271,7 +268,8 @@ const ServiceAccountAccessKeys = ({ projectId, serviceAccount }) => {
         Header: ' ',
         Cell: ({ row }) => (
           <Button
-            title="Delete Access Key"
+            title="Delete"
+            variant="tertiary"
             onClick={() => deleteAccessKey(row.original.id)}
           />
         ),
@@ -336,39 +334,34 @@ const ServiceAccountAccessKeys = ({ projectId, serviceAccount }) => {
     }
   };
 
-  const closeAccessKeyDialog = () => {
-    showAccessKeyCreated(false);
+  const closeAccessKeyPopup = () => {
+    setShowAccessKeyCreated(false);
     fetchAccessKeys();
   };
 
   return (
     <>
-      <Row
-        alignItems="flex-end"
-        borderTop={0}
-        borderColor="white"
-        marginTop={4}
-        justifyContent="space-between"
-        paddingTop={4}
-        marginBottom={2}
+      <Card
+        title="Access Keys"
+        size="xlarge"
+        actions={[{ title: 'Create', onClick: createAccessKey }]}
       >
-        <Heading fontSize={4}>Access Keys</Heading>
-        <Button title="Create Access Key" onClick={createAccessKey} />
-      </Row>
-      {backendError && (
-        <Alert
-          marginBottom={16}
-          paddingTop={16}
-          paddingBottom={16}
-          intent="warning"
-          title={backendError}
-        />
-      )}
-      <Table columns={columns} data={tableData} />
-      <Dialog
+        {backendError && (
+          <Alert
+            marginBottom={16}
+            paddingTop={16}
+            paddingBottom={16}
+            intent="warning"
+            title={backendError}
+          />
+        )}
+        <Table columns={columns} data={tableData} />
+      </Card>
+
+      <Popup
         show={showAccessKeyCreated}
         title="Access Key Created"
-        onClose={closeAccessKeyDialog}
+        onClose={closeAccessKeyPopup}
       >
         <Card title="Access Key Created" border>
           <Text fontWeight={3} marginBottom={2}>
@@ -378,12 +371,14 @@ const ServiceAccountAccessKeys = ({ projectId, serviceAccount }) => {
 
           <Alert
             intent="warning"
+            marginTop={16}
+            paddingY={16}
             title="Save the info above! This is the only time you'll be able to use it."
           >
             {`If you lose it, you'll need to create a new access key.`}
           </Alert>
         </Card>
-      </Dialog>
+      </Popup>
     </>
   );
 };

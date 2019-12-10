@@ -20,7 +20,7 @@ const Input = styled.input`
   }
 
   &:-internal-autofill-selected {
-    background-color: #181818 !important;
+    background: #181818 !important;
   }
 
   ${space} ${border} ${layout} ${color} ${typography} ${shadow}
@@ -28,7 +28,7 @@ const Input = styled.input`
 
 Input.defaultProps = {
   color: 'white',
-  bg: 'background',
+  bg: 'whites.1',
   padding: 3,
   borderRadius: 1,
   boxShadow: 0,

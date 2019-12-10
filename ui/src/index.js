@@ -2,24 +2,29 @@ import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import { Router, View } from 'react-navi';
 import HelmetProvider from 'react-navi-helmet-async';
+import { ThemeProvider } from 'styled-components';
 import { Provider } from 'react-redux';
 
 import routes from './routes';
 import * as serviceWorker from './serviceWorker';
 import store from './store';
+import theme from './theme';
 
 import Page from './components/page';
+import Spinner from './components/spinner';
 
 const App = () => {
   return (
     <Provider store={store}>
       <HelmetProvider>
         <Router routes={routes}>
-          <Page>
-            <Suspense fallback={null}>
-              <View />
-            </Suspense>
-          </Page>
+          <ThemeProvider theme={theme}>
+            <Page>
+              <Suspense fallback={<Spinner />}>
+                <View />
+              </Suspense>
+            </Page>
+          </ThemeProvider>
         </Router>
       </HelmetProvider>
     </Provider>

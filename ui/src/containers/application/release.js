@@ -7,7 +7,7 @@ import api from '../../api';
 import utils from '../../utils';
 import Editor from '../../components/editor';
 import Card from '../../components/card';
-import Dialog from '../../components/dialog';
+import Popup from '../../components/popup';
 import { Column, Text, Button, Link } from '../../components/core';
 
 const ReleasedBy = ({ project, release }) => {
@@ -37,7 +37,7 @@ const Release = ({
   },
 }) => {
   const [backendError, setBackendError] = useState();
-  const [showConfirmDialog, setShowConfirmDialog] = useState();
+  const [showConfirmPopup, setShowConfirmPopup] = useState();
   const navigation = useNavigation();
 
   const revertRelease = async () => {
@@ -55,7 +55,7 @@ const Release = ({
         console.log(error);
       }
     }
-    setShowConfirmDialog(false);
+    setShowConfirmPopup(false);
   };
 
   return (
@@ -99,14 +99,11 @@ const Release = ({
         <Button
           marginTop={4}
           title="Revert to this Release"
-          onClick={() => setShowConfirmDialog(true)}
+          onClick={() => setShowConfirmPopup(true)}
         />
       </Card>
 
-      <Dialog
-        show={showConfirmDialog}
-        onClose={() => setShowConfirmDialog(false)}
-      >
+      <Popup show={showConfirmPopup} onClose={() => setShowConfirmPopup(false)}>
         <Card title="Revert Release" border>
           <Text>
             This will create a new release to application{' '}
@@ -119,7 +116,7 @@ const Release = ({
             onClick={revertRelease}
           />
         </Card>
-      </Dialog>
+      </Popup>
     </>
   );
 };

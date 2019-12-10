@@ -6,17 +6,23 @@ import Logo from './icons/logo';
 import { Column, Row, Text, Button, Link } from './core';
 
 const Container = styled(Column)`
+  width: 100%;
+
   ${variant({
     variants: {
       small: {
-        width: 9,
+        maxWidth: 9,
       },
       medium: {
-        width: 11,
+        maxWidth: 11,
         boxShadow: 1,
       },
       large: {
-        width: 13,
+        maxWidth: 12,
+        boxShadow: 1,
+      },
+      xlarge: {
+        maxWidth: 13,
         boxShadow: 1,
       },
       full: {
@@ -28,13 +34,15 @@ const Container = styled(Column)`
 `;
 
 const Card = ({
-  size = 'medium',
+  size = 'large',
   title,
+  subtitle,
   top = null,
   border = false,
   logo,
   actions = [],
   children,
+  ...props
 }) => {
   return (
     <Container
@@ -46,6 +54,7 @@ const Card = ({
       border={border ? 0 : undefined}
       borderColor="white"
       boxShadow={1}
+      {...props}
     >
       {logo && (
         <Link href="https://deviceplane.com" marginX="auto" marginBottom={6}>
@@ -60,10 +69,17 @@ const Card = ({
           marginBottom={5}
           borderColor="white"
         >
-          <Text fontSize={5} fontWeight={3}>
-            {title}
-          </Text>
-          <Row>
+          <Column>
+            <Text fontSize={5} fontWeight={3}>
+              {title}
+            </Text>
+            {subtitle && (
+              <Text fontSize={1} fontWeight={2} color="whites.7">
+                {subtitle}
+              </Text>
+            )}
+          </Column>
+          <Row marginLeft={7}>
             {actions.map(
               ({ href, variant = 'primary', title, onClick, show = true }) =>
                 show && (
@@ -73,7 +89,7 @@ const Card = ({
                     href={href}
                     variant={variant}
                     onClick={onClick}
-                    marginLeft={4}
+                    marginLeft={5}
                   />
                 )
             )}

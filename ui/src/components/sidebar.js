@@ -72,7 +72,7 @@ const Sidebar = () => {
 
   return (
     <Column width={136} alignSelf="stretch" bg="black" alignItems="center">
-      <Row paddingY={4}>
+      <Row paddingY={5}>
         <Link href="/">
           <Logo />
         </Link>

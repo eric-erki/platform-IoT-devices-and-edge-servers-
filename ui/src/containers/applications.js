@@ -34,7 +34,7 @@ const Applications = ({
     <Layout title="Applications" alignItems="center">
       <Card
         title="Applications"
-        size="large"
+        size="xlarge"
         actions={[{ title: 'Create Application', href: 'create' }]}
       >
         <Table

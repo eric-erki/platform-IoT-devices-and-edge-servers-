@@ -7,7 +7,7 @@ import api from '../../api';
 import utils from '../../utils';
 import Card from '../../components/card';
 import Field from '../../components/field';
-import Dialog from '../../components/dialog';
+import Popup from '../../components/popup';
 import { Text, Row, Button, Form } from '../../components/core';
 
 const DeviceRegistrationTokenSettings = ({
@@ -23,7 +23,7 @@ const DeviceRegistrationTokenSettings = ({
       maxRegistrations: deviceRegistrationToken.maxRegistrations,
     },
   });
-  const [showDeleteDialog, setShowDeleteDialog] = useState();
+  const [showDeletePopup, setShowDeletePopup] = useState();
   const [backendError, setBackendError] = useState();
 
   const submit = async data => {
@@ -62,11 +62,20 @@ const DeviceRegistrationTokenSettings = ({
         console.log(error);
       }
     }
-    setShowDeleteDialog(false);
+    setShowDeletePopup(false);
   };
 
   return (
-    <Card title="Device Registration Token Settings">
+    <Card
+      title="Device Registration Token Settings"
+      actions={[
+        {
+          title: 'Delete',
+          onClick: () => setShowDeletePopup(true),
+          variant: 'secondary',
+        },
+      ]}
+    >
       {backendError && (
         <Alert
           marginBottom={16}
@@ -93,32 +102,18 @@ const DeviceRegistrationTokenSettings = ({
           errors={errors.maxRegistrations}
           ref={register}
         />
-        <Button title="Update Settings" disabled={!formState.dirty} />
+        <Button title="Update" disabled={!formState.dirty} />
       </Form>
-      <Row marginTop={4}>
-        <Button
-          title="Delete Device Registration Token"
-          variant="tertiary"
-          onClick={() => setShowDeleteDialog(true)}
-        />
-      </Row>
-      <Dialog
-        show={showDeleteDialog}
-        onClose={() => setShowDeleteDialog(false)}
-      >
+      <Popup show={showDeletePopup} onClose={() => setShowDeletePopup(false)}>
         <Card title="Delete Device Registration Token" border>
           <Text>
             You are about to delete the{' '}
             <strong>{deviceRegistrationToken.name}</strong> Device Registration
             Token.
           </Text>
-          <Button
-            title="Delete Device Registration Token"
-            marginTop={4}
-            onClick={submitDelete}
-          />
+          <Button title="Delete" marginTop={4} onClick={submitDelete} />
         </Card>
-      </Dialog>
+      </Popup>
     </Card>
   );
 };

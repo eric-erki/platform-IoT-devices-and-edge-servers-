@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { logout } from '../actions';
 import { Row, Text } from './core';
-import Dialog from './dialog';
+import Popup from './popup';
 import Popover from './popover';
 import Avatar from './avatar';
 import CliDownload from '../containers/cli-download';
@@ -56,19 +56,19 @@ const AvatarMenu = () => {
 
   return (
     <>
-      <Dialog show={showCLI} onClose={() => setShowCLI(false)}>
+      <Popup show={showCLI} onClose={() => setShowCLI(false)}>
         <CliDownload />
-      </Dialog>
-      <Dialog show={showUserProfile} onClose={() => setShowUserProfile(false)}>
+      </Popup>
+      <Popup show={showUserProfile} onClose={() => setShowUserProfile(false)}>
         <Profile user={user} close={() => setShowUserProfile(false)} />
-      </Dialog>
-      <Dialog
+      </Popup>
+      <Popup
         show={showUserAccessKeys}
         onClose={() => setShowUserAccessKeys(false)}
       >
         <UserAccessKeys user={user} />
-      </Dialog>
-      <Dialog
+      </Popup>
+      <Popup
         show={showChangePassword}
         onClose={() => setShowChangePassword(false)}
       >
@@ -76,7 +76,7 @@ const AvatarMenu = () => {
           user={user}
           close={() => setShowChangePassword(false)}
         />
-      </Dialog>
+      </Popup>
       <Popover
         content={({ close }) => (
           <>

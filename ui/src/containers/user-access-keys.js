@@ -5,11 +5,13 @@ import api from '../api';
 import utils from '../utils';
 import Card from '../components/card';
 import Table from '../components/table';
+import Popup from '../components/popup';
 import { Button } from '../components/core';
 
 const UserAccessKeys = () => {
   const [accessKeys, setAccessKeys] = useState([]);
   const [backendError, setBackendError] = useState();
+  const [showPopup, setShowPopup] = useState();
 
   const fetchAccessKeys = () => {
     api
@@ -67,7 +69,7 @@ const UserAccessKeys = () => {
         Header: ' ',
         Cell: ({ row }) => (
           <Button
-            title="Delete Access Key"
+            title="Delete"
             variant="tertiary"
             onClick={() => deleteAccessKey(row.original.id)}
           />
@@ -81,9 +83,9 @@ const UserAccessKeys = () => {
   return (
     <>
       <Card
+        border
         title="User Access Keys"
         size="large"
-        border
         actions={[{ title: 'Create Access Key', onClick: createAccessKey }]}
       >
         {backendError && (
@@ -97,6 +99,7 @@ const UserAccessKeys = () => {
         )}
         <Table columns={columns} data={tableData} />
       </Card>
+      <Popup show={true} onClose={() => setShowPopup(false)} />
     </>
   );
 };

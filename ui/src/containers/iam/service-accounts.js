@@ -16,7 +16,7 @@ const ServiceAccounts = ({
   return (
     <Card
       title="Service Accounts"
-      size="large"
+      size="xlarge"
       actions={[
         {
           href: `create`,
