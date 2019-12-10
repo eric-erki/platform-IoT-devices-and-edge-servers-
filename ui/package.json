@@ -25,7 +25,7 @@
     "react-router": "^5.0.0",
     "react-router-dom": "^5.0.0",
     "react-scripts": "2.1.5",
-    "react-spinkit": "^3.0.0",
+    "react-spinners": "^0.6.1",
     "react-spring": "^8.0.27",
     "react-table": "^7.0.0-rc.5",
     "redux": "^4.0.4",

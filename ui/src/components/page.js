@@ -37,7 +37,7 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-const Page = ({ children, light }) => {
+const Page = ({ children }) => {
   const loadingRoute = useLoadingRoute();
 
   return (
@@ -45,7 +45,7 @@ const Page = ({ children, light }) => {
       <>
         <GlobalStyle theme={theme} />
         <Box>
-          <Spinner show={!!loadingRoute} />
+          <Spinner show={true || !!loadingRoute} />
           <main>
             <NotFoundBoundary render={NotFound}>{children}</NotFoundBoundary>
           </main>

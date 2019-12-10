@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import useForm from 'react-hook-form';
 import { useNavigation } from 'react-navi';
+import { Alert, toaster } from 'evergreen-ui';
 
 import api from '../../api';
 import Card from '../../components/card';
 import Field from '../../components/field';
-import { Row, Button, Form } from '../../components/core';
-
-const validationSchema = {};
+import Dialog from '../../components/dialog';
+import { Text, Row, Button, Form } from '../../components/core';
 
 const DeviceRegistrationTokenSettings = ({
   route: {
@@ -21,18 +21,41 @@ const DeviceRegistrationTokenSettings = ({
       description: deviceRegistrationToken.description,
       maxRegistrations: deviceRegistrationToken.maxRegistrations || 'Unlimited',
     },
-    validationSchema,
   });
   const [showDeleteDialog, setShowDeleteDialog] = useState();
+  const [backendError, setBackendError] = useState();
 
-  const submit = data => {
-    api.updateDeviceRegistrationToken(data).then(() => {
+  const submit = async data => {
+    setBackendError(null);
+    try {
+      await api.updateDeviceRegistrationToken({
+        projectId: params.project,
+        tokenId: deviceRegistrationToken.id,
+        data,
+      });
       navigation.navigate(`/${params.projectId}/provisioning`);
-    });
+      toaster.success('Device Registration Token updated successfully.');
+    } catch (error) {
+      console.log(error);
+      toaster.danger('Device Registration Token was not updated.');
+    }
+  };
+
+  const submitDelete = async () => {
+    setBackendError(null);
   };
 
   return (
     <Card title="Device Registration Token Settings">
+      {backendError && (
+        <Alert
+          marginBottom={16}
+          paddingTop={16}
+          paddingBottom={16}
+          intent="warning"
+          title={backendError}
+        />
+      )}
       <Form onSubmit={handleSubmit(submit)}>
         <Field label="Name" name="name" ref={register} errors={errors.name} />
         <Field
@@ -59,18 +82,23 @@ const DeviceRegistrationTokenSettings = ({
           onClick={() => setShowDeleteDialog(true)}
         />
       </Row>
-      {/* <Dialog
-          isShown={this.state.showDeleteDialog}
-          title="Delete Device Registration Token"
-          intent="danger"
-          onCloseComplete={() => this.setState({ showDeleteDialog: false })}
-          onConfirm={() => this.handleDelete()}
-          confirmLabel="Delete Device Registration Token"
-        >
-          You are about to delete the{" "}
-          <strong>{this.props.deviceRegistrationToken.name}</strong> Device
-          Registration Token.
-        </Dialog> */}
+      <Dialog
+        show={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+      >
+        <Card title="Delete Device Registration Token">
+          <Text>
+            You are about to delete the{' '}
+            <strong>{deviceRegistrationToken.name}</strong> Device Registration
+            Token.
+          </Text>
+          <Button
+            title="Delete Device Registration Token"
+            marginTop={4}
+            onClick={submitDelete}
+          />
+        </Card>
+      </Dialog>
     </Card>
   );
 };
@@ -124,7 +152,6 @@ export default DeviceRegistrationTokenSettings;
 //   }
 // )
 // .then(response => {
-//   toaster.success('Device Registration Token updated successfully.');
 
 // })
 // .catch(error => {
@@ -133,8 +160,7 @@ export default DeviceRegistrationTokenSettings;
 //       backendError: utils.convertErrorMessage(error.response.data)
 //     });
 //   } else {
-//     toaster.danger('Device Registration Token was not updated.');
-//     console.log(error);
+
 //   }
 // });
 //};

@@ -99,12 +99,10 @@ const api = {
 
   updateDeviceRegistrationToken: ({
     projectId,
-    name,
-    description,
-    maxRegistrations,
-    settings,
+    tokenId,
+    data: { name, description, maxRegistrations, settings },
   }) =>
-    put(`projects/${projectId}/deviceregistrationtokens/${name}`, {
+    put(`projects/${projectId}/deviceregistrationtokens/${tokenId}`, {
       name,
       description,
       maxRegistrations,
