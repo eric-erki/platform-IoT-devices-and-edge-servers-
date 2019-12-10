@@ -9,7 +9,7 @@ import Card from '../../components/card';
 import Field from '../../components/field';
 import Popup from '../../components/popup';
 import Table from '../../components/table';
-import { Text, Row, Button, Form, Heading } from '../../components/core';
+import { Text, Row, Button, Form } from '../../components/core';
 
 const createRoleBindings = (serviceAccount, allRoles) => {
   let roleBindings = [];

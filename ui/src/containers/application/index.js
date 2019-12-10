@@ -3,7 +3,6 @@ import { View } from 'react-navi';
 
 import Layout from '../../components/layout';
 import Tabs from '../../components/tabs';
-import { Row } from '../../components/core';
 
 const tabs = [
   {

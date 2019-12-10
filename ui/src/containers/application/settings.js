@@ -9,7 +9,7 @@ import utils from '../../utils';
 import Card from '../../components/card';
 import Popup from '../../components/popup';
 import Field from '../../components/field';
-import { Row, Button, Text, Form } from '../../components/core';
+import { Button, Text, Form } from '../../components/core';
 
 const validationSchema = yup.object().shape({
   name: yup.string().required(),

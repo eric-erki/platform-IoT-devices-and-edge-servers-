@@ -1,7 +1,6 @@
 import React from 'react';
-import styled from 'styled-components';
 
-import { Row, Text } from './core';
+import { Row } from './core';
 import AvatarMenu from './avatar-menu';
 
 const Header = ({ children }) => (

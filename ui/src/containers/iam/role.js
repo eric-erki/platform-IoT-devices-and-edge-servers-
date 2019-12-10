@@ -10,7 +10,7 @@ import Editor from '../../components/editor';
 import Card from '../../components/card';
 import Field from '../../components/field';
 import Popup from '../../components/popup';
-import { Row, Text, Button, Form } from '../../components/core';
+import { Text, Button, Form } from '../../components/core';
 
 const validationSchema = yup.object().shape({
   name: yup.string().required(),

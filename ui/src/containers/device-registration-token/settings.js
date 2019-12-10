@@ -8,7 +8,7 @@ import utils from '../../utils';
 import Card from '../../components/card';
 import Field from '../../components/field';
 import Popup from '../../components/popup';
-import { Text, Row, Button, Form } from '../../components/core';
+import { Text, Button, Form } from '../../components/core';
 
 const DeviceRegistrationTokenSettings = ({
   route: {

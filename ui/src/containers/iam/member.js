@@ -7,14 +7,7 @@ import api from '../../api';
 import Card from '../../components/card';
 import Popup from '../../components/popup';
 import Field from '../../components/field';
-import {
-  Row,
-  Text,
-  Button,
-  Checkbox,
-  Heading,
-  Form,
-} from '../../components/core';
+import { Text, Button, Checkbox, Form } from '../../components/core';
 
 const Member = ({
   route: {
@@ -63,9 +56,9 @@ const Member = ({
               userId: member.userId,
               roleId: role,
             });
-          } catch (error) {
-            console.log(error);
+          } catch (e) {
             error = true;
+            console.log(e);
           }
         } else {
           try {
@@ -74,9 +67,9 @@ const Member = ({
               userId: member.userId,
               roleId: role,
             });
-          } catch (error) {
-            console.log(error);
+          } catch (e) {
             error = true;
+            console.log(e);
           }
         }
       }

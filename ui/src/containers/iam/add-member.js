@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigation } from 'react-navi';
 import useForm from 'react-hook-form';
 
@@ -45,9 +45,9 @@ const AddMember = ({
               userId,
               roleId: role,
             });
-          } catch (error) {
+          } catch (e) {
             error = true;
-            console.log(error);
+            console.log(e);
           }
         }
       }
