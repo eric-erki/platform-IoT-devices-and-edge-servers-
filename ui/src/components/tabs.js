@@ -13,7 +13,7 @@ const styles = `
     text-decoration: none;
     border-radius: 0;
     background-color: transparent;
-    transition: background-color 250ms;
+    transition: background-color 150ms;
     border-radius: 4px;
     padding: 8px;
     user-select: none;

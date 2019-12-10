@@ -29,14 +29,16 @@ const TableRow = styled(Row)`
   cursor: ${props => (props.selectable ? 'pointer' : 'default')};
   transition: border-color 150ms, background-color 150ms;
 
-  ${props =>
-    props.selectable
-      ? `&:hover {
-          border-color: ${props => props.theme.colors.white} !important;
-          color: ${props => props.theme.colors.white};
-          background-color: ${props => props.theme.colors.whites[1]};
-        }`
-      : ''}
+  &:hover {
+    border-color: ${props =>
+      props.selectable
+        ? props.theme.colors.white
+        : props.theme.colors.whites[7]} !important;
+    background-color: ${props =>
+      props.selectable
+        ? props.theme.colors.whites[2]
+        : props.theme.colors.black};
+  }
 `;
 
 const Header = styled(Row)`

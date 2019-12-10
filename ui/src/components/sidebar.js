@@ -38,7 +38,7 @@ const SidebarLink = styled(Link)`
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: background-color 250ms;
+  transition: background-color 200ms;
   border-radius: 4px;
 
   background-color: ${props => (props.active ? '#181818' : 'inherit')};

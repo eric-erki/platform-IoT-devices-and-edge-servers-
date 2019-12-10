@@ -38,14 +38,14 @@ const CloseButton = styled.button`
   cursor: pointer;
   border: 1px solid white;
 
-  transition: background-color 250ms;
+  transition: background-color 200ms;
 
   &:hover {
     background-color: black;
   }
 
   & > svg {
-    transition: fill 250ms;
+    transition: fill 200ms;
   }
 
   &:hover > svg {

@@ -66,7 +66,7 @@ export const Btn = styled.button`
   font-family: inherit;
   cursor: pointer;
   text-transform: capitalize;
-  transition: all 250ms;
+  transition: all 200ms;
 
   &:disabled {
     cursor: not-allowed;
@@ -85,7 +85,7 @@ export const LinkButton = styled.a`
   font-family: inherit;
   cursor: pointer;
   text-transform: capitalize;
-  transition: all 250ms;
+  transition: all 200ms;
 
   &:disabled {
     opacity: .4;
