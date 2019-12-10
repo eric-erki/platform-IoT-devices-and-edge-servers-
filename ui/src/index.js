@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import { Router, View } from 'react-navi';
-import HelmetProvider from 'react-navi-helmet-async';
+import { HelmetProvider } from 'react-helmet-async';
 import { ThemeProvider } from 'styled-components';
 import { Provider } from 'react-redux';
 

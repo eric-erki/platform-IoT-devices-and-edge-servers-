@@ -1,6 +1,7 @@
 import React from 'react';
-import { NotFoundBoundary } from 'react-navi';
+import { NotFoundBoundary, useCurrentRoute } from 'react-navi';
 import { createGlobalStyle } from 'styled-components/macro';
+import { Helmet } from 'react-helmet-async';
 
 import { Box } from './core';
 import NotFound from './not-found';
@@ -34,8 +35,13 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 const Page = ({ children }) => {
+  const route = useCurrentRoute();
+  console.log(route);
   return (
     <>
+      <Helmet>
+        {route.title && <title>{`${route.title} - Deviceplane`}</title>}
+      </Helmet>
       <GlobalStyle />
       <Box>
         <main>
