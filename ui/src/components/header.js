@@ -10,6 +10,7 @@ const Title = styled(Text)`
 
 Title.defaultProps = {
   fontSize: 3,
+  fontWeight: 2,
   color: 'white',
 };
 
