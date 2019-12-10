@@ -13,15 +13,12 @@ const Container = styled(Column)`
       },
       medium: {
         width: 11,
-        boxShadow: 1,
       },
       large: {
         width: 12,
-        boxShadow: 1,
       },
       xlarge: {
         width: 13,
-        boxShadow: 1,
       },
       full: {
         width: 'unset',

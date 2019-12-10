@@ -19,60 +19,45 @@ const checkServices = applicationStatusInfo => {
 };
 
 const DeviceServices = ({ project, applicationStatusInfo }) => {
-  // const columns = useMemo(
-  //   () => [
-  //     { Header: 'Service', accessor: 'user.email' },
-  //     {
-  //       Header: 'Current Release',
-  //       Cell: ({
-  //         row: {
-  //           original: {
-  //             user: { firstName, lastName },
-  //           },
-  //         },
-  //       }) => `${firstName} ${lastName}`,
-  //     },
-  //     {
-  //       Header: 'Roles',
-  //       Cell: ({
-  //         row: {
-  //           original: { roles },
-  //         },
-  //       }) => roles.map(({ name }) => name).join(', '),
-  //     },
-  //   ],
-  //   []
-  // );
-  // const tableData = useMemo(() => members, [members]);
+  const columns = useMemo(
+    () => [
+      {
+        Header: 'Service',
+        Cell: ({ row: { original } }) => (
+          <Button
+            title={`${original.application.name} / ${original.service}`}
+            variant="tertiary"
+            href={`/${project}/applications/${original.application.name}`}
+          />
+        ),
+      },
+      {
+        Header: 'Current Release',
+        accessor: 'currentReleaseId',
+      },
+    ],
+    []
+  );
+  const tableData = useMemo(
+    () =>
+      applicationStatusInfo.reduce(
+        (data, curr) => [
+          ...data,
+          ...curr.serviceStatuses.map(status => ({
+            ...status,
+            application: curr.application,
+          })),
+        ],
+        []
+      ),
+    [applicationStatusInfo]
+  );
 
   if (!checkServices(applicationStatusInfo)) {
     return null;
   }
 
-  return (
-    <Table>
-      <Table.Head>
-        <Table.TextHeaderCell>Service</Table.TextHeaderCell>
-        <Table.TextHeaderCell>Current Release</Table.TextHeaderCell>
-      </Table.Head>
-      {applicationStatusInfo.map(applicationInfo => (
-        <Table.Body key={applicationInfo.application.id}>
-          {applicationInfo.serviceStatuses.map((serviceStatus, index) => (
-            <Table.Row key={index}>
-              <Table.TextCell>
-                <Button
-                  title={`${applicationInfo.application.name} / ${serviceStatus.service}`}
-                  variant="tertiary"
-                  href={`/${project}/applications/${applicationInfo.application.name}`}
-                />
-              </Table.TextCell>
-              <Table.TextCell>{serviceStatus.currentReleaseId}</Table.TextCell>
-            </Table.Row>
-          ))}
-        </Table.Body>
-      ))}
-    </Table>
-  );
+  return <Table columns={columns} data={tableData} />;
 };
 
 const DeviceOverview = ({
@@ -129,7 +114,10 @@ const DeviceOverview = ({
         <Text fontWeight={3} marginBottom={2}>
           Services
         </Text>
-        <DeviceServices project={params.project} device={device} />
+        <DeviceServices
+          project={params.project}
+          applicationStatusInfo={device.applicationStatusInfo}
+        />
       </Column>
     </Card>
   );

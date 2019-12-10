@@ -6,10 +6,11 @@ import {
   border,
   flexbox,
   typography,
+  shadow,
 } from 'styled-system';
 
 export const Box = styled.div`
-  ${space} ${layout} ${color} ${border} ${typography}
+  ${space} ${layout} ${color} ${border} ${typography} ${shadow}
 `;
 
 export const Row = styled(Box)`
