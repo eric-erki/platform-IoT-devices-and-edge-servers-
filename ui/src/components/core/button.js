@@ -23,7 +23,7 @@ const variants = {
         bg: 'black',
       },
       '&:not(:disabled):focus': {
-        color: 'white',
+        color: 'primary',
         bg: 'black',
       },
     },
