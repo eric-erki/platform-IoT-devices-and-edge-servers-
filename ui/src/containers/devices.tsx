@@ -313,7 +313,9 @@ const Devices = ({ route }) => {
         <Table
           columns={columns}
           data={tableData}
-          onRowSelect={({ name }) => navigation.navigate(name)}
+          onRowSelect={({ name }) =>
+            navigation.navigate(`/${route.data.params.project}/devices/${name}`)
+          }
         />
       </Card>
 
