@@ -43,7 +43,7 @@ const Applications = ({
           onRowSelect={row =>
             navigation.navigate(`/${params.project}/applications/${row.name}`)
           }
-          placeholder="No Applications found."
+          placeholder="There are no Applications."
         />
       </Card>
     </Layout>

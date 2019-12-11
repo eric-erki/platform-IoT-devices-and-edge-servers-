@@ -224,7 +224,7 @@ const EditableLabelTable = ({ data }) => {
       <Table
         columns={columns}
         data={tableData}
-        placeholder="There are no labels."
+        placeholder="There are no Labels."
       />
     </Card>
   );

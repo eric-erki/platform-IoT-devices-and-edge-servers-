@@ -58,7 +58,7 @@ const api = {
       return response;
     }),
 
-  updateProject: ({ projectId, name, datadogApiKey }) =>
+  updateProject: ({ projectId, data: { name, datadogApiKey } }) =>
     put(`projects/${projectId}`, {
       name,
       datadogApiKey,

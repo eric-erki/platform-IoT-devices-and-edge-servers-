@@ -48,7 +48,7 @@ const Members = ({
         onRowSelect={({ user }) => {
           navigation.navigate(`/${params.project}/iam/members/${user.id}`);
         }}
-        placeholder="No Members found."
+        placeholder="There are no Members."
       />
     </Card>
   );

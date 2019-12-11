@@ -12,10 +12,10 @@ import Field from '../components/field';
 import Popup from '../components/popup';
 import { Text, Button, Form, Input } from '../components/core';
 
-const validationSchema = {
+const validationSchema = yup.object().shape({
   name: yup.string().required(),
   datadogApiKey: yup.string(),
-};
+});
 
 const ProjectSettings = ({
   route: {
@@ -24,51 +24,48 @@ const ProjectSettings = ({
 }) => {
   const { register, handleSubmit, errors, formState } = useForm({
     validationSchema,
-    defaultValues: { name: project.name, datadogApiKey: project.datadogApiKey },
+    defaultValues: {
+      name: project.name,
+      datadogApiKey: project.datadogApiKey,
+    },
   });
   const navigation = useNavigation();
   const [showDeletePopup, setShowDeletePopup] = React.useState();
   const [confirmation, setConfirmation] = React.useState();
   const [backendError, setBackendError] = React.useState();
 
-  const submit = data => {
+  const submit = async data => {
     setBackendError(null);
-    api
-      .updateProject(data)
-      .then(() => {
-        toaster.success('Successfully updated project.');
-        navigation.navigate(`/${params.project}/settings`);
-      })
-      .catch(error => {
-        if (utils.is4xx(error.response.status)) {
-          setBackendError(utils.convertErrorMessage(error.response.data));
-        } else {
-          toaster.danger('Project was not updated.');
-          console.log(error);
-        }
-      });
+    try {
+      await api.updateProject({ projectId: project.name, data });
+      toaster.success('Successfully updated project.');
+      navigation.navigate(`/${data.name}/settings`);
+    } catch (error) {
+      if (utils.is4xx(error.response.status)) {
+        setBackendError(utils.convertErrorMessage(error.response.data));
+      } else {
+        toaster.danger('Project was not updated.');
+        console.log(error);
+      }
+    }
   };
 
-  const submitDelete = e => {
+  const submitDelete = async e => {
     e.preventDefault();
     setBackendError(null);
-    api
-      .deleteProject({ projectId: params.project })
-      .then(() => {
-        toaster.success('Successfully deleted project.');
-        navigation.navigate(`/projects`);
-      })
-      .catch(error => {
-        if (utils.is4xx(error.response.status)) {
-          setBackendError(utils.convertErrorMessage(error.response.data));
-        } else {
-          toaster.danger('Project was not deleted.');
-          console.log(error);
-        }
-      })
-      .finally(() => {
-        setShowDeletePopup(false);
-      });
+    try {
+      await api.deleteProject({ projectId: project.name });
+      toaster.success('Successfully deleted project.');
+      navigation.navigate(`/projects`);
+    } catch (error) {
+      if (utils.is4xx(error.response.status)) {
+        setBackendError(utils.convertErrorMessage(error.response.data));
+      } else {
+        toaster.danger('Project was not deleted.');
+        console.log(error);
+      }
+    }
+    setShowDeletePopup(false);
   };
 
   return (

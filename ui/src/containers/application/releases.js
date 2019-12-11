@@ -65,7 +65,7 @@ const Releases = ({
             `/${params.project}/applications/${application.name}/releases/${id}`
           )
         }
-        placeholder="No Releases found."
+        placeholder="There are no Releases."
       />
     </Card>
   );
