@@ -22,6 +22,10 @@ const variants = {
         color: 'primary',
         bg: 'black',
       },
+      '&:not(:disabled):focus': {
+        color: 'white',
+        bg: 'black',
+      },
     },
     secondary: {
       color: 'black',
@@ -29,6 +33,10 @@ const variants = {
       border: 0,
       borderColor: 'white',
       '&:not(:disabled):hover': {
+        color: 'white',
+        bg: 'black',
+      },
+      '&:not(:disabled):focus': {
         color: 'white',
         bg: 'black',
       },
@@ -41,6 +49,9 @@ const variants = {
       padding: '6px',
       opacity: 0.7,
       '&:not(:disabled):hover': {
+        opacity: 1,
+      },
+      '&:not(:disabled):focus': {
         opacity: 1,
       },
     },
@@ -73,6 +84,10 @@ export const Btn = styled.button`
     opacity: .4;
   }
 
+  &:focus {
+    outline: none !important;
+  }
+
   ${variant(variants)}
 
   ${space} ${layout} ${typography} ${color} ${border} ${shadow} ${flexbox}
@@ -91,6 +106,10 @@ export const LinkButton = styled.a`
   &:disabled {
     opacity: .4;
     cursor: not-allowed;
+  }
+
+  &:focus {
+    outline: none !important;
   }
 
   ${variant(variants)}
