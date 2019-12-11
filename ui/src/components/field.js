@@ -5,7 +5,17 @@ import { Column, Input, Textarea, Label } from './core';
 
 const Field = forwardRef(
   (
-    { label, type, name, as, setValue, register, onChangeEvent, ...props },
+    {
+      label,
+      type,
+      name,
+      as,
+      setValue,
+      register,
+      onChangeEvent,
+      autoComplete = 'off',
+      ...props
+    },
     ref
   ) => {
     const getComponent = () => {
@@ -27,7 +37,7 @@ const Field = forwardRef(
           return (
             <Textarea
               name={name}
-              autoComplete="off"
+              autoComplete={autoComplete}
               id={name}
               ref={ref}
               {...props}
@@ -36,7 +46,7 @@ const Field = forwardRef(
         default:
           return (
             <Input
-              autoComplete="off"
+              autoComplete={autoComplete}
               type={type}
               name={name}
               id={name}

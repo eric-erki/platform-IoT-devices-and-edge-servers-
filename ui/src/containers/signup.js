@@ -81,6 +81,7 @@ const Signup = () => {
           <Field
             required
             autoFocus
+            autoComplete="on"
             label="First Name"
             name="firstName"
             ref={register}
@@ -89,6 +90,7 @@ const Signup = () => {
           />
           <Field
             required
+            autoComplete="on"
             label="Last Name"
             name="lastName"
             ref={register}
@@ -96,6 +98,7 @@ const Signup = () => {
             maxLength={64}
           />
           <Field
+            autoComplete="on"
             label="Company"
             name="company"
             ref={register}
@@ -104,6 +107,7 @@ const Signup = () => {
           />
           <Field
             required
+            autoComplete="on"
             type="email"
             label="Email"
             name="email"

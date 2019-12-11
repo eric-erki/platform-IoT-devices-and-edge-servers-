@@ -55,6 +55,7 @@ const Login = () => {
           <Field
             required
             autoFocus
+            autoComplete="on"
             ref={register}
             name="email"
             type="email"
