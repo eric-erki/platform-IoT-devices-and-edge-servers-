@@ -13,7 +13,7 @@ const GlobalStyle = createGlobalStyle`
 
   html {
     box-sizing: border-box;
-    font-family: 'Rubik', "Roboto", sans-serif;
+    font-family: ${props => props.theme.fonts.default};
     
     font-size: 16px;
     font-weight: 400;

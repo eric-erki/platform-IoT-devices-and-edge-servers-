@@ -55,6 +55,11 @@ export default {
     1024,
   ],
 
+  fonts: {
+    default: `Rubik,Roboto,sans-serif`,
+    code: 'source-code-pro,Menlo,Monaco,Consolas,monospace',
+  },
+
   fontSizes: [13, 15, 16, 18, 24, 36, 48, 64, 72],
 
   fontWeights: [100, 300, 400, 500, 600, 700, 900],

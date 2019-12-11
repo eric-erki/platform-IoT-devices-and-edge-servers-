@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { toaster, Alert, Code, Icon } from 'evergreen-ui';
+import { toaster, Icon } from 'evergreen-ui';
 
 import api from '../api';
 import utils from '../utils';
 import Card from '../components/card';
 import Table from '../components/table';
-import Popup from '../components/popup';
-import { Label, Button, Text } from '../components/core';
+import Alert from '../components/alert';
+import { Label, Button, Text, Code, Row } from '../components/core';
 
 const UserAccessKeys = () => {
   const [accessKeys, setAccessKeys] = useState([]);
@@ -61,38 +61,35 @@ const UserAccessKeys = () => {
     fetchAccessKeys();
   }, []);
 
-  const createAccessKey = () => {
-    api
-      .createUserAccessKey()
-      .then(response => {
-        setNewAccessKey(response.data.value);
-        setShowPopup(true);
-      })
-      .catch(error => {
-        if (utils.is4xx(error.response.status)) {
-          setBackendError(utils.convertErrorMessage(error.response.data));
-        } else {
-          toaster.danger('Access key was not created successfully.');
-          console.log(error);
-        }
-      });
+  const createAccessKey = async () => {
+    try {
+      const response = await api.createUserAccessKey();
+      setAccessKeys([response.data, ...accessKeys]);
+      setNewAccessKey(response.data.value);
+      setShowPopup(true);
+    } catch (error) {
+      if (utils.is4xx(error.response.status)) {
+        setBackendError(utils.convertErrorMessage(error.response.data));
+      } else {
+        toaster.danger('Access key was not created successfully.');
+        console.log(error);
+      }
+    }
   };
 
-  const deleteAccessKey = id => {
-    api
-      .deleteUserAccessKey({ id })
-      .then(() => {
-        toaster.success('Successfully deleted access key.');
-        fetchAccessKeys();
-      })
-      .catch(error => {
-        if (utils.is4xx(error.response.status)) {
-          setBackendError(utils.convertErrorMessage(error.response.data));
-        } else {
-          toaster.danger('Access key was not deleted.');
-          console.log(error);
-        }
-      });
+  const deleteAccessKey = async id => {
+    try {
+      await api.deleteUserAccessKey({ id });
+      toaster.success('Successfully deleted access key.');
+      fetchAccessKeys();
+    } catch (error) {
+      if (utils.is4xx(error.response.status) && error.response.data) {
+        setBackendError(utils.convertErrorMessage(error.response.data));
+      } else {
+        toaster.danger('Access key was not deleted.');
+        console.log(error);
+      }
+    }
   };
 
   return (
@@ -103,15 +100,18 @@ const UserAccessKeys = () => {
         size="xlarge"
         actions={[{ title: 'Create Access Key', onClick: createAccessKey }]}
       >
-        {backendError && (
-          <Alert
-            marginBottom={16}
-            paddingTop={16}
-            paddingBottom={16}
-            intent="warning"
-            title={backendError}
-          />
-        )}
+        <Alert show={backendError} variant="error" title={backendError} />
+        <Alert
+          show={newAccessKey}
+          title="Access Key Created"
+          description=" Save this key! This is the only time you'll be able to view it. If
+            you lose it, you'll need to create a new access key."
+        >
+          <Label>Access Key</Label>
+          <Row>
+            <Code>{newAccessKey}</Code>
+          </Row>
+        </Alert>
         <Table
           columns={columns}
           data={tableData}
@@ -122,19 +122,6 @@ const UserAccessKeys = () => {
           }
         />
       </Card>
-      <Popup show={showPopup} onClose={() => setShowPopup(false)}>
-        <Card border title="Access Key Created">
-          <Alert
-            intent="warning"
-            marginBottom={16}
-            paddingTop={16}
-            paddingBottom={16}
-            title="Save this key! This is the only time you'll be able to view it.  If you lose it, you'll need to create a new access key."
-          />
-          <Label>Access Key</Label>
-          <Code background="white">{newAccessKey}</Code>
-        </Card>
-      </Popup>
     </>
   );
 };

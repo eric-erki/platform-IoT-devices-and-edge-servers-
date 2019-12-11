@@ -12,19 +12,23 @@ const Overlay = styled(Column)`
   left: 0;
   width: 100%;
   height: 100%;
-  padding: 64px;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   background-color: ${props => props.theme.colors.overlay};
 `;
 
 const Container = styled(Column)`
   position: relative;
-  z-index: 9999;
+  max-height: 80vh;
+  z-index: 9999999;
 `;
 
 const Content = styled(Column)`
   overflow: hidden;
+  & > div {
+    overflow: auto;
+  }
 `;
 
 const CloseButton = styled.button`
@@ -39,7 +43,7 @@ const CloseButton = styled.button`
   left: -64px;
   padding: 4px;
   border-radius: 999px;
-  z-index: 999;
+  z-index: 9999999;
   cursor: pointer;
   border: 1px solid ${props => props.theme.colors.white};
 
@@ -96,10 +100,10 @@ const Popup = ({ children, show, onClose }) => {
   return (
     <Overlay>
       <Container ref={node}>
-        <Content>{children}</Content>
         <CloseButton onClick={onClose}>
           <Icon icon="cross" size={20} color="white" />
         </CloseButton>
+        <Content>{children}</Content>
       </Container>
     </Overlay>
   );
