@@ -20,8 +20,8 @@ const Provisioning = ({
       { Header: 'Name', accessor: 'name' },
       {
         Header: 'Created At',
-        Cell: ({ row }) =>
-          row.createdAt ? moment(row.createdAt).fromNow() : '-',
+        Cell: ({ row: { original } }) =>
+          original.createdAt ? moment(original.createdAt).fromNow() : '-',
       },
       {
         Header: 'Devices Registered',
@@ -29,15 +29,15 @@ const Provisioning = ({
       },
       {
         Header: 'Registration Limit',
-        Cell: ({ row }) =>
-          typeof row.maxRegistrations === 'number'
-            ? row.maxRegistrations
+        Cell: ({ row: { original } }) =>
+          typeof original.maxRegistrations === 'number'
+            ? original.maxRegistrations
             : 'Unlimited',
       },
       {
         Header: 'Labels',
-        Cell: ({ row }) =>
-          row.labels ? renderLabels(row.labels, labelColorMap) : null,
+        Cell: ({ row: { original } }) =>
+          original.labels ? renderLabels(original.labels, labelColorMap) : null,
       },
     ],
     []
