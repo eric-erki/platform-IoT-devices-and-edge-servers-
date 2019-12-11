@@ -1,7 +1,20 @@
 import React, { forwardRef } from 'react';
 import { RHFInput } from 'react-hook-form-input';
+import styled from 'styled-components';
+import { space, color, typography } from 'styled-system';
 
-import { Column, Input, Textarea, Label } from './core';
+import { Column, Input, Textarea } from './core';
+
+const Label = styled.label`
+${space} ${color} ${typography}
+`;
+
+Label.defaultProps = {
+  color: 'white',
+  fontWeight: 3,
+  fontSize: 3,
+  marginBottom: 2,
+};
 
 const Field = forwardRef(
   (
@@ -34,15 +47,7 @@ const Field = forwardRef(
 
       switch (type) {
         case 'textarea':
-          return (
-            <Textarea
-              name={name}
-              autoComplete={autoComplete}
-              id={name}
-              ref={ref}
-              {...props}
-            />
-          );
+          return <Textarea name={name} id={name} ref={ref} {...props} />;
         default:
           return (
             <Input
@@ -58,12 +63,8 @@ const Field = forwardRef(
     };
 
     return (
-      <Column marginBottom={4}>
-        {label && (
-          <Label marginBottom={2} htmlFor={name}>
-            {label}
-          </Label>
-        )}
+      <Column marginBottom={6}>
+        {label && <Label htmlFor={name}>{label}</Label>}
         {getComponent()}
       </Column>
     );

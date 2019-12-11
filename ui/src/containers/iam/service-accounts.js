@@ -10,7 +10,13 @@ const ServiceAccounts = ({
   },
 }) => {
   const navigation = useNavigation();
-  const columns = useMemo(() => [{ Header: 'Name', accessor: 'name' }], []);
+  const columns = useMemo(
+    () => [
+      { Header: 'Name', accessor: 'name' },
+      { Header: 'Description', accessor: 'description' },
+    ],
+    []
+  );
   const tableData = useMemo(() => serviceAccounts, [serviceAccounts]);
 
   return (

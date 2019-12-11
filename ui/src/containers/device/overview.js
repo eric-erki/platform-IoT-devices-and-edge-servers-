@@ -1,6 +1,14 @@
 import React, { useMemo } from 'react';
 
-import { Row, Column, Text, Button, Badge, Link } from '../../components/core';
+import {
+  Row,
+  Column,
+  Text,
+  Button,
+  Badge,
+  Link,
+  Label,
+} from '../../components/core';
 import Card from '../../components/card';
 import Table from '../../components/table';
 import EditableLabelTable from '../../components/EditableLabelTable';
@@ -70,25 +78,21 @@ const DeviceOverview = ({
 }) => {
   return (
     <Card size="xlarge" title={device.name}>
-      <Row marginBottom={4}>
+      <Row marginBottom={6}>
         {device.status === 'offline' ? (
           <Badge bg="whites.7">offline</Badge>
         ) : (
           <Badge bg="green">online</Badge>
         )}
       </Row>
-      <Column marginBottom={4}>
-        <Text fontWeight={3} marginBottom={2}>
-          IP Address
-        </Text>
+      <Column marginBottom={6}>
+        <Label>IP Address</Label>
         <Text>
           {device.info.hasOwnProperty('ipAddress') ? device.info.ipAddress : ''}
         </Text>
       </Column>
-      <Column marginBottom={4}>
-        <Text fontWeight={3} marginBottom={2}>
-          Operating System
-        </Text>
+      <Column marginBottom={6}>
+        <Label>Operating System</Label>
         <Text>
           {device.info.hasOwnProperty('osRelease') &&
           device.info.osRelease.hasOwnProperty('prettyName')
@@ -104,9 +108,7 @@ const DeviceOverview = ({
         /> */}
       </Column>
       <Column>
-        <Text fontWeight={3} marginBottom={2}>
-          Services
-        </Text>
+        <Label>Services</Label>
         <DeviceServices
           project={params.project}
           applicationStatusInfo={device.applicationStatusInfo}

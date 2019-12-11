@@ -4,7 +4,7 @@ import axios from 'axios';
 import { toaster } from 'evergreen-ui';
 
 import utils from '../utils';
-import { Text, Row, Button, Input } from './core';
+import { Text, Row, Button, Input, Label } from './core';
 import Table from './table';
 
 const CellInput = styled(Input)`
@@ -64,13 +64,13 @@ const EditableLabelTable = ({ data }) => {
               <Row>
                 <Button
                   title="Save"
-                  variant="tertiary"
-                  color="primary"
                   onClick={() => saveLabel(index)}
+                  variant="text"
+                  color="primary"
                 />
                 <Button
                   title="Cancel"
-                  variant="tertiary"
+                  variant="text"
                   marginLeft={4}
                   onClick={() => cancelEdit(index)}
                 />
@@ -81,11 +81,11 @@ const EditableLabelTable = ({ data }) => {
             <Row>
               <Button
                 title="Edit"
-                variant="tertiary"
+                variant="text"
                 color="primary"
                 onClick={() => setEdit(index)}
               />
-              <Button title="Delete" variant="tertiary" marginLeft={4} />
+              <Button title="Delete" variant="text" marginLeft={4} />
             </Row>
           );
         },
@@ -221,14 +221,20 @@ const EditableLabelTable = ({ data }) => {
         justifyContent="space-between"
         alignItems="flex-end"
       >
-        <Text fontWeight={3}>Labels</Text>
+        <Text fontSize={5} fontWeight={3}>
+          Labels
+        </Text>
         <Button
           title="Add Label"
           onClick={() => addLabel()}
           variant="secondary"
         />
       </Row>
-      <Table columns={columns} data={tableData} />
+      <Table
+        columns={columns}
+        data={tableData}
+        placeholder="No labels have been added yet."
+      />
     </>
   );
 

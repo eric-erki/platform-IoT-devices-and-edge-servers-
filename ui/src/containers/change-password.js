@@ -20,7 +20,6 @@ const ChangePassword = ({ close }) => {
         close();
       })
       .catch(error => {
-        console.log(error.response);
         if (utils.is4xx(error.response.status) && error.response.data) {
           setBackendError(utils.convertErrorMessage(error.response.data));
         } else {

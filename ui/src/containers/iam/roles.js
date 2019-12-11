@@ -10,13 +10,19 @@ const Roles = ({
   },
 }) => {
   const navigation = useNavigation();
-  const columns = useMemo(() => [{ Header: 'Name', accessor: 'name' }], []);
+  const columns = useMemo(
+    () => [
+      { Header: 'Name', accessor: 'name' },
+      { Header: 'Description', accessor: 'description' },
+    ],
+    []
+  );
   const tableData = useMemo(() => roles, [roles]);
 
   return (
     <Card
       title="Roles"
-      size="large"
+      size="xlarge"
       actions={[
         {
           href: `create`,

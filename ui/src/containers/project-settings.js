@@ -85,16 +85,16 @@ const ProjectSettings = ({
             },
           ]}
         >
+          {backendError && (
+            <Alert
+              marginBottom={16}
+              paddingTop={16}
+              paddingBottom={16}
+              intent="warning"
+              title={backendError}
+            />
+          )}
           <Form onSubmit={handleSubmit(submit)}>
-            {backendError && (
-              <Alert
-                marginBottom={16}
-                paddingTop={16}
-                paddingBottom={16}
-                intent="warning"
-                title={backendError}
-              />
-            )}
             <Field
               required
               label="Name"
@@ -113,14 +113,13 @@ const ProjectSettings = ({
         </Card>
         <Popup show={showDeletePopup} onClose={() => setShowDeletePopup(false)}>
           <Card title="Delete Project" border>
-            <Text>
+            <Text marginBottom={6}>
               This action <strong>cannot</strong> be undone. This will
               permanently delete the <strong>{params.project}</strong> project.
               <p></p>Please type in the name of the project to confirm.
             </Text>
             <Form onSubmit={submitDelete}>
               <Input
-                marginTop={4}
                 placeholder="Project name"
                 onChange={e => setConfirmation(e.target.value)}
                 value={confirmation}

@@ -56,6 +56,20 @@ const variants = {
         bg: 'white',
       },
     },
+    text: {
+      color: 'white',
+      bg: 'transparent',
+      border: 'none',
+      padding: 0,
+      // '&:not(:disabled):hover': {
+      //   color: 'black',
+      //   bg: 'white',
+      // },
+      // '&:not(:disabled):focus': {
+      //   color: 'black',
+      //   bg: 'white',
+      // },
+    },
   },
 };
 

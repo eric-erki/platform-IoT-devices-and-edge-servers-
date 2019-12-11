@@ -17,9 +17,9 @@ const Applications = ({
       { Header: 'Name', accessor: 'name' },
       {
         Header: 'Last Release',
-        Cell: ({ row }) =>
-          row.latestRelease
-            ? moment(row.latestRelease.createdAt).fromNow()
+        Cell: ({ row: { original } }) =>
+          original.latestRelease
+            ? moment(original.latestRelease.createdAt).fromNow()
             : '-',
       },
       {

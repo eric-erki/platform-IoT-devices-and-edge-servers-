@@ -103,7 +103,7 @@ const AddMember = ({
           />
         ))}
 
-        <Button marginTop={2} type="submit" title="Add Member" />
+        <Button type="submit" title="Add Member" />
       </Form>
       <Row marginTop={4}>
         <Button

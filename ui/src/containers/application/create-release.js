@@ -15,7 +15,11 @@ const CreateRelease = ({
     data: { params, application },
   },
 }) => {
-  const { register, handleSubmit, setValue } = useForm();
+  const { register, handleSubmit, setValue } = useForm({
+    defaultValues: {
+      rawConfig: application.latestRelease.rawConfig,
+    },
+  });
   const navigation = useNavigation();
   const [backendError, setBackendError] = useState();
 
@@ -58,7 +62,7 @@ const CreateRelease = ({
           register={register}
           setValue={setValue}
         />
-        <Button marginTop={4} type="submit" title="Create" />
+        <Button marginTop={6} type="submit" title="Create" />
       </Form>
       <Row marginTop={4}>
         <Button

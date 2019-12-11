@@ -9,7 +9,7 @@ import Card from '../../components/card';
 import Field from '../../components/field';
 import Popup from '../../components/popup';
 import Table from '../../components/table';
-import { Text, Row, Button, Form } from '../../components/core';
+import { Text, Button, Form, Label } from '../../components/core';
 
 const ServiceAccount = ({
   route: {
@@ -103,58 +103,46 @@ const ServiceAccount = ({
 
   return (
     <>
-      <Row flex={1}>
-        <Card
-          title={serviceAccount.name}
-          marginRight={5}
-          actions={[
-            {
-              title: 'Delete',
-              onClick: () => setShowDeletePopup(true),
-              variant: 'secondary',
-            },
-          ]}
-        >
-          <Form onSubmit={handleSubmit(submit)}>
+      <Card
+        title={serviceAccount.name}
+        marginRight={5}
+        size="xlarge"
+        actions={[
+          {
+            title: 'Delete',
+            onClick: () => setShowDeletePopup(true),
+            variant: 'secondary',
+          },
+        ]}
+        marginBottom={6}
+      >
+        <Form onSubmit={handleSubmit(submit)}>
+          <Field label="Name" name="name" ref={register} errors={errors.name} />
+          <Field
+            type="textarea"
+            label="Description"
+            name="description"
+            ref={register}
+            errors={errors.description}
+          />
+          <Label>Choose Individual Roles</Label>
+          {roles.map(role => (
             <Field
-              label="Name"
-              name="name"
-              ref={register}
-              errors={errors.name}
+              key={role.id}
+              name={`roles[${role.name}]`}
+              as={<Checkbox label={role.name} />}
+              register={register}
+              setValue={setValue}
             />
-            <Field
-              type="textarea"
-              label="Description"
-              name="description"
-              ref={register}
-              errors={errors.description}
-            />
-            <Text fontSize={2} marginBottom={2}>
-              Choose Individual Roles
-            </Text>
-            {roles.map(role => (
-              <Field
-                key={role.id}
-                name={`roles[${role.name}]`}
-                as={<Checkbox label={role.name} />}
-                register={register}
-                setValue={setValue}
-              />
-            ))}
-            <Button
-              title="Update"
-              type="submit"
-              marginTop={4}
-              disabled={!formState.dirty}
-            />
-          </Form>
-        </Card>
+          ))}
+          <Button title="Update" type="submit" disabled={!formState.dirty} />
+        </Form>
+      </Card>
 
-        <ServiceAccountAccessKeys
-          projectId={params.project}
-          serviceAccount={serviceAccount}
-        />
-      </Row>
+      <ServiceAccountAccessKeys
+        projectId={params.project}
+        serviceAccount={serviceAccount}
+      />
 
       <Popup show={showDeletePopup} onClose={() => setShowDeletePopup(false)}>
         <Card title="Delete Service Account" border>
@@ -284,9 +272,7 @@ const ServiceAccountAccessKeys = ({ projectId, serviceAccount }) => {
         onClose={closeAccessKeyPopup}
       >
         <Card title="Access Key Created" border>
-          <Text fontWeight={3} marginBottom={2}>
-            Access Key
-          </Text>
+          <Label>Access Key</Label>
           <Code>{newAccessKey}</Code>
 
           <Alert

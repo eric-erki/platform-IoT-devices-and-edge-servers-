@@ -7,7 +7,7 @@ import api from '../../api';
 import Card from '../../components/card';
 import Popup from '../../components/popup';
 import Field from '../../components/field';
-import { Text, Button, Checkbox, Form } from '../../components/core';
+import { Text, Button, Checkbox, Form, Label } from '../../components/core';
 
 const Member = ({
   route: {
@@ -100,9 +100,7 @@ const Member = ({
         ]}
       >
         <Form onSubmit={handleSubmit(submit)}>
-          <Text marginTop={4} marginBottom={2} fontWeight={3}>
-            Choose Individual Roles
-          </Text>
+          <Label>Choose Individual Roles</Label>
           {roles.map(role => (
             <Field
               key={role.id}

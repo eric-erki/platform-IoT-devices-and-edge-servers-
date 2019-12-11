@@ -8,7 +8,7 @@ import utils from '../../utils';
 import Editor from '../../components/editor';
 import Card from '../../components/card';
 import Popup from '../../components/popup';
-import { Row, Column, Text, Button, Link } from '../../components/core';
+import { Row, Column, Text, Button, Link, Label } from '../../components/core';
 
 const ReleasedBy = ({ project, release }) => {
   if (release) {
@@ -61,7 +61,7 @@ const Release = ({
   return (
     <>
       <Card size="large">
-        <Text fontWeight={3} fontSize={5} marginBottom={5}>
+        <Text fontWeight={3} fontSize={5} marginBottom={6}>
           {release.id}
         </Text>
         {backendError && (
@@ -73,25 +73,19 @@ const Release = ({
             title={backendError}
           />
         )}
-        <Column marginBottom={4}>
-          <Text fontWeight={3} marginBottom={2}>
-            Released By
-          </Text>
+        <Column marginBottom={6}>
+          <Label>Released By</Label>
           <Row>
             <ReleasedBy project={params.project} release={release} />
           </Row>
         </Column>
 
-        <Column marginBottom={4}>
-          <Text fontWeight={3} marginBottom={2}>
-            Started
-          </Text>
+        <Column marginBottom={6}>
+          <Label>Started</Label>
           <Text>{moment(release.createdAt).fromNow()}</Text>
         </Column>
 
-        <Text fontWeight={3} marginBottom={2}>
-          Config
-        </Text>
+        <Label>Config</Label>
         <Editor
           readOnly
           width="100%"
@@ -99,7 +93,7 @@ const Release = ({
           value={release.rawConfig}
         />
         <Button
-          marginTop={4}
+          marginTop={6}
           title="Revert to this Release"
           onClick={() => setShowConfirmPopup(true)}
         />

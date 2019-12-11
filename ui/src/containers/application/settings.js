@@ -37,7 +37,7 @@ const ApplicationSettings = ({
     api
       .updateApplication({
         projectId: params.project,
-        applicationId: params.application,
+        applicationId: application.id,
         data,
       })
       .then(() => {

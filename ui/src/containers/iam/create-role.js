@@ -61,7 +61,7 @@ const CreateRole = ({
           register={register}
           setValue={setValue}
         />
-        <Button marginTop={4} title="Create" type="submit" />
+        <Button title="Create" type="submit" />
       </Form>
       <Row marginTop={4}>
         <Button

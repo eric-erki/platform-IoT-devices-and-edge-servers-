@@ -9,7 +9,15 @@ import utils from '../../utils';
 import Card from '../../components/card';
 import Field from '../../components/field';
 import Popup from '../../components/popup';
-import { Row, Column, Text, Form, Button, Badge } from '../../components/core';
+import {
+  Row,
+  Column,
+  Text,
+  Form,
+  Button,
+  Badge,
+  Label,
+} from '../../components/core';
 
 const validationSchema = yup.object().shape({
   name: yup.string().required(),
@@ -100,10 +108,8 @@ const DeviceSettings = ({
           )}
         </Row>
 
-        <Column marginBottom={4}>
-          <Text fontWeight={3} marginBottom={2}>
-            ID
-          </Text>
+        <Column marginBottom={6}>
+          <Label>ID</Label>
           <Text>{device.id}</Text>
         </Column>
 

@@ -2,7 +2,8 @@ import React from 'react';
 import { useTable, useSortBy } from 'react-table';
 import styled from 'styled-components';
 
-import { Box, Column, Row } from './core';
+import { Text, Box, Column, Row } from './core';
+import { placeholder } from 'glamor';
 
 const Container = styled(Column)``;
 
@@ -25,7 +26,7 @@ const CellContent = styled(Box)`
 
 const TableRow = styled(Row)`
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  border-bottom: 1px solid ${props => props.theme.colors.whites[3]};
   cursor: ${props => (props.selectable ? 'pointer' : 'default')};
   transition: background-color 150ms;
 
@@ -47,7 +48,7 @@ Header.defaultProps = {
   bg: '#202020',
 };
 
-const Table = ({ columns, data, onRowSelect }) => {
+const Table = ({ columns, data, onRowSelect, placeholder }) => {
   const selectable = !!onRowSelect;
   onRowSelect = onRowSelect || function() {};
   const {
@@ -63,10 +64,6 @@ const Table = ({ columns, data, onRowSelect }) => {
     },
     useSortBy
   );
-
-  if (rows.length === 0) {
-    return <Row marginTop={-5} />;
-  }
 
   return (
     <Container {...getTableProps()}>
@@ -94,7 +91,17 @@ const Table = ({ columns, data, onRowSelect }) => {
         ))}
       </Header>
       <Column {...getTableBodyProps()}>
-        {rows.slice(0, 10).map((row, i) => {
+        {rows.length === 0 && (
+          <Row
+            justifyContent="center"
+            padding={3}
+            borderBottom={0}
+            borderColor="whites.3"
+          >
+            <Text>{placeholder}</Text>
+          </Row>
+        )}
+        {rows.map((row, i) => {
           prepareRow(row);
           return (
             <TableRow

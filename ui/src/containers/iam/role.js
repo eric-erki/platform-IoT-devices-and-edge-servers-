@@ -115,12 +115,7 @@ const Role = ({
             register={register}
             setValue={setValue}
           />
-          <Button
-            marginTop={4}
-            title="Update"
-            type="submit"
-            disabled={!formState.dirty}
-          />
+          <Button title="Update" type="submit" disabled={!formState.dirty} />
         </Form>
       </Card>
       <Popup

@@ -2,7 +2,7 @@ import React from 'react';
 
 import Editor from '../../components/editor';
 import Card from '../../components/card';
-import { Column, Text, Link } from '../../components/core';
+import { Column, Text, Link, Label } from '../../components/core';
 import { DevicesFilterButtons } from '../../components/DevicesFilterButtons';
 
 const ApplicationOverview = ({
@@ -15,7 +15,7 @@ const ApplicationOverview = ({
 }) => {
   return (
     <Card size="large">
-      <Column marginBottom={4}>
+      <Column marginBottom={5}>
         <Text fontSize={6} fontWeight={3}>
           {name}
         </Text>
@@ -23,10 +23,8 @@ const ApplicationOverview = ({
           {description}
         </Text>
       </Column>
-      <Column marginBottom={4}>
-        <Text fontWeight={3} marginBottom={2}>
-          Scheduling Rule
-        </Text>
+      <Column marginBottom={6}>
+        <Label>Scheduling Rule</Label>
         {schedulingRule.length ? (
           <DevicesFilterButtons
             query={schedulingRule}
@@ -43,18 +41,10 @@ const ApplicationOverview = ({
         )}
       </Column>
 
-      <Column>
-        <Text fontSize={4} fontWeight={3} marginBottom={2}>
-          Current Release
-        </Text>
-      </Column>
-
-      {latestRelease ? (
+      {latestRelease && (
         <>
-          <Column marginBottom={4}>
-            <Text fontWeight={3} marginBottom={2}>
-              ID
-            </Text>
+          <Column marginBottom={6}>
+            <Label>Current Release ID</Label>
             <Link
               href={`/${params.project}/applications/${name}/releases/${latestRelease.id}`}
             >
@@ -62,10 +52,8 @@ const ApplicationOverview = ({
             </Link>
           </Column>
 
-          <Column marginBottom={4}>
-            <Text fontWeight={3} marginBottom={2}>
-              Config
-            </Text>
+          <Column marginBottom={6}>
+            <Label>Current Release Config</Label>
             <Editor
               width="100%"
               height="150px"
@@ -74,14 +62,6 @@ const ApplicationOverview = ({
             />
           </Column>
         </>
-      ) : (
-        <Text>
-          There are no releases. Create one on the{' '}
-          <Link href={`/${params.project}/applications/${name}/releases`}>
-            releases
-          </Link>{' '}
-          page.
-        </Text>
       )}
     </Card>
   );
