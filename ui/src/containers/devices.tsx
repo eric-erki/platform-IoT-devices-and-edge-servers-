@@ -15,7 +15,7 @@ import { labelColors } from '../theme';
 import Layout from '../components/layout';
 import Card from '../components/card';
 import Table from '../components/table';
-import { Badge } from '../components/core';
+import { Badge, Text } from '../components/core';
 import {
   DevicesFilter,
   Query,

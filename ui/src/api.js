@@ -168,7 +168,8 @@ const api = {
 
   addMembershipRoleBindings: ({ projectId, userId, roleId }) =>
     post(
-      `projects/${projectId}/memberships/${userId}/roles/${roleId}/membershiprolebindings`
+      `projects/${projectId}/memberships/${userId}/roles/${roleId}/membershiprolebindings`,
+      {}
     ),
 
   removeMembershipRoleBindings: ({ projectId, userId, roleId }) =>

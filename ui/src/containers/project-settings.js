@@ -41,7 +41,7 @@ const ProjectSettings = ({
       toaster.success('Successfully updated project.');
       navigation.navigate(`/${data.name}/settings`);
     } catch (error) {
-      if (utils.is4xx(error.response.status)) {
+      if (utils.is4xx(error.response.status) && error.response.data) {
         setBackendError(utils.convertErrorMessage(error.response.data));
       } else {
         toaster.danger('Project was not updated.');
@@ -58,7 +58,7 @@ const ProjectSettings = ({
       toaster.success('Successfully deleted project.');
       navigation.navigate(`/projects`);
     } catch (error) {
-      if (utils.is4xx(error.response.status)) {
+      if (utils.is4xx(error.response.status) && error.response.data) {
         setBackendError(utils.convertErrorMessage(error.response.data));
       } else {
         toaster.danger('Project was not deleted.');
@@ -110,7 +110,7 @@ const ProjectSettings = ({
         </Card>
         <Popup show={showDeletePopup} onClose={() => setShowDeletePopup(false)}>
           <Card title="Delete Project" border>
-            <Text marginBottom={6}>
+            <Text marginBottom={4}>
               This action <strong>cannot</strong> be undone. This will
               permanently delete the <strong>{params.project}</strong> project.
               <p></p>Please type in the name of the project to confirm.

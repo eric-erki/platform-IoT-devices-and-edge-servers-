@@ -47,30 +47,30 @@ const Member = ({
     const roleArray = Object.keys(data.roles);
     for (let i = 0; i < roleArray.length; i++) {
       const role = roleArray[i];
-      const roleChosen = data.roles[role];
-      if (member.roles[role] !== roleChosen) {
-        if (roleChosen) {
-          try {
-            await api.addMembershipRoleBindings({
-              projectId: params.project,
-              userId: member.userId,
-              roleId: role,
-            });
-          } catch (e) {
-            error = true;
-            console.log(e);
-          }
-        } else {
-          try {
-            await api.removeMembershipRoleBindings({
-              projectId: params.project,
-              userId: member.userId,
-              roleId: role,
-            });
-          } catch (e) {
-            error = true;
-            console.log(e);
-          }
+      const choseRole = data.roles[role];
+      const hasRole = member.roles.find(({ name }) => name === role);
+      const roleId = roles.find(({ name }) => name === role).id;
+      if (choseRole && !hasRole) {
+        try {
+          await api.addMembershipRoleBindings({
+            projectId: params.project,
+            userId: member.userId,
+            roleId,
+          });
+        } catch (e) {
+          error = true;
+          console.log(e);
+        }
+      } else if (!choseRole && hasRole) {
+        try {
+          await api.removeMembershipRoleBindings({
+            projectId: params.project,
+            userId: member.userId,
+            roleId,
+          });
+        } catch (e) {
+          error = true;
+          console.log(e);
         }
       }
     }

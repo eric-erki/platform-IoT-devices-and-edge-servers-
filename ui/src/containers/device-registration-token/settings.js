@@ -95,6 +95,7 @@ const DeviceRegistrationTokenSettings = ({
           errors={errors.description}
         />
         <Field
+          type="number"
           label="Maximum Device Registrations"
           name="maxRegistrations"
           description="Limits the number of devices that can be registered using this token."
