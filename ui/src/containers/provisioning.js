@@ -72,6 +72,7 @@ const Provisioning = ({
               `/${params.project}/provisioning/device-registration-tokens/${name}`
             )
           }
+          placeholder="No Device Registration Tokens have been created yet."
         />
       </Card>
     </Layout>

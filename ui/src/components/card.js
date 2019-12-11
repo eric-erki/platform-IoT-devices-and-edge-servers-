@@ -62,7 +62,7 @@ const Card = ({
         <Row
           justifyContent="space-between"
           alignItems="flex-end"
-          marginBottom={5}
+          marginBottom={6}
           borderColor="white"
         >
           <Column>

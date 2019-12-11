@@ -17,7 +17,9 @@ const CreateRelease = ({
 }) => {
   const { register, handleSubmit, setValue } = useForm({
     defaultValues: {
-      rawConfig: application.latestRelease.rawConfig,
+      rawConfig: application.latestRelease
+        ? application.latestRelease.rawConfig
+        : '',
     },
   });
   const navigation = useNavigation();

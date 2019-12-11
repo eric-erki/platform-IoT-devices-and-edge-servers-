@@ -35,19 +35,19 @@ const PasswordReset = () => {
   };
 
   return (
-    <Column flex={1} alignItems="center" paddingTop={9}>
-      {backendError && (
-        <Alert
-          marginBottom={16}
-          paddingTop={16}
-          paddingBottom={16}
-          intent="warning"
-          title="User doesn't exist"
-        >
-          There is no user with that email address.
-        </Alert>
-      )}
+    <Column flex={1} alignItems="center" paddingTop={9} paddingBottom={6}>
       <Card logo width={10} title="Reset Password">
+        {backendError && (
+          <Alert
+            marginBottom={16}
+            paddingTop={16}
+            paddingBottom={16}
+            intent="warning"
+            title="User doesn't exist"
+          >
+            There is no user with that email address.
+          </Alert>
+        )}
         <Text marginBottom={3}>
           You will receive an email with a link to reset your password.
         </Text>
@@ -65,7 +65,7 @@ const PasswordReset = () => {
         </Form>
 
         <Row marginTop={4}>
-          <Button href="/login" variant="tertiary" title="Log in" />
+          <Button href="/login" variant="tertiary" title="Cancel" />
         </Row>
       </Card>
     </Column>

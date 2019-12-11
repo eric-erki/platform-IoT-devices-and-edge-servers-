@@ -61,7 +61,7 @@ const Signup = () => {
   };
 
   return (
-    <Column alignItems="center" flex={1} paddingTop={9}>
+    <Column alignItems="center" flex={1} paddingTop={9} paddingBottom={6}>
       <Card
         logo
         width={10}

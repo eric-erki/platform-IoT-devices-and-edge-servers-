@@ -265,7 +265,7 @@ const ServiceAccountAccessKeys = ({ projectId, serviceAccount }) => {
         <Table
           columns={columns}
           data={tableData}
-          placeholder="No access keys have been created yet."
+          placeholder="No Access Keys have been created yet."
         />
       </Card>
 

@@ -217,7 +217,7 @@ const EditableLabelTable = ({ data }) => {
   return (
     <>
       <Row
-        marginBottom={2}
+        marginBottom={6}
         justifyContent="space-between"
         alignItems="flex-end"
       >

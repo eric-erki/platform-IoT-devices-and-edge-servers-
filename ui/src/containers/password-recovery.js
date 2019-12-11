@@ -75,7 +75,7 @@ const PasswordRecovery = ({
   }
 
   return (
-    <Column flex={1} alignItems="center" paddingTop={9}>
+    <Column flex={1} alignItems="center" paddingTop={9} paddingBottom={6}>
       <Card title="Recover Password" logo>
         {backendError && (
           <Alert

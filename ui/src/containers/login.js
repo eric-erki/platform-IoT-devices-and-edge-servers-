@@ -36,7 +36,7 @@ const Login = () => {
   };
 
   return (
-    <Column flex={1} alignItems="center" paddingTop={9}>
+    <Column flex={1} alignItems="center" paddingTop={9} paddingBottom={6}>
       <Card
         logo
         title="Log in"
@@ -74,7 +74,7 @@ const Login = () => {
 
           <Button justifyContent="center" title="Log in" />
         </Form>
-        <Row marginTop={4}>
+        <Row marginTop={6}>
           <Button variant="tertiary" href="/forgot" title="Recover password" />
         </Row>
       </Card>

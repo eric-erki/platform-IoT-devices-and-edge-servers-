@@ -36,6 +36,7 @@ const ServiceAccounts = ({
         onRowSelect={({ name }) =>
           navigation.navigate(`/${params.project}/iam/service-accounts/${name}`)
         }
+        placeholder="No Service Accounts have been created yet."
       />
     </Card>
   );

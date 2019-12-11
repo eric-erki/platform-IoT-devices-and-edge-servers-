@@ -5,6 +5,18 @@ import config from './config';
 
 axios.defaults.withCredentials = true;
 
+axios.interceptors.response.use(
+  response => {
+    return response;
+  },
+  error => {
+    if (error.response.status === 401) {
+      window.location.replace('/login');
+    }
+    throw error;
+  }
+);
+
 const url = path => `${config.endpoint}/${path}`;
 const get = (path, ...rest) => axios.get(url(path), ...rest);
 const post = (path, ...rest) => axios.post(url(path), ...rest);
@@ -141,6 +153,7 @@ const api = {
     post(`projects/${projectId}/roles`, { name, description, config }).then(
       response => {
         segment.track('Role Created');
+
         return response;
       }
     ),

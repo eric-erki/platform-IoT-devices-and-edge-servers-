@@ -41,7 +41,7 @@ const ApplicationOverview = ({
         )}
       </Column>
 
-      {latestRelease && (
+      {latestRelease ? (
         <>
           <Column marginBottom={6}>
             <Label>Current Release ID</Label>
@@ -52,7 +52,7 @@ const ApplicationOverview = ({
             </Link>
           </Column>
 
-          <Column marginBottom={6}>
+          <Column>
             <Label>Current Release Config</Label>
             <Editor
               width="100%"
@@ -62,6 +62,17 @@ const ApplicationOverview = ({
             />
           </Column>
         </>
+      ) : (
+        <Column>
+          <Label>Current Release</Label>
+          <Value>
+            Create your first release on the{' '}
+            <Link href={`/${params.project}/applications/${name}/releases`}>
+              releases
+            </Link>{' '}
+            page.
+          </Value>
+        </Column>
       )}
     </Card>
   );

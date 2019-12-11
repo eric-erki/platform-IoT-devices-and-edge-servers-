@@ -112,7 +112,11 @@ const UserAccessKeys = () => {
             title={backendError}
           />
         )}
-        <Table columns={columns} data={tableData} />
+        <Table
+          columns={columns}
+          data={tableData}
+          placeholder="No User Access Keys have been created yet."
+        />
       </Card>
       <Popup show={showPopup} onClose={() => setShowPopup(false)}>
         <Card border title="Access Key Created">
