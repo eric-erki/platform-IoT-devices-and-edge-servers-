@@ -3,7 +3,7 @@ import { RHFInput } from 'react-hook-form-input';
 import styled from 'styled-components';
 import { space, color, typography } from 'styled-system';
 
-import { Group, Column, Input, Textarea, Label, Text, Checkbox } from './core';
+import { Group, Column, Input, Textarea, Label, Text } from './core';
 
 const Container = styled(Group)`
   &:not(:last-of-type) {
