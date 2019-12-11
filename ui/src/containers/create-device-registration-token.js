@@ -69,8 +69,8 @@ const CreateDeviceRegistrationToken = ({
             type="number"
             label="Maximum Device Registrations"
             name="maxRegistrations"
-            description="Limit the number of devices that can be registered using this token"
-            hint="Leave empty to allow unlimited registrations"
+            description="Limits the number of devices that can be registered using this token."
+            hint="Leave empty to allow unlimited registrations."
             ref={register}
           />
           <Button title="Create" type="submit" />
@@ -79,7 +79,7 @@ const CreateDeviceRegistrationToken = ({
         <Row marginTop={4}>
           <Button
             title="Cancel"
-            variant="tertiary"
+            variant="text"
             href={`/${params.project}/provisioning`}
           />
         </Row>

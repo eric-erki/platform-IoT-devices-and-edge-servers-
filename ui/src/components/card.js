@@ -61,7 +61,7 @@ const Card = ({
       {title && (
         <Row
           justifyContent="space-between"
-          alignItems="center"
+          alignItems="flex-end"
           marginBottom={6}
           borderColor="white"
         >

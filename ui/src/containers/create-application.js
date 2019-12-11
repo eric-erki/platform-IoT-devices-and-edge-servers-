@@ -73,7 +73,7 @@ const CreateApplication = ({
           <Row marginTop={4}>
             <Button
               title="Cancel"
-              variant="tertiary"
+              variant="text"
               href={`/${params.project}/applications`}
             />
           </Row>

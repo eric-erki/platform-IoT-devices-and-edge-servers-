@@ -59,7 +59,7 @@ const ProjectCreate = () => {
           />
           <Button type="submit" title="Create" />
           <Row marginTop={4}>
-            <Button title="Cancel" variant="tertiary" href="/projects" />
+            <Button title="Cancel" variant="text" href="/projects" />
           </Row>
         </Form>
       </Card>

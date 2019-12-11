@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigation, useCurrentRoute } from 'react-navi';
+import { useNavigation } from 'react-navi';
 import useForm from 'react-hook-form';
 import * as yup from 'yup';
 import { Alert } from 'evergreen-ui';
@@ -17,7 +17,11 @@ const validationSchema = yup.object().shape({
   password: yup.string().required(),
 });
 
-const Login = () => {
+const Login = ({
+  route: {
+    data: { params },
+  },
+}) => {
   const { register, handleSubmit, errors } = useForm({
     validationSchema,
   });
@@ -27,9 +31,15 @@ const Login = () => {
   const submit = data => {
     api
       .login(data)
-      .then(() => navigation.navigate('/'))
+      .then(() =>
+        navigation.navigate(
+          params.redirectTo
+            ? decodeURIComponent(params.redirectTo)
+            : '/projects'
+        )
+      )
       .catch(error => {
-        setBackendError('Invalid Username/Password');
+        setBackendError('Invalid credentials');
         console.log(error);
       });
   };

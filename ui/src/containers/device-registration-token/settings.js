@@ -8,7 +8,7 @@ import utils from '../../utils';
 import Card from '../../components/card';
 import Field from '../../components/field';
 import Popup from '../../components/popup';
-import { Text, Button, Form, Label } from '../../components/core';
+import { Text, Button, Form } from '../../components/core';
 
 const DeviceRegistrationTokenSettings = ({
   route: {
@@ -97,8 +97,8 @@ const DeviceRegistrationTokenSettings = ({
         <Field
           label="Maximum Device Registrations"
           name="maxRegistrations"
-          description="Limit the number of devices that can be registered using this token"
-          hint="Leave empty to allow unlimited registrations"
+          description="Limits the number of devices that can be registered using this token."
+          hint="Leave empty to allow unlimited registrations."
           errors={errors.maxRegistrations}
           ref={register}
         />

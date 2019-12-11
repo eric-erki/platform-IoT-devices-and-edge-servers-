@@ -108,7 +108,7 @@ const AddMember = ({
       <Row marginTop={4}>
         <Button
           title="Cancel"
-          variant="tertiary"
+          variant="text"
           href={`/${params.project}/iam/members`}
         />
       </Row>

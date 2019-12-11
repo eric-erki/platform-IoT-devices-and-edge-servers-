@@ -36,7 +36,7 @@ const Roles = ({
         onRowSelect={({ name }) =>
           navigation.navigate(`/${params.project}/iam/roles/${name}`)
         }
-        placeholder="No Roles have been created."
+        placeholder="No Roles found."
       />
     </Card>
   );

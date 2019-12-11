@@ -12,9 +12,9 @@ import Page from './components/page';
 import Spinner from './components/spinner';
 import api from './api';
 
-const App = props => {
+const App = () => {
   const [loaded, setLoaded] = useState();
-  const [currentUser, setCurrentUser] = useState(props.currentUser);
+  const [currentUser, setCurrentUser] = useState();
 
   const load = async () => {
     try {

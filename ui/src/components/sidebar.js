@@ -9,12 +9,12 @@ import { Row, Column, Link, Text } from './core';
 const links = [
   {
     title: 'Devices',
-    icon: 'layout-grid',
+    icon: 'multi-select',
     to: '/devices',
   },
   {
     title: 'Provisioning',
-    icon: 'box',
+    icon: 'projects',
     to: '/provisioning',
   },
   {
@@ -95,12 +95,12 @@ const Sidebar = () => {
               paddingY={4}
               marginBottom={2}
               key={title}
-              fontSize={1}
+              fontSize={0}
               active={useActive(href, { exact: false })}
             >
               <Column alignItems="center">
                 <Icon icon={icon} color="white" size={24} />
-                <Text marginTop={2}>{title}</Text>
+                <Text marginTop={3}>{title}</Text>
               </Column>
             </SidebarLink>
           );

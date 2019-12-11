@@ -46,7 +46,7 @@ const Projects = ({
           columns={columns}
           data={tableData}
           onRowSelect={({ name }) => navigation.navigate(`${name}`)}
-          placeholder="No Projects have been created yet."
+          placeholder="No Projects found."
         />
       </Card>
     </Layout>

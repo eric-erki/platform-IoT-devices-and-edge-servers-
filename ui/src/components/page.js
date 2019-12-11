@@ -47,7 +47,18 @@ const Page = ({ children }) => {
       <GlobalStyle />
       <Box>
         <main>
-          <NotFoundBoundary render={NotFound}>{children}</NotFoundBoundary>
+          <NotFoundBoundary
+            render={() => {
+              if (route.data.context.currentUser) {
+                return <NotFound />;
+              } else {
+                window.location.replace('/login');
+                return null;
+              }
+            }}
+          >
+            {children}
+          </NotFoundBoundary>
         </main>
       </Box>
     </>

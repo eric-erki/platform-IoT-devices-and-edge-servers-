@@ -115,7 +115,7 @@ const UserAccessKeys = () => {
         <Table
           columns={columns}
           data={tableData}
-          placeholder="No User Access Keys have been created yet."
+          placeholder="No User Access Keys found."
         />
       </Card>
       <Popup show={showPopup} onClose={() => setShowPopup(false)}>

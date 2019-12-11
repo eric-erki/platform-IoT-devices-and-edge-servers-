@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import useForm from 'react-hook-form';
 import { useNavigation } from 'react-navi';
-import { Alert, toaster, Checkbox, Code } from 'evergreen-ui';
+import { Alert, toaster, Code, Icon } from 'evergreen-ui';
 
 import api from '../../api';
 import utils from '../../utils';
@@ -9,7 +9,7 @@ import Card from '../../components/card';
 import Field from '../../components/field';
 import Popup from '../../components/popup';
 import Table from '../../components/table';
-import { Text, Button, Form, Label } from '../../components/core';
+import { Text, Button, Form, Label, Checkbox } from '../../components/core';
 
 const ServiceAccount = ({
   route: {
@@ -175,11 +175,16 @@ const ServiceAccountAccessKeys = ({ projectId, serviceAccount }) => {
         Header: ' ',
         Cell: ({ row }) => (
           <Button
-            title="Delete"
-            variant="tertiary"
+            title={<Icon name="trashcan" size={18} color="white" />}
+            variant="icon"
             onClick={() => deleteAccessKey(row.original.id)}
           />
         ),
+        cellStyle: {
+          flex: 1,
+          display: 'flex',
+          justifyContent: 'flex-end',
+        },
       },
     ],
     []
@@ -265,7 +270,7 @@ const ServiceAccountAccessKeys = ({ projectId, serviceAccount }) => {
         <Table
           columns={columns}
           data={tableData}
-          placeholder="No Access Keys have been created yet."
+          placeholder="No Access Keys found."
         />
       </Card>
 

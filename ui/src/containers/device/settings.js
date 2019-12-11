@@ -17,6 +17,7 @@ import {
   Button,
   Badge,
   Label,
+  Value,
 } from '../../components/core';
 
 const validationSchema = yup.object().shape({
@@ -110,7 +111,7 @@ const DeviceSettings = ({
 
         <Column marginBottom={6}>
           <Label>ID</Label>
-          <Text>{device.id}</Text>
+          <Value>{device.id}</Value>
         </Column>
 
         <Form onSubmit={handleSubmit(submit)}>

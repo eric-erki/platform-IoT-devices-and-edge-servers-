@@ -119,7 +119,7 @@ const Scheduling = ({
         onClose={() => setShowFilterDialog(false)}
         onSubmit={addFilter}
       />
-      <Button title="Submit" marginTop={6} onClick={submit} />
+      <Button title="Set Rule" marginTop={6} onClick={submit} />
     </Card>
   );
 };

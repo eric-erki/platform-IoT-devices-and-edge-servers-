@@ -8,7 +8,10 @@ import { Column, Input, Textarea, Label, Text } from './core';
 const FieldLabel = styled.label`
 ${space} ${color} ${typography}
 `;
-FieldLabel.defaultProps = Label.defaultProps;
+FieldLabel.defaultProps = {
+  ...Label.defaultProps,
+  marginBottom: 0,
+};
 
 const Field = forwardRef(
   (
@@ -60,19 +63,22 @@ const Field = forwardRef(
 
     return (
       <Column marginBottom={6}>
-        {label && <FieldLabel htmlFor={name}>{label}</FieldLabel>}
-        {description && (
-          <Text marginTop={2} fontSize={1} color="whites.7">
-            {description}
-          </Text>
+        {(label || description) && (
+          <Column marginBottom={Label.defaultProps.marginBottom}>
+            {label && <FieldLabel htmlFor={name}>{label}</FieldLabel>}
+            {description && (
+              <Text marginTop={2} fontSize={1} color="whites.7">
+                {description}
+              </Text>
+            )}
+          </Column>
         )}
+        {getComponent()}
         {hint && (
-          <Text marginTop={2} fontSize={1} color="whites.7">
+          <Text marginTop={2} fontSize={0} color="whites.7">
             {hint}
           </Text>
         )}
-
-        {getComponent()}
       </Column>
     );
   }

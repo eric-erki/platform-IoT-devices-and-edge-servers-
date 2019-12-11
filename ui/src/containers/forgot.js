@@ -65,7 +65,7 @@ const PasswordReset = () => {
         </Form>
 
         <Row marginTop={4}>
-          <Button href="/login" variant="tertiary" title="Cancel" />
+          <Button href="/login" variant="text" title="Cancel" />
         </Row>
       </Card>
     </Column>

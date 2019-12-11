@@ -8,7 +8,7 @@ import utils from '../../utils';
 import Card from '../../components/card';
 import Editor from '../../components/editor';
 import Field from '../../components/field';
-import { Row, Button, Form, Text } from '../../components/core';
+import { Row, Button, Form } from '../../components/core';
 
 const CreateRole = ({
   route: {
@@ -66,7 +66,7 @@ const CreateRole = ({
       <Row marginTop={4}>
         <Button
           title="Cancel"
-          variant="tertiary"
+          variant="text"
           href={`/${params.project}/iam/roles`}
         />
       </Row>

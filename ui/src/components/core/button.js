@@ -28,17 +28,17 @@ const variants = {
       },
     },
     secondary: {
-      color: 'black',
-      bg: 'white',
+      color: 'white',
+      bg: 'black',
       border: 0,
       borderColor: 'white',
       '&:not(:disabled):hover': {
-        color: 'white',
-        bg: 'black',
+        color: 'black',
+        bg: 'white',
       },
       '&:not(:disabled):focus': {
-        color: 'white',
-        bg: 'black',
+        color: 'black',
+        bg: 'white',
       },
     },
     tertiary: {
@@ -47,6 +47,7 @@ const variants = {
       border: 0,
       borderColor: 'white',
       padding: 1,
+      fontSize: 0,
       '&:not(:disabled):hover': {
         color: 'black',
         bg: 'white',
@@ -60,7 +61,7 @@ const variants = {
       color: 'white',
       bg: 'transparent',
       border: 'none',
-      opacity: 0.7,
+      opacity: 0.8,
       padding: 0,
       '&:not(:disabled):hover': {
         opacity: 1,

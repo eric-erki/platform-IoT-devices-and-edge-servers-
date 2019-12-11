@@ -229,7 +229,7 @@ const EditableLabelTable = ({ data }) => {
       <Table
         columns={columns}
         data={tableData}
-        placeholder="No labels have been added."
+        placeholder="There are no labels."
       />
     </>
   );
