@@ -6,13 +6,14 @@ import { space, color, typography } from 'styled-system';
 import { Column, Input, Textarea } from './core';
 
 const Label = styled.label`
+margin-bottom: 4px;
 ${space} ${color} ${typography}
 `;
 
 Label.defaultProps = {
-  color: 'white',
-  fontWeight: 3,
-  fontSize: 3,
+  color: 'whites.8',
+  fontWeight: 4,
+  fontSize: 1,
   marginBottom: 2,
 };
 

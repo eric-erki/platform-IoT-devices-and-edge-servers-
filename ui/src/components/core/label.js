@@ -8,7 +8,7 @@ ${space} ${color} ${typography}
 `;
 
 Label.defaultProps = {
-  color: 'whites.7',
+  color: 'whites.8',
   fontWeight: 4,
 };
 
