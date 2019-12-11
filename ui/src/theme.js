@@ -6,7 +6,10 @@ const colors = {
 
   black: '#000',
   white: '#fff',
+  green: '#71F79F',
+
   transparent: 'transparent',
+
   inputBackground: '#181818',
 
   blacks: [

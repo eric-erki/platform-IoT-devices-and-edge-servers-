@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import {
-  Badge,
   TextDropdownButton,
   Menu,
   Position,
@@ -16,7 +15,7 @@ import { labelColors } from '../theme';
 import Layout from '../components/layout';
 import Card from '../components/card';
 import Table from '../components/table';
-import { Text, Button } from '../components/core';
+import { Text, Button, Badge } from '../components/core';
 import {
   DevicesFilter,
   Query,
@@ -59,9 +58,9 @@ const Devices = ({ route }) => {
         Header: 'Status',
         Cell: ({ row }) =>
           row.original.status === 'offline' ? (
-            <Badge color="red">offline</Badge>
+            <Badge bg="whites.7">offline</Badge>
           ) : (
-            <Badge color="green">online</Badge>
+            <Badge bg="green">online</Badge>
           ),
         sortType: 'basic',
       },

@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
-import { Table, Badge } from 'evergreen-ui';
 
 import config from '../../config';
-import { Row, Column, Text, Button } from '../../components/core';
+import { Row, Column, Text, Button, Badge } from '../../components/core';
 import Card from '../../components/card';
+import Table from '../../components/table';
 import EditableLabelTable from '../../components/EditableLabelTable';
 
 const checkServices = applicationStatusInfo => {
@@ -76,9 +76,9 @@ const DeviceOverview = ({
           {device.name}
         </Text>
         {device.status === 'offline' ? (
-          <Badge color="red">offline</Badge>
+          <Badge bg="whites.7">offline</Badge>
         ) : (
-          <Badge color="green">online</Badge>
+          <Badge bg="green">online</Badge>
         )}
       </Row>
       <Column marginBottom={4}>

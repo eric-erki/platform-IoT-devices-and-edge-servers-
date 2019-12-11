@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import useForm from 'react-hook-form';
 import { useNavigation } from 'react-navi';
 import * as yup from 'yup';
-import { Alert, toaster, Badge } from 'evergreen-ui';
+import { Alert, toaster } from 'evergreen-ui';
 
 import api from '../../api';
 import utils from '../../utils';
 import Card from '../../components/card';
 import Field from '../../components/field';
 import Popup from '../../components/popup';
-import { Text, Form, Button } from '../../components/core';
+import { Text, Form, Button, Badge } from '../../components/core';
 
 const validationSchema = yup.object().shape({
   name: yup.string().required(),
@@ -87,9 +87,9 @@ const DeviceSettings = ({
           />
         )}
         {device.status === 'offline' ? (
-          <Badge color="red">offline</Badge>
+          <Badge bg="whites.7">offline</Badge>
         ) : (
-          <Badge color="green">online</Badge>
+          <Badge bg="green">online</Badge>
         )}
         <Text>
           <strong>ID: </strong>
