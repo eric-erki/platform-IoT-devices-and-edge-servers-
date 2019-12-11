@@ -9,14 +9,14 @@ appearance: none;
 transition: border-color 150ms;
 
 &:focus {
-  border-color: ${props => props.theme.colors.white};
+  border-color: ${props => props.theme.colors.primary};
 }
 ${space} ${color} ${typography} ${border} ${shadow}
 `;
 
 Textarea.defaultProps = {
   color: 'white',
-  bg: 'inputBackground',
+  bg: 'grays.0',
   borderRadius: 1,
   boxShadow: 0,
   padding: 3,

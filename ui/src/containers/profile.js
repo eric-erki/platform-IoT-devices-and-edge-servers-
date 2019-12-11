@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import useForm from 'react-hook-form';
 import * as yup from 'yup';
+import { useCurrentRoute } from 'react-navi';
 import { toaster, Alert } from 'evergreen-ui';
 
 import api from '../api';
@@ -22,13 +23,17 @@ const validationSchema = yup.object().shape({
 });
 
 const Profile = ({ close }) => {
-  let user = {};
+  const {
+    data: {
+      context: { currentUser },
+    },
+  } = useCurrentRoute();
   const { register, handleSubmit, formState } = useForm({
     validationSchema,
     defaultValues: {
-      firstName: user.firstName,
-      lastName: user.lastName,
-      company: user.company,
+      firstName: currentUser.firstName,
+      lastName: currentUser.lastName,
+      company: currentUser.company,
     },
   });
   const [backendError, setBackendError] = useState();
@@ -36,7 +41,7 @@ const Profile = ({ close }) => {
   const submit = data =>
     api
       .updateUser(data)
-      .then(response => {
+      .then(() => {
         toaster.success('Profile updated.');
         close();
       })

@@ -22,23 +22,24 @@ const variants = {
       '&:not(:disabled):hover': {
         bg: 'transparent',
         color: theme.colors.primary,
-        boxShadow: `0px 0px 0px 3px ${theme.colors.primary} inset`,
+        boxShadow: `0px 0px 0px 2px ${theme.colors.primary} inset`,
       },
       '&:not(:disabled):focus': {
         bg: 'transparent',
         color: theme.colors.primary,
-        boxShadow: `0px 0px 0px 3px ${theme.colors.primary} inset`,
+        boxShadow: `0px 0px 0px 2px ${theme.colors.primary} inset`,
       },
     },
     secondary: {
       color: 'white',
       border: 0,
-      borderColor: 'white',
+      borderColor: 'grays.7',
       '&:not(:disabled):hover': {
-        boxShadow: `0px 0px 0px 3px #fff inset`,
+        borderColor: 'white',
+        boxShadow: `0px 0px 0px 2px ${theme.colors.white} inset`,
       },
       '&:not(:disabled):focus': {
-        boxShadow: `0px 0px 0px 3px #fff inset`,
+        boxShadow: `0px 0px 0px 2px ${theme.colors.white} inset`,
       },
     },
     tertiary: {
@@ -95,14 +96,14 @@ export const Btn = styled.button`
   font-family: inherit;
   cursor: pointer;
   text-transform: capitalize;
-  transition: all 200ms;
+  transition: all 250ms;
   padding: 10px 12px;
   transform: translateZ(0);
   backface-visibility: hidden;
 
   &:disabled {
     cursor: not-allowed;
-    opacity: .4;
+    opacity: .3;
   }
 
   &:focus {
@@ -121,13 +122,13 @@ export const LinkButton = styled.a`
   font-family: inherit;
   cursor: pointer;
   text-transform: capitalize;
-  transition: all 200ms;
+  transition: all 250ms;
   padding: 10px 12px;
   transform: translateZ(0);
   backface-visibility: hidden;
 
   &:disabled {
-    opacity: .4;
+    opacity: .3;
     cursor: not-allowed;
   }
 

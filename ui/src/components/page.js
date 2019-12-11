@@ -18,7 +18,7 @@ const GlobalStyle = createGlobalStyle`
     font-size: 16px;
     font-weight: 400;
     line-height: 1.2;
-    background-color: ${props => props.theme.colors.background};
+    background-color: ${props => props.theme.colors.pageBackground};
   }
 
   body {
@@ -30,6 +30,22 @@ const GlobalStyle = createGlobalStyle`
 
   html, body, main, #root, #root > div  {
     height: 100%;
+  }
+
+
+  .ace_editor {
+    background: ${props => props.theme.colors.grays[0]} !important;
+    color: ${props => props.theme.colors.white} !important;
+  }
+  .ace_gutter {
+    background: ${props => props.theme.colors.grays[1]} !important;
+    color: ${props => props.theme.colors.white} !important;
+  }
+  .ace_gutter-active-line {
+    background: ${props => props.theme.colors.grays[2]} !important;
+  }
+  .ace_active-line {
+    background: ${props => props.theme.colors.grays[2]} !important;
   }
 `;
 

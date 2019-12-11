@@ -8,7 +8,7 @@ import api from '../../api';
 import utils from '../../utils';
 import Card from '../../components/card';
 import Field from '../../components/field';
-import { Text, Row, Form, Button, Checkbox } from '../../components/core';
+import { Label, Row, Form, Button, Checkbox } from '../../components/core';
 
 const AddMember = ({
   route: {
@@ -90,11 +90,10 @@ const AddMember = ({
           name="email"
           ref={register}
         />
-        <Text fontWeight={3} marginBottom={2}>
-          Choose Individual Roles
-        </Text>
+        <Label>Choose Individual Roles</Label>
         {roles.map(role => (
           <Field
+            group
             key={role.id}
             name={`roles[${role.name}]`}
             as={<Checkbox label={role.name} />}
@@ -102,7 +101,6 @@ const AddMember = ({
             setValue={setValue}
           />
         ))}
-
         <Button type="submit" title="Add Member" />
       </Form>
       <Row marginTop={4}>

@@ -7,7 +7,7 @@ const Value = styled.span`
 `;
 
 Value.defaultProps = {
-  color: 'whites.7',
+  color: 'grays.7',
   fontSize: 2,
 };
 

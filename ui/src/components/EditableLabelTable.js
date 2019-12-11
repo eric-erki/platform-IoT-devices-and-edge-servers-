@@ -4,6 +4,7 @@ import axios from 'axios';
 import { toaster, Icon } from 'evergreen-ui';
 
 import utils from '../utils';
+import Card from './card';
 import { Text, Row, Button, Input, Label } from './core';
 import Table from './table';
 
@@ -215,23 +216,17 @@ const EditableLabelTable = ({ data }) => {
   };
 
   return (
-    <>
-      <Row
-        marginBottom={6}
-        justifyContent="space-between"
-        alignItems="flex-end"
-      >
-        <Text fontSize={5} fontWeight={3}>
-          Labels
-        </Text>
-        <Button title="Add Label" onClick={() => addLabel()} />
-      </Row>
+    <Card
+      title="Labels"
+      size="xlarge"
+      actions={[{ title: 'Add Label', onClick: () => addLabel() }]}
+    >
       <Table
         columns={columns}
         data={tableData}
         placeholder="There are no labels."
       />
-    </>
+    </Card>
   );
 
   // renderLabel(Label, i) {

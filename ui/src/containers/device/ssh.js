@@ -94,7 +94,7 @@ const DeviceSsh = ({
 
   return (
     <Card size="xlarge">
-      <Terminal bg="inputBackground">
+      <Terminal bg="grays.0">
         <Column id="terminal" />
       </Terminal>
     </Card>

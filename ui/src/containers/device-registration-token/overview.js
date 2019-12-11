@@ -12,6 +12,7 @@ const DeviceRegistrationTokenOverview = ({
   return (
     <>
       <Card
+        size="xlarge"
         title={deviceRegistrationToken.name}
         subtitle={deviceRegistrationToken.description}
       >
@@ -30,14 +31,14 @@ const DeviceRegistrationTokenOverview = ({
           </Value>
         </Column>
       </Card>
-      <Card marginTop={4}>
+      <Column marginTop={4}>
         <EditableLabelTable
           data={deviceRegistrationToken.labels}
           getEndpoint={`projects/${params.project}/deviceregistrationtokens/${deviceRegistrationToken.id}`}
           setEndpoint={`projects/${params.project}/deviceregistrationtokens/${deviceRegistrationToken.id}/labels`}
           deleteEndpoint={`projects/${params.project}/deviceregistrationtokens/${deviceRegistrationToken.id}/labels`}
         />
-      </Card>
+      </Column>
     </>
   );
 };

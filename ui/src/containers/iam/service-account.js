@@ -127,6 +127,7 @@ const ServiceAccount = ({
           <Label>Choose Individual Roles</Label>
           {roles.map(role => (
             <Field
+              group
               key={role.id}
               name={`roles[${role.name}]`}
               as={<Checkbox label={role.name} />}
@@ -149,7 +150,7 @@ const ServiceAccount = ({
             You are about to delete the <strong>{serviceAccount.name}</strong>{' '}
             service account.
           </Text>
-          <Button marginTop={6} title="Delete" onClick={submitDelete} />
+          <Button marginTop={5} title="Delete" onClick={submitDelete} />
         </Card>
       </Popup>
     </>

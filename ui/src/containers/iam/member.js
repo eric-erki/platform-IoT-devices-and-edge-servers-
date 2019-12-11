@@ -103,6 +103,7 @@ const Member = ({
           <Label>Choose Individual Roles</Label>
           {roles.map(role => (
             <Field
+              group
               key={role.id}
               name={`roles[${role.name}]`}
               as={<Checkbox label={role.name} />}
@@ -126,7 +127,7 @@ const Member = ({
             </strong>
             ) from the project.
           </Text>
-          <Button marginTop={6} title="Remove" onClick={removeMember} />
+          <Button marginTop={5} title="Remove" onClick={removeMember} />
         </Card>
       </Popup>
     </>

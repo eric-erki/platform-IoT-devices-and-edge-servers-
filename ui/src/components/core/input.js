@@ -13,7 +13,7 @@ const Input = styled.input`
   outline: none;
   margin: 0;
   padding: 10px;
-  transition: border-color 150ms;
+  transition: border-color 200ms;
 
   &:focus {
     border-color: ${props => props.theme.colors.primary};
@@ -25,20 +25,20 @@ const Input = styled.input`
     opacity: .75;
   }
 
-  input:-webkit-autofill,
-  input:-webkit-autofill:hover, 
-  input:-webkit-autofill:focus, 
-  input:-webkit-autofill:active  {
-      -webkit-box-shadow: 0 0 0 30px ${props =>
-        props.theme.colors.inputBackground} inset !important;
+  -webkit-autofill,
+  -webkit-autofill:hover, 
+  -webkit-autofill:focus, 
+  -webkit-autofill:active  {
+      box-shadow: 0 0 0 30px ${props =>
+        props.theme.colors.grays[1]} inset !important;
   }
 
   ${space} ${border} ${layout} ${color} ${typography} ${shadow}
 `;
 
 Input.defaultProps = {
-  color: 'whites.9',
-  bg: 'inputBackground',
+  color: 'grays.11',
+  bg: 'grays.0',
   padding: 3,
   borderRadius: 1,
   fontWeight: 2,

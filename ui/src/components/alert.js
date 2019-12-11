@@ -8,7 +8,7 @@ const Alert = ({ show, type, children }) => {
     return null;
   }
   return (
-    <Column bg="whites.5" padding={3}>
+    <Column bg="grays.5" padding={3}>
       <Row justifyContent="center">
         <Icon icon={type} color="black" />
         {children}

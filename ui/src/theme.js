@@ -2,7 +2,6 @@ const breakpoints = ['480px', '768px', '1024px'];
 
 const colors = {
   primary: '#6fccff', //'#57e3ff',
-  background: '#151515',
 
   black: '#000',
   white: '#fff',
@@ -11,31 +10,25 @@ const colors = {
 
   transparent: 'transparent',
 
-  inputBackground: '#101010',
+  overlay: 'rgba(0,0,0,.8)',
 
-  blacks: [
-    'rgba(0,0,0,.05)',
-    'rgba(0,0,0,.1)',
-    'rgba(0,0,0,.2)',
-    'rgba(0,0,0,.3)',
-    'rgba(0,0,0,.4)',
-    'rgba(0,0,0,.5)',
-    'rgba(0,0,0,.6)',
-    'rgba(0,0,0,.7)',
-    'rgba(0,0,0,.8)',
-    'rgba(0,0,0,.9)',
-  ],
-  whites: [
-    'rgba(255,255,255,.05)',
-    'rgba(255,255,255,.1)',
-    'rgba(255,255,255,.2)',
-    'rgba(255,255,255,.3)',
-    'rgba(255,255,255,.4)',
-    'rgba(255,255,255,.5)',
-    'rgba(255,255,255,.6)',
-    'rgba(255,255,255,.7)',
-    'rgba(255,255,255,.8)',
-    'rgba(255,255,255,.9)',
+  pageBackground: '#121212',
+
+  grays: [
+    '#141414',
+    '#181818',
+    '#222222',
+    '#363636',
+    '#484848',
+    '#5A5A5A',
+    '#6C6C6C',
+    '#7E7E7E',
+    '#909090',
+    '#A2A2A2',
+    '#B4B4B4',
+    '#C6C6C6',
+    '#D8D8D8',
+    '#EAEAEA',
   ],
 };
 
@@ -74,10 +67,7 @@ export default {
 
   borders: [`1px solid ${colors.primary}`, `3px solid ${colors.primary}`],
 
-  shadows: [
-    `0 2px 4px ${colors.blacks[1]}, 0 2px 4px ${colors.blacks[2]}`,
-    `0 3px 6px ${colors.blacks[1]}, 0 3px 6px ${colors.blacks[2]}`,
-  ],
+  shadows: [`0 2px 4px black`, `0 3px 6px black`],
 
   mediaQueries: {
     small: `@media screen and (min-width: ${breakpoints[0]})`,

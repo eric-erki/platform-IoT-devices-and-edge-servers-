@@ -24,7 +24,7 @@ const styles = `
 `;
 
 const LinkTab = styled.a`
-  text-decoration: none;
+  text-decoration: none !important;
 
   ${color} ${typography} ${space}
 

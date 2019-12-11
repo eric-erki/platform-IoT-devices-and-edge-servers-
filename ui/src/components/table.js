@@ -26,13 +26,15 @@ const CellContent = styled(Row)`
 
 const TableRow = styled(Row)`
   align-items: center;
-  border-bottom: 1px solid ${props => props.theme.colors.whites[3]};
+  border-bottom: 1px solid ${props => props.theme.colors.grays[2]};
   cursor: ${props => (props.selectable ? 'pointer' : 'default')};
   transition: background-color 150ms;
 
   &:hover {
     background-color: ${props =>
-      props.selectable ? '#121212' : props.theme.colors.black};
+      props.selectable
+        ? props.theme.colors.grays[1]
+        : props.theme.colors.black};
   }
 `;
 
@@ -48,7 +50,7 @@ Header.defaultProps = {
   fontSize: 0,
   fontWeight: 4,
   color: 'white',
-  bg: 'whites.1',
+  bg: 'grays.0',
 };
 
 const Table = ({ columns, data, onRowSelect, placeholder }) => {
@@ -113,7 +115,7 @@ const Table = ({ columns, data, onRowSelect, placeholder }) => {
             justifyContent="center"
             padding={3}
             borderBottom={0}
-            borderColor="whites.3"
+            borderColor="grays.3"
           >
             <Text>{placeholder}</Text>
           </Row>

@@ -9,5 +9,6 @@ export { default as Checkbox } from './checkbox';
 export { default as Label } from './label';
 export { default as Value } from './value';
 export { default as Badge } from './badge';
+export { default as Group } from './group';
 export * from './box';
 export * from './form';

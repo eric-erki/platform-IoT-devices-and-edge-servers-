@@ -114,7 +114,7 @@ const Release = ({
             <strong>{params.application}</strong> using the config from release{' '}
             <strong>{release.id}</strong>.
           </Text>
-          <Button marginTop={6} title="Revert" onClick={revertRelease} />
+          <Button marginTop={5} title="Revert" onClick={revertRelease} />
         </Card>
       </Popup>
     </>

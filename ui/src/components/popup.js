@@ -7,7 +7,7 @@ import { Column } from './core';
 
 const Overlay = styled(Column)`
   position: absolute;
-  z-index: 99;
+  z-index: 9999999;
   top: 0;
   left: 0;
   width: 100%;
@@ -15,13 +15,16 @@ const Overlay = styled(Column)`
   padding: 64px;
   align-items: center;
   justify-content: center;
-  background-color: ${props => props.theme.colors.blacks[5]};
+  background-color: ${props => props.theme.colors.overlay};
 `;
 
 const Container = styled(Column)`
   position: relative;
-  overflow: hidden;
   z-index: 9999;
+`;
+
+const Content = styled(Column)`
+  overflow: hidden;
 `;
 
 const CloseButton = styled.button`
@@ -32,25 +35,27 @@ const CloseButton = styled.button`
   margin: 0;
   padding: 0;
   position: absolute;
-  top: 8px;
-  right: 8px;
-  padding: 2px;
+  top: 0px;
+  left: -64px;
+  padding: 4px;
   border-radius: 999px;
+  z-index: 999;
   cursor: pointer;
   border: 1px solid ${props => props.theme.colors.white};
 
   transition: background-color 200ms;
+  background-color: transparent;
 
   &:hover {
-    background-color: ${props => props.theme.colors.black};
+    background-color: ${props => props.theme.colors.white};
   }
 
-  & > svg {
+  & svg {
     transition: fill 200ms;
   }
 
-  &:hover > svg {
-    fill: #fff !important;
+  &:hover svg {
+    fill: ${props => props.theme.colors.black} !important;
   }
 `;
 
@@ -91,9 +96,9 @@ const Popup = ({ children, show, onClose }) => {
   return (
     <Overlay>
       <Container ref={node}>
-        {children}
+        <Content>{children}</Content>
         <CloseButton onClick={onClose}>
-          <Icon icon="cross" size={12} />
+          <Icon icon="cross" size={20} color="white" />
         </CloseButton>
       </Container>
     </Overlay>

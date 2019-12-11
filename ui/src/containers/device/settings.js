@@ -131,7 +131,7 @@ const DeviceSettings = ({
             You are about to remove the <strong>{device.name}</strong> device.
           </Text>
 
-          <Button marginTop={6} title="Remove" onClick={submitDelete} />
+          <Button marginTop={5} title="Remove" onClick={submitDelete} />
         </Card>
       </Popup>
     </>

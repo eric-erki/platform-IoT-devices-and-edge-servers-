@@ -2,7 +2,7 @@ import React from 'react';
 
 import Editor from '../../components/editor';
 import Card from '../../components/card';
-import { Column, Text, Link, Label, Value } from '../../components/core';
+import { Group, Link, Label, Value } from '../../components/core';
 import { DevicesFilterButtons } from '../../components/DevicesFilterButtons';
 
 const ApplicationOverview = ({
@@ -14,16 +14,8 @@ const ApplicationOverview = ({
   },
 }) => {
   return (
-    <Card size="large">
-      <Column marginBottom={5}>
-        <Text fontSize={6} fontWeight={3}>
-          {name}
-        </Text>
-        <Text fontWeight={3} opacity={0.8}>
-          {description}
-        </Text>
-      </Column>
-      <Column marginBottom={6}>
+    <Card title={name} subtitle={description}>
+      <Group>
         <Label>Scheduling Rule</Label>
         {schedulingRule.length ? (
           <DevicesFilterButtons
@@ -39,20 +31,20 @@ const ApplicationOverview = ({
             page.
           </Value>
         )}
-      </Column>
+      </Group>
 
       {latestRelease ? (
         <>
-          <Column marginBottom={6}>
+          <Group>
             <Label>Current Release ID</Label>
             <Link
               href={`/${params.project}/applications/${name}/releases/${latestRelease.id}`}
             >
               {latestRelease.id}
             </Link>
-          </Column>
+          </Group>
 
-          <Column>
+          <Group>
             <Label>Current Release Config</Label>
             <Editor
               width="100%"
@@ -60,10 +52,10 @@ const ApplicationOverview = ({
               value={latestRelease.rawConfig}
               readOnly
             />
-          </Column>
+          </Group>
         </>
       ) : (
-        <Column>
+        <Group>
           <Label>Current Release</Label>
           <Value>
             Create your first release on the{' '}
@@ -72,7 +64,7 @@ const ApplicationOverview = ({
             </Link>{' '}
             page.
           </Value>
-        </Column>
+        </Group>
       )}
     </Card>
   );

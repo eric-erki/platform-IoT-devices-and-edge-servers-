@@ -122,7 +122,7 @@ const ApplicationSettings = ({
             You are about to delete the <strong>{application.name}</strong>{' '}
             application.
           </Text>
-          <Button marginTop={6} title="Delete" onClick={submitDelete} />
+          <Button marginTop={5} title="Delete" onClick={submitDelete} />
         </Card>
       </Popup>
     </>

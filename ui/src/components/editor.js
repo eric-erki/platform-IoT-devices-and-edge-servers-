@@ -1,7 +1,7 @@
 import React from 'react';
 import AceEditor from 'react-ace';
 import 'brace/mode/yaml';
-import 'brace/theme/twilight';
+import 'brace/theme/pastel_on_dark';
 
 const Editor = ({ readOnly, onChange, value, width, height }) => (
   <AceEditor
@@ -20,7 +20,7 @@ const Editor = ({ readOnly, onChange, value, width, height }) => (
     readOnly={readOnly}
     value={value}
     onChange={onChange}
-    theme="twilight"
+    theme="pastel_on_dark"
     style={{ borderRadius: '4px' }}
     // onLoad={this.handleLoad}
   />

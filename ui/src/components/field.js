@@ -3,7 +3,16 @@ import { RHFInput } from 'react-hook-form-input';
 import styled from 'styled-components';
 import { space, color, typography } from 'styled-system';
 
-import { Column, Input, Textarea, Label, Text } from './core';
+import { Group, Column, Input, Textarea, Label, Text, Checkbox } from './core';
+
+const Container = styled(Group)`
+  &:not(:last-of-type) {
+    margin-bottom: ${props =>
+      props.group
+        ? props.theme.sizes[2]
+        : props.theme.sizes[Label.defaultProps.marginBottom]}px;
+  }
+`;
 
 const FieldLabel = styled.label`
 ${space} ${color} ${typography}
@@ -26,6 +35,7 @@ const Field = forwardRef(
       register,
       onChangeEvent,
       autoComplete = 'off',
+      group,
       ...props
     },
     ref
@@ -62,12 +72,12 @@ const Field = forwardRef(
     };
 
     return (
-      <Column marginBottom={6}>
+      <Container group={group}>
         {(label || description) && (
           <Column marginBottom={Label.defaultProps.marginBottom}>
             {label && <FieldLabel htmlFor={name}>{label}</FieldLabel>}
             {description && (
-              <Text marginTop={2} fontSize={1} color="whites.7">
+              <Text marginTop={2} fontSize={1} color="grays.7">
                 {description}
               </Text>
             )}
@@ -75,11 +85,11 @@ const Field = forwardRef(
         )}
         {getComponent()}
         {hint && (
-          <Text marginTop={2} fontSize={0} color="whites.7">
+          <Text marginTop={2} fontSize={0} color="grays.7">
             {hint}
           </Text>
         )}
-      </Column>
+      </Container>
     );
   }
 );

@@ -96,14 +96,14 @@ const DeviceOverview = ({
           </Value>
         </Column>
       </Card>
-      <Card marginBottom={4} size="xlarge">
+      <Column marginBottom={4}>
         <EditableLabelTable
           data={device.labels}
           getEndpoint={`projects/${params.project}/devices/${device.id}`}
           setEndpoint={`projects/${params.project}/devices/${device.id}/labels`}
           deleteEndpoint={`projects/${params.project}/devices/${device.id}/labels`}
         />
-      </Card>
+      </Column>
       <Card title="Services" size="xlarge">
         <DeviceServices
           project={params.project}
