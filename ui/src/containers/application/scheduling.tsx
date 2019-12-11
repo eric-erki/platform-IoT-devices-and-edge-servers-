@@ -106,7 +106,7 @@ const Scheduling = ({
           title={backendError}
         />
       )}
-      <Row backgroundColor={'#E4E7EB'} borderRadius={'5px'} minHeight={'60px'}>
+      <Row bg="inputBackground" borderRadius={'5px'} minHeight={'60px'}>
         <DevicesFilterButtons
           query={schedulingRule}
           canRemoveFilter={true}
