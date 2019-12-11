@@ -21,16 +21,21 @@ const tabs = [
 ];
 
 const Device = ({ route }) => {
+  if (!route) {
+    return null;
+  }
   return (
-    <Layout title={route.data.params.device}>
-      <Row marginBottom={5}>
+    <Layout
+      alignItems="center"
+      header={
         <Tabs
           content={tabs.map(({ to, title }) => ({
             title,
-            href: `/${route.data.params.project}/${to}`,
+            href: `/${route.data.params.project}/devices/${route.data.device.name}/${to}`,
           }))}
         />
-      </Row>
+      }
+    >
       <View />
     </Layout>
   );

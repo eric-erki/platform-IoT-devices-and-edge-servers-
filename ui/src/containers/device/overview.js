@@ -66,21 +66,19 @@ const DeviceOverview = ({
   },
 }) => {
   return (
-    <Card size="large">
-      <Row
-        alignItems="flex-end"
-        justifyContent="space-between"
-        marginBottom={5}
-      >
+    <Card size="xlarge">
+      <Column marginBottom={5}>
         <Text fontSize={5} fontWeight={3}>
           {device.name}
         </Text>
-        {device.status === 'offline' ? (
-          <Badge bg="whites.7">offline</Badge>
-        ) : (
-          <Badge bg="green">online</Badge>
-        )}
-      </Row>
+        <Row marginTop={2}>
+          {device.status === 'offline' ? (
+            <Badge bg="whites.7">offline</Badge>
+          ) : (
+            <Badge bg="green">online</Badge>
+          )}
+        </Row>
+      </Column>
       <Column marginBottom={4}>
         <Text fontWeight={3} marginBottom={2}>
           IP Address
@@ -101,11 +99,11 @@ const DeviceOverview = ({
         </Text>
       </Column>
       <Column marginBottom={4}>
-        <EditableLabelTable
+        {/* <EditableLabelTable
           getEndpoint={`${config.endpoint}/projects/${params.project}/devices/${device.id}`}
           setEndpoint={`${config.endpoint}/projects/${params.project}/devices/${device.id}/labels`}
           deleteEndpoint={`${config.endpoint}/projects/${params.project}/devices/${device.id}/labels`}
-        />
+        /> */}
       </Column>
       <Column>
         <Text fontWeight={3} marginBottom={2}>
