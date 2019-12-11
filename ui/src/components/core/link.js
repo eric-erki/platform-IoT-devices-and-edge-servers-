@@ -7,6 +7,10 @@ const A = styled.a`
   text-decoration: none;
   cursor: pointer;
 
+  &:hover {
+    filter: brightness(125%);
+  }
+
   ${color} ${layout} ${space} ${typography}
 `;
 

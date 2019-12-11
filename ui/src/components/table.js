@@ -25,7 +25,7 @@ const CellContent = styled(Box)`
 
 const TableRow = styled(Row)`
   align-items: center;
-  border-bottom: 1px solid #242424;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
   cursor: ${props => (props.selectable ? 'pointer' : 'default')};
   transition: background-color 150ms;
 
