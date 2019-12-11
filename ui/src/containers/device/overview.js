@@ -77,44 +77,48 @@ const DeviceOverview = ({
   },
 }) => {
   return (
-    <Card size="xlarge" title={device.name}>
-      <Row marginBottom={6}>
-        {device.status === 'offline' ? (
-          <Badge bg="whites.7">offline</Badge>
-        ) : (
-          <Badge bg="green">online</Badge>
-        )}
-      </Row>
-      <Column marginBottom={6}>
-        <Label>IP Address</Label>
-        <Text>
-          {device.info.hasOwnProperty('ipAddress') ? device.info.ipAddress : ''}
-        </Text>
-      </Column>
-      <Column marginBottom={6}>
-        <Label>Operating System</Label>
-        <Text>
-          {device.info.hasOwnProperty('osRelease') &&
-          device.info.osRelease.hasOwnProperty('prettyName')
-            ? device.info.osRelease.prettyName
-            : '-'}
-        </Text>
-      </Column>
-      <Column marginBottom={4}>
-        {/* <EditableLabelTable
-          getEndpoint={`${config.endpoint}/projects/${params.project}/devices/${device.id}`}
-          setEndpoint={`${config.endpoint}/projects/${params.project}/devices/${device.id}/labels`}
-          deleteEndpoint={`${config.endpoint}/projects/${params.project}/devices/${device.id}/labels`}
-        /> */}
-      </Column>
-      <Column>
-        <Label>Services</Label>
+    <>
+      <Card size="xlarge" title={device.name} marginBottom={4}>
+        <Row marginBottom={6}>
+          {device.status === 'offline' ? (
+            <Badge bg="whites.7">offline</Badge>
+          ) : (
+            <Badge bg="green">online</Badge>
+          )}
+        </Row>
+        <Column marginBottom={6}>
+          <Label>IP Address</Label>
+          <Text>
+            {device.info.hasOwnProperty('ipAddress')
+              ? device.info.ipAddress
+              : ''}
+          </Text>
+        </Column>
+        <Column marginBottom={6}>
+          <Label>Operating System</Label>
+          <Text>
+            {device.info.hasOwnProperty('osRelease') &&
+            device.info.osRelease.hasOwnProperty('prettyName')
+              ? device.info.osRelease.prettyName
+              : '-'}
+          </Text>
+        </Column>
+      </Card>
+      <Card marginBottom={4} size="xlarge">
+        <EditableLabelTable
+          data={device.labels}
+          getEndpoint={`projects/${params.project}/devices/${device.id}`}
+          setEndpoint={`projects/${params.project}/devices/${device.id}/labels`}
+          deleteEndpoint={`projects/${params.project}/devices/${device.id}/labels`}
+        />
+      </Card>
+      <Card title="Services" size="xlarge">
         <DeviceServices
           project={params.project}
           applicationStatusInfo={device.applicationStatusInfo}
         />
-      </Column>
-    </Card>
+      </Card>
+    </>
   );
 };
 

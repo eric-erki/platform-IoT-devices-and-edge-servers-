@@ -35,7 +35,7 @@ const UserAccessKeys = () => {
         Cell: ({ row }) => (
           <Button
             title="Delete"
-            variant="tertiary"
+            variant="text"
             onClick={() => deleteAccessKey(row.original.id)}
           />
         ),
