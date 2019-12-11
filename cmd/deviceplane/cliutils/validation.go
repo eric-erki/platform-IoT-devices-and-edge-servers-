@@ -13,7 +13,7 @@ func RequireAccessKey(config *global.Config, c interface{}) interface{} {
 	return RequireVariableForPreAction(
 		config,
 		config.Flags.AccessKey,
-		fmt.Errorf("Access Key not found as a flag, env var, or in config (%s)", *config.Flags.ConfigFile),
+		fmt.Errorf("Access key not found as a flag, environment variable, or in config (%s)", *config.Flags.ConfigFile),
 		c,
 	)
 }
@@ -22,7 +22,7 @@ func RequireProject(config *global.Config, c interface{}) interface{} {
 	return RequireVariableForPreAction(
 		config,
 		config.Flags.Project,
-		fmt.Errorf("Project not found as a flag, env var, or in config (%s)", *config.Flags.ConfigFile),
+		fmt.Errorf("Project not found as a flag, environment variable, or in config (%s)", *config.Flags.ConfigFile),
 		c,
 	)
 }
@@ -46,7 +46,7 @@ func RequireVariableForPreAction(config *global.Config, variable *string, err er
 	case *kingpin.FlagClause:
 		return v.PreAction(requirePreAction)
 	default:
-		log.Fatal("Cannot require access key on this type")
+		log.Fatal("Cannot require Access key on this type")
 		return nil
 	}
 }

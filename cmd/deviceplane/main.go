@@ -21,7 +21,7 @@ var (
 
 		Flags: global.ConfigFlags{
 			APIEndpoint: app.Flag("url", "API Endpoint.").Hidden().Default("https://cloud.deviceplane.com:443/api").URL(),
-			AccessKey:   app.Flag("access-key", "Access Key used for authentication.").Envar("DEVICEPLANE_ACCESS_KEY").String(),
+			AccessKey:   app.Flag("access-key", "Access key used for authentication.").Envar("DEVICEPLANE_ACCESS_KEY").String(),
 			Project:     app.Flag("project", "Project name.").Envar("DEVICEPLANE_PROJECT").String(),
 			ConfigFile:  app.Flag("config", "Config file to use.").Default("~/.deviceplane/config").String(),
 		},

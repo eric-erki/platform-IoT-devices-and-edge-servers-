@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/deviceplane/deviceplane/cmd/deviceplane/cliutils"
+	"golang.org/x/sync/errgroup"
 
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
@@ -94,32 +95,21 @@ func deviceSSHAction(c *kingpin.ParseContext) error {
 	}
 	defer listener.Close()
 
-	var errChan = make(chan error, 2)
+	g, ctx := errgroup.WithContext(context.TODO())
 
-	go func() {
+	g.Go(func() error {
 		localConn, err := listener.Accept()
 		if err != nil {
-			select {
-			case e, open := <-errChan:
-				if !open {
-					return
-				}
-				errChan <- e
-				return
-			default:
-			}
-
-			errChan <- err
-			return
+			return err
 		}
 
 		go io.Copy(conn, localConn)
 		io.Copy(localConn, conn)
 
-		return
-	}()
+		return nil
+	})
 
-	go func() {
+	g.Go(func() error {
 		defer conn.Close()
 
 		port := strconv.Itoa(listener.Addr().(*net.TCPAddr).Port)
@@ -139,7 +129,8 @@ func deviceSSHAction(c *kingpin.ParseContext) error {
 			fmt.Sprintf("ConnectTimeout=%d", *sshTimeoutFlag),
 		}, trailingArgs...)
 
-		cmd := exec.Command(
+		cmd := exec.CommandContext(
+			ctx,
 			"ssh",
 			sshArguments...,
 		)
@@ -150,14 +141,13 @@ func deviceSSHAction(c *kingpin.ParseContext) error {
 		if err := cmd.Run(); err != nil {
 			if exitError, ok := err.(*exec.ExitError); ok {
 				os.Exit(exitError.ExitCode())
-				return
+				return nil
 			}
-			errChan <- err
-			return
+			return err
 		}
 
-		close(errChan)
-	}()
+		return nil
+	})
 
-	return <-errChan
+	return g.Wait()
 }

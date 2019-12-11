@@ -100,17 +100,12 @@ func applicationInspectAction(c *kingpin.ParseContext) error {
 		return err
 	}
 
-	var config interface{}
-	if release != nil {
-		switch *applicationOutputFlag {
-		case cliutils.FormatYAML:
-			config = release.RawConfig
-		case cliutils.FormatJSON:
-			config = release.Config
-		}
+	if *applicationOutputFlag == cliutils.FormatYAML {
+		fmt.Println(release.RawConfig)
+		return nil
 	}
 
-	return cliutils.PrintWithFormat(config, *applicationOutputFlag)
+	return cliutils.PrintWithFormat(release.Config, *applicationOutputFlag)
 }
 
 func applicationEditAction(c *kingpin.ParseContext) error {
