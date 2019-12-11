@@ -93,7 +93,7 @@ const DeviceSsh = ({
   return (
     <Card size="xlarge">
       <Terminal>
-        <Column id="terminal" width="100%" />
+        <Column id="terminal" />
       </Terminal>
     </Card>
   );

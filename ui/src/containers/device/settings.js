@@ -34,7 +34,7 @@ const DeviceSettings = ({
     api
       .updateDevice({
         projectId: params.project,
-        deviceId: params.device,
+        deviceId: device.id,
         data,
       })
       .then(() => {
@@ -108,12 +108,18 @@ const DeviceSettings = ({
         </Column>
 
         <Form onSubmit={handleSubmit(submit)}>
-          <Field label="Name" name="name" ref={register} errors={errors.name} />
+          <Field
+            required
+            label="Name"
+            name="name"
+            ref={register}
+            errors={errors.name}
+          />
           <Button type="submit" title="Update" disabled={!formState.dirty} />
         </Form>
       </Card>
       <Popup show={showPopup} onClose={() => setShowPopup(false)}>
-        <Card title="Remove Device">
+        <Card title="Remove Device" border>
           <Text>
             You are about to remove the <strong>{device.name}</strong> device.
           </Text>
