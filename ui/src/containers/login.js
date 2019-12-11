@@ -37,20 +37,20 @@ const Login = () => {
 
   return (
     <Column flex={1} alignItems="center" paddingTop={9}>
-      {backendError && (
-        <Alert
-          marginBottom={16}
-          paddingTop={16}
-          paddingBottom={16}
-          intent="warning"
-          title={backendError}
-        />
-      )}
       <Card
         logo
         title="Log in"
         actions={[{ href: '/signup', title: 'Sign up', variant: 'secondary' }]}
       >
+        {backendError && (
+          <Alert
+            marginBottom={16}
+            paddingTop={16}
+            paddingBottom={16}
+            intent="warning"
+            title={backendError}
+          />
+        )}
         <Form onSubmit={handleSubmit(submit)}>
           <Field
             required
