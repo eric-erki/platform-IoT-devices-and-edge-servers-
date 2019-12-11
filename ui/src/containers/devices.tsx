@@ -58,7 +58,7 @@ const Devices = ({ route }) => {
       {
         Header: 'Status',
         Cell: ({ row }) =>
-          row.status === 'offline' ? (
+          row.original.status === 'offline' ? (
             <Badge color="red">offline</Badge>
           ) : (
             <Badge color="green">online</Badge>
@@ -72,20 +72,24 @@ const Devices = ({ route }) => {
       {
         Header: 'IP Address',
         Cell: ({ row }) =>
-          row.info.hasOwnProperty('ipAddress') ? row.info.ipAddress : '',
+          row.original.info.hasOwnProperty('ipAddress')
+            ? row.original.info.ipAddress
+            : '',
       },
       {
         Header: 'OS',
         Cell: ({ row }) =>
-          row.info.hasOwnProperty('osRelease') &&
-          row.info.osRelease.hasOwnProperty('prettyName')
-            ? row.info.osRelease.prettyName
+          row.original.info.hasOwnProperty('osRelease') &&
+          row.original.info.osRelease.hasOwnProperty('prettyName')
+            ? row.original.info.osRelease.prettyName
             : '-',
       },
       {
         Header: 'Labels',
         Cell: ({ row }) =>
-          row.labels ? renderLabels(row.labels, labelColorMap) : null,
+          row.original.labels
+            ? renderLabels(row.original.labels, labelColorMap)
+            : null,
       },
     ],
     []
