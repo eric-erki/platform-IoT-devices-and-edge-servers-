@@ -109,7 +109,7 @@ func configureAction(c *kingpin.ParseContext) error {
 	if gConfig.Flags.AccessKey != nil && *gConfig.Flags.AccessKey != "" {
 		extraAccessKeyMsg = fmt.Sprintf(` (or leave empty to use "%s")`, *gConfig.Flags.AccessKey)
 	}
-	fmt.Printf("Enter Access key%s: \n>", extraAccessKeyMsg)
+	fmt.Printf("Enter access key%s: \n>", extraAccessKeyMsg)
 	rawAccessKey, _ := reader.ReadString('\n')
 
 	var extraProjectMsg string
@@ -131,7 +131,7 @@ func configureAction(c *kingpin.ParseContext) error {
 		project = *gConfig.Flags.Project
 	}
 
-	fmt.Printf("Configuring with Access key (%s) and project (%s)\n", accessKey, project)
+	fmt.Printf("Configuring with access key (%s) and project (%s)\n", accessKey, project)
 
 	// Actually configure
 	configValues := ConfigValues{

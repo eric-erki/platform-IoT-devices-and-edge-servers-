@@ -46,7 +46,7 @@ func RequireVariableForPreAction(config *global.Config, variable *string, err er
 	case *kingpin.FlagClause:
 		return v.PreAction(requirePreAction)
 	default:
-		log.Fatal("Cannot require Access key on this type")
+		log.Fatal("Cannot require access key on this type")
 		return nil
 	}
 }
