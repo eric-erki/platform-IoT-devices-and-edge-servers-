@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 
-import config from '../../config';
-import { Row, Column, Text, Button, Badge } from '../../components/core';
+import { Row, Column, Text, Button, Badge, Link } from '../../components/core';
 import Card from '../../components/card';
 import Table from '../../components/table';
 import EditableLabelTable from '../../components/EditableLabelTable';
@@ -24,16 +23,20 @@ const DeviceServices = ({ project, applicationStatusInfo }) => {
       {
         Header: 'Service',
         Cell: ({ row: { original } }) => (
-          <Button
-            title={`${original.application.name} / ${original.service}`}
-            variant="tertiary"
+          <Link
             href={`/${project}/applications/${original.application.name}`}
-          />
+          >{`${original.application.name} / ${original.service}`}</Link>
         ),
       },
       {
         Header: 'Current Release',
-        accessor: 'currentReleaseId',
+        Cell: ({ row: { original } }) => (
+          <Link
+            href={`/${project}/applications/${original.application.name}/releases/${original.currentReleaseId}`}
+          >
+            {original.currentReleaseId}
+          </Link>
+        ),
       },
     ],
     []
