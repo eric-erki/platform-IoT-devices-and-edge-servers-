@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import useForm from 'react-hook-form';
 import { useNavigation } from 'react-navi';
-import { toaster, Alert } from 'evergreen-ui';
+import { toaster } from 'evergreen-ui';
 
 import api from '../../api';
 import utils from '../../utils';
 import Card from '../../components/card';
 import Editor from '../../components/editor';
 import Field from '../../components/field';
+import Alert from '../../components/alert';
 import { Form, Row, Button } from '../../components/core';
 
 const CreateRelease = ({
@@ -47,16 +48,8 @@ const CreateRelease = ({
 
   return (
     <Card title="Create Release">
+      <Alert show={backendError} variant="error" description={backendError} />
       <Form onSubmit={handleSubmit(submit)}>
-        {backendError && (
-          <Alert
-            marginBottom={16}
-            paddingTop={16}
-            paddingBottom={16}
-            intent="warning"
-            title={backendError}
-          />
-        )}
         <Field
           as={<Editor width="100%" height="300px" />}
           label="Config"

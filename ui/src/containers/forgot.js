@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import useForm from 'react-hook-form';
 import { useNavigation } from 'react-navi';
-import { toaster, Alert } from 'evergreen-ui';
+import { toaster } from 'evergreen-ui';
 
 import api from '../api';
 import Card from '../components/card';
 import Field from '../components/field';
+import Alert from '../components/alert';
 import { Text, Row, Column, Button, Form } from '../components/core';
 
 const PasswordReset = () => {
@@ -37,17 +38,11 @@ const PasswordReset = () => {
   return (
     <Column flex={1} alignItems="center" paddingTop={9} paddingBottom={6}>
       <Card logo width={10} title="Reset Password">
-        {backendError && (
-          <Alert
-            marginBottom={16}
-            paddingTop={16}
-            paddingBottom={16}
-            intent="warning"
-            title="User doesn't exist"
-          >
-            There is no user with that email address.
-          </Alert>
-        )}
+        <Alert
+          show={backendError}
+          variant="error"
+          description="There is no user with that email address."
+        />
         <Text marginBottom={3}>
           You will receive an email with a link to reset your password.
         </Text>

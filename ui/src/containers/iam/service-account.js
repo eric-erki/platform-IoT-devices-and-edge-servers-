@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import useForm from 'react-hook-form';
 import { useNavigation } from 'react-navi';
-import { Alert, toaster, Code, Icon } from 'evergreen-ui';
+import { toaster, Code, Icon } from 'evergreen-ui';
 
 import api from '../../api';
 import utils from '../../utils';
@@ -9,7 +9,15 @@ import Card from '../../components/card';
 import Field from '../../components/field';
 import Popup from '../../components/popup';
 import Table from '../../components/table';
-import { Text, Button, Form, Label, Checkbox } from '../../components/core';
+import Alert from '../../components/alert';
+import {
+  Row,
+  Text,
+  Button,
+  Form,
+  Label,
+  Checkbox,
+} from '../../components/core';
 
 const ServiceAccount = ({
   route: {
@@ -162,7 +170,6 @@ export default ServiceAccount;
 const ServiceAccountAccessKeys = ({ projectId, serviceAccount }) => {
   const [accessKeys, setAccessKeys] = useState([]);
   const [newAccessKey, setNewAccessKey] = useState();
-  const [showAccessKeyCreated, setShowAccessKeyCreated] = useState();
   const [backendError, setBackendError] = useState();
 
   const columns = useMemo(
@@ -215,8 +222,8 @@ const ServiceAccountAccessKeys = ({ projectId, serviceAccount }) => {
         projectId,
         serviceId: serviceAccount.id,
       });
+      setAccessKeys([response.data, ...accessKeys]);
       setNewAccessKey(response.data.value);
-      setShowAccessKeyCreated(true);
     } catch (error) {
       if (utils.is4xx(error.response.status)) {
         setBackendError(utils.convertErrorMessage(error.response.data));
@@ -247,57 +254,32 @@ const ServiceAccountAccessKeys = ({ projectId, serviceAccount }) => {
     }
   };
 
-  const closeAccessKeyPopup = () => {
-    setShowAccessKeyCreated(false);
-    fetchAccessKeys();
-  };
-
   return (
-    <>
-      <Card
-        title="Access Keys"
-        size="xlarge"
-        actions={[{ title: 'Create Access Key', onClick: createAccessKey }]}
-      >
-        {backendError && (
-          <Alert
-            marginBottom={16}
-            paddingTop={16}
-            paddingBottom={16}
-            intent="warning"
-            title={backendError}
-          />
-        )}
-        <Table
-          columns={columns}
-          data={tableData}
-          placeholder={
-            <Text>
-              There are no <strong>Access Keys</strong>.
-            </Text>
-          }
-        />
-      </Card>
-
-      <Popup
-        show={showAccessKeyCreated}
+    <Card
+      title="Access Keys"
+      size="xlarge"
+      actions={[{ title: 'Create Access Key', onClick: createAccessKey }]}
+    >
+      <Alert show={backendError} variant="error" description={backendError} />
+      <Alert
+        show={!!newAccessKey}
         title="Access Key Created"
-        onClose={closeAccessKeyPopup}
+        description="Save the info above! This is the only time you'll be able to use it. If you lose it, you'll need to create a new access key."
       >
-        <Card title="Access Key Created" border>
-          <Label>Access Key</Label>
+        <Label>Access Key</Label>
+        <Row>
           <Code>{newAccessKey}</Code>
-
-          <Alert
-            intent="warning"
-            marginTop={16}
-            paddingY={16}
-            title="Save the info above! This is the only time you'll be able to use it."
-          >
-            {`If you lose it, you'll need to create a new access key.`}
-          </Alert>
-        </Card>
-      </Popup>
-    </>
+        </Row>
+      </Alert>
+      <Table
+        columns={columns}
+        data={tableData}
+        placeholder={
+          <Text>
+            There are no <strong>Access Keys</strong>.
+          </Text>
+        }
+      />
+    </Card>
   );
 };

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import useForm from 'react-hook-form';
-import { toaster, Alert } from 'evergreen-ui';
+import { toaster } from 'evergreen-ui';
 
 import api from '../api';
 import utils from '../utils';
 import Card from '../components/card';
 import Field from '../components/field';
+import Alert from '../components/alert';
 import { Form, Button } from '../components/core';
 
 const ChangePassword = ({ close }) => {
@@ -31,15 +32,7 @@ const ChangePassword = ({ close }) => {
 
   return (
     <Card title="Change Password" border>
-      {backendError && (
-        <Alert
-          marginBottom={16}
-          paddingTop={16}
-          paddingBottom={16}
-          intent="warning"
-          title={backendError}
-        />
-      )}
+      <Alert show={backendError} variant="error" description={backendError} />
       <Form onSubmit={handleSubmit(submit)}>
         <Field
           required

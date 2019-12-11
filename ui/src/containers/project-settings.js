@@ -1,7 +1,7 @@
 import React from 'react';
 import useForm from 'react-hook-form';
 import { useNavigation } from 'react-navi';
-import { Alert, toaster } from 'evergreen-ui';
+import { toaster } from 'evergreen-ui';
 import * as yup from 'yup';
 
 import api from '../api';
@@ -10,6 +10,7 @@ import Layout from '../components/layout';
 import Card from '../components/card';
 import Field from '../components/field';
 import Popup from '../components/popup';
+import Alert from '../components/alert';
 import { Text, Button, Form, Input, Label, Group } from '../components/core';
 
 const validationSchema = yup.object().shape({
@@ -82,15 +83,11 @@ const ProjectSettings = ({
             },
           ]}
         >
-          {backendError && (
-            <Alert
-              marginBottom={16}
-              paddingTop={16}
-              paddingBottom={16}
-              intent="warning"
-              title={backendError}
-            />
-          )}
+          <Alert
+            show={backendError}
+            variant="error"
+            description={backendError}
+          />
           <Form onSubmit={handleSubmit(submit)}>
             <Field
               required

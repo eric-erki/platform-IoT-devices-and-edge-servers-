@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import useForm from 'react-hook-form';
 import { useNavigation } from 'react-navi';
 import * as yup from 'yup';
-import { Alert, toaster } from 'evergreen-ui';
+import { toaster } from 'evergreen-ui';
 
 import api from '../../api';
 import utils from '../../utils';
 import Card from '../../components/card';
 import Field from '../../components/field';
 import Popup from '../../components/popup';
+import Alert from '../../components/alert';
 import {
   Row,
   Column,
@@ -92,15 +93,8 @@ const DeviceSettings = ({
           },
         ]}
       >
-        {backendError && (
-          <Alert
-            marginBottom={16}
-            paddingTop={16}
-            paddingBottom={16}
-            intent="warning"
-            title={backendError}
-          />
-        )}
+        <Alert show={backendError} variant="error" description={backendError} />
+
         <Row marginBottom={6}>
           {device.status === 'offline' ? (
             <Badge bg="red">offline</Badge>

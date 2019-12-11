@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import {
-  Alert,
   toaster,
   // @ts-ignore
 } from 'evergreen-ui';
@@ -18,6 +17,7 @@ import {
   LabelValueCondition,
 } from '../../components/DevicesFilter';
 import Card from '../../components/card';
+import Alert from '../../components/alert';
 import { Button, Row } from '../../components/core';
 
 interface Props {
@@ -97,15 +97,7 @@ const Scheduling = ({
         },
       ]}
     >
-      {backendError && (
-        <Alert
-          marginBottom={16}
-          paddingTop={16}
-          paddingBottom={16}
-          intent="warning"
-          title={backendError}
-        />
-      )}
+      <Alert show={backendError} variant="error" description={backendError} />
       <Row bg="grays.0" borderRadius={'5px'} minHeight={'60px'}>
         <DevicesFilterButtons
           query={schedulingRule}

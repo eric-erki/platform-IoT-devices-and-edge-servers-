@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigation } from 'react-navi';
 import useForm from 'react-hook-form';
-import { toaster, Alert } from 'evergreen-ui';
+import { toaster } from 'evergreen-ui';
 import * as yup from 'yup';
 
 import utils from '../../utils';
 import api from '../../api';
 import Field from '../../components/field';
 import Card from '../../components/card';
+import Alert from '../../components/alert';
 import { Row, Form, Button } from '../../components/core';
 
 const validationSchema = yup.object().shape({
@@ -41,16 +42,8 @@ const CreateServiceAccount = ({
 
   return (
     <Card title="Create Service Account" size="medium">
+      <Alert show={backendError} variant="error" description={backendError} />
       <Form onSubmit={handleSubmit(submit)}>
-        {backendError && (
-          <Alert
-            marginBottom={16}
-            paddingTop={16}
-            paddingBottom={16}
-            intent="warning"
-            title={backendError}
-          />
-        )}
         <Field required autoFocus label="Name" name="name" ref={register} />
         <Field
           type="textarea"

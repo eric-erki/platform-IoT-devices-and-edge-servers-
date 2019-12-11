@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import useForm from 'react-hook-form';
 import * as yup from 'yup';
 import { useCurrentRoute } from 'react-navi';
-import { toaster, Alert } from 'evergreen-ui';
+import { toaster } from 'evergreen-ui';
 
 import api from '../api';
 import utils from '../utils';
 import Card from '../components/card';
 import Field from '../components/field';
+import Alert from '../components/alert';
 import { Form, Button } from '../components/core';
 
 const validationSchema = yup.object().shape({
@@ -38,33 +39,24 @@ const Profile = ({ close }) => {
   });
   const [backendError, setBackendError] = useState();
 
-  const submit = data =>
-    api
-      .updateUser(data)
-      .then(() => {
-        toaster.success('Profile updated.');
-        close();
-      })
-      .catch(error => {
-        if (utils.is4xx(error.response.status)) {
-          setBackendError(utils.convertErrorMessage(error.response.data));
-        } else {
-          toaster.danger('Profile was not updated.');
-          console.log(error);
-        }
-      });
+  const submit = async data => {
+    try {
+      await api.updateUser(data);
+      toaster.success('Profile updated.');
+      close();
+    } catch (error) {
+      if (utils.is4xx(error.response.status) && error.response.data) {
+        setBackendError(utils.convertErrorMessage(error.response.data));
+      } else {
+        toaster.danger('Profile was not updated.');
+        console.log(error);
+      }
+    }
+  };
 
   return (
     <Card title="Profile" border>
-      {backendError && (
-        <Alert
-          marginBottom={16}
-          paddingTop={16}
-          paddingBottom={16}
-          intent="warning"
-          title={backendError}
-        />
-      )}
+      <Alert show={backendError} variant="error" description={backendError} />
       <Form onSubmit={handleSubmit(submit)}>
         <Field required label="First Name" name="firstName" ref={register} />
         <Field required label="Last Name" name="lastName" ref={register} />

@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import moment from 'moment';
 import { useNavigation } from 'react-navi';
-import { Alert } from 'evergreen-ui';
 
 import api from '../../api';
 import utils from '../../utils';
 import Editor from '../../components/editor';
 import Card from '../../components/card';
 import Popup from '../../components/popup';
+import Alert from '../../components/alert';
 import {
   Row,
   Column,
@@ -72,15 +72,7 @@ const Release = ({
         <Text fontWeight={3} fontSize={5} marginBottom={6}>
           {release.id}
         </Text>
-        {backendError && (
-          <Alert
-            marginBottom={16}
-            paddingTop={16}
-            paddingBottom={16}
-            intent="warning"
-            title={backendError}
-          />
-        )}
+        <Alert show={backendError} variant="error" description={backendError} />
         <Column marginBottom={6}>
           <Label>Released By</Label>
           <Row>

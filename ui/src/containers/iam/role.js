@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import useForm from 'react-hook-form';
 import * as yup from 'yup';
 import { useNavigation } from 'react-navi';
-import { toaster, Alert } from 'evergreen-ui';
+import { toaster } from 'evergreen-ui';
 
 import api from '../../api';
 import utils from '../../utils';
@@ -10,6 +10,7 @@ import Editor from '../../components/editor';
 import Card from '../../components/card';
 import Field from '../../components/field';
 import Popup from '../../components/popup';
+import Alert from '../../components/alert';
 import { Text, Button, Form } from '../../components/core';
 
 const validationSchema = yup.object().shape({
@@ -84,15 +85,11 @@ const Role = ({
         ]}
       >
         <Form onSubmit={handleSubmit(submit)}>
-          {backendError && (
-            <Alert
-              marginBottom={16}
-              paddingTop={16}
-              paddingBottom={16}
-              intent="warning"
-              title={backendError}
-            />
-          )}
+          <Alert
+            show={backendError}
+            variant="error"
+            description={backendError}
+          />
           <Field
             autoFocus
             required

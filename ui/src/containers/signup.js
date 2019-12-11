@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { toaster, Alert } from 'evergreen-ui';
+import { toaster } from 'evergreen-ui';
 import { useNavigation } from 'react-navi';
 import useForm from 'react-hook-form';
 import * as yup from 'yup';
@@ -8,6 +8,7 @@ import api from '../api';
 import utils from '../utils';
 import Card from '../components/card';
 import Field from '../components/field';
+import Alert from '../components/alert';
 import { Column, Button, Form, Text, Link } from '../components/core';
 
 const validationSchema = yup.object().shape({
@@ -39,25 +40,21 @@ const Signup = () => {
   const navigation = useNavigation();
   const [backendError, setBackendError] = useState();
 
-  const submit = data => {
-    api
-      .signup(data)
-      .then(() => {
-        navigation.navigate('/login');
-        toaster.success(
-          'Please check your email to confirm your registration.'
+  const submit = async data => {
+    try {
+      await api.signup(data);
+      navigation.navigate('/login');
+      toaster.success('Please check your email to confirm your registration.');
+    } catch (error) {
+      if (utils.is4xx(error.response.status) && error.response.data) {
+        setBackendError(utils.convertErrorMessage(error.response.data));
+      } else {
+        toaster.danger(
+          'Something went wrong with your registration. Please contact us at support@deviceplane.com.'
         );
-      })
-      .catch(error => {
-        if (utils.is4xx(error.response.status)) {
-          setBackendError(utils.convertErrorMessage(error.response.data));
-        } else {
-          toaster.danger(
-            'Something went wrong with your registration. Please contact us at support@deviceplane.com.'
-          );
-          console.log(error);
-        }
-      });
+        console.log(error);
+      }
+    }
   };
 
   return (
@@ -68,15 +65,7 @@ const Signup = () => {
         title="Sign up for free"
         actions={[{ href: '/login', title: 'Log in', variant: 'secondary' }]}
       >
-        {backendError && (
-          <Alert
-            marginBottom={16}
-            paddingTop={16}
-            paddingBottom={16}
-            intent="warning"
-            title={backendError}
-          />
-        )}
+        <Alert show={backendError} variant="error" description={backendError} />
         <Form onSubmit={handleSubmit(submit)}>
           <Field
             required

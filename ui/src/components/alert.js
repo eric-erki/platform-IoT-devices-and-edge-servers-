@@ -42,13 +42,15 @@ const Alert = ({ show, title, description, variant = 'info', children }) => {
       padding={4}
       marginBottom={5}
     >
-      <Column marginBottom={4}>
-        <Row marginBottom={2}>
+      <Column marginBottom={children ? 4 : 0}>
+        <Row>
           <Icon icon={getIcon(variant)} color={color} size={18} />
         </Row>
-        <Text fontSize={4} fontWeight={4}>
-          {title}
-        </Text>
+        {title && (
+          <Text fontSize={4} fontWeight={4} marginTop={2}>
+            {title}
+          </Text>
+        )}
         {description && (
           <Text color="grays.10" marginTop={2}>
             {description}

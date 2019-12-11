@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from 'react-navi';
 import useForm from 'react-hook-form';
-import { toaster, Alert } from 'evergreen-ui';
+import { toaster } from 'evergreen-ui';
 
 import api from '../api';
 import utils from '../utils';
 import Card from '../components/card';
 import Field from '../components/field';
+import Alert from '../components/alert';
 import { Column, Button, Form } from '../components/core';
 
 const isTokenExpired = expiration => {
@@ -65,8 +66,9 @@ const PasswordRecovery = ({
       <Column flex={1} alignItems="center" paddingTop={9}>
         <Card title="Recover Password" logo>
           <Alert
-            intent="warning"
-            title="Your recovery token has expired. Please reset your password again."
+            show
+            variant="error"
+            description="Your recovery token has expired. Please reset your password again."
           />
           <Button marginTop={3} href="/forgot" title="Reset your password" />
         </Card>
@@ -77,15 +79,7 @@ const PasswordRecovery = ({
   return (
     <Column flex={1} alignItems="center" paddingTop={9} paddingBottom={6}>
       <Card title="Recover Password" logo>
-        {backendError && (
-          <Alert
-            marginBottom={16}
-            paddingTop={16}
-            paddingBottom={16}
-            intent="warning"
-            title={backendError}
-          />
-        )}
+        <Alert show={backendError} variant="error" description={backendError} />
         <Form onSubmit={handleSubmit(submit)}>
           <Field
             required

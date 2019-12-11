@@ -100,9 +100,9 @@ const UserAccessKeys = () => {
         size="xlarge"
         actions={[{ title: 'Create Access Key', onClick: createAccessKey }]}
       >
-        <Alert show={backendError} variant="error" title={backendError} />
+        <Alert show={backendError} variant="error" description={backendError} />
         <Alert
-          show={newAccessKey}
+          show={!!newAccessKey}
           title="Access Key Created"
           description=" Save this key! This is the only time you'll be able to view it. If
             you lose it, you'll need to create a new access key."

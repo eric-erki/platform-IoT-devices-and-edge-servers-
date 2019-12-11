@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { useNavigation } from 'react-navi';
 import useForm from 'react-hook-form';
 
-import { toaster, Alert } from 'evergreen-ui';
+import { toaster } from 'evergreen-ui';
 
 import api from '../../api';
 import utils from '../../utils';
 import Card from '../../components/card';
 import Field from '../../components/field';
+import Alert from '../../components/alert';
 import { Label, Row, Form, Button, Checkbox } from '../../components/core';
 
 const AddMember = ({
@@ -72,16 +73,8 @@ const AddMember = ({
 
   return (
     <Card title="Add Member">
+      <Alert show={backendError} variant="error" description={backendError} />
       <Form onSubmit={handleSubmit(submit)}>
-        {backendError && (
-          <Alert
-            marginBottom={16}
-            paddingTop={16}
-            paddingBottom={16}
-            intent="warning"
-            title={backendError}
-          />
-        )}
         <Field
           autoFocus
           required

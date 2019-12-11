@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigation } from 'react-navi';
 import useForm from 'react-hook-form';
-import { Alert, toaster } from 'evergreen-ui';
+import { toaster } from 'evergreen-ui';
 
 import api from '../../api';
 import utils from '../../utils';
 import Card from '../../components/card';
 import Editor from '../../components/editor';
 import Field from '../../components/field';
+import Alert from '../../components/alert';
 import { Row, Button, Form } from '../../components/core';
 
 const CreateRole = ({
@@ -35,15 +36,7 @@ const CreateRole = ({
 
   return (
     <Card title="Create Role">
-      {backendError && (
-        <Alert
-          marginBottom={16}
-          paddingTop={16}
-          paddingBottom={16}
-          intent="warning"
-          title={backendError}
-        />
-      )}
+      <Alert show={backendError} variant="error" description={backendError} />
       <Form onSubmit={handleSubmit(submit)}>
         <Field required autoFocus label="Name" name="name" ref={register} />
 
