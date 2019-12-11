@@ -46,7 +46,7 @@ const variants = {
       bg: 'transparent',
       border: 0,
       borderColor: 'white',
-      padding: '6px',
+      padding: 1,
       '&:not(:disabled):hover': {
         color: 'black',
         bg: 'white',
@@ -60,15 +60,19 @@ const variants = {
       color: 'white',
       bg: 'transparent',
       border: 'none',
+      opacity: 0.7,
       padding: 0,
-      // '&:not(:disabled):hover': {
-      //   color: 'black',
-      //   bg: 'white',
-      // },
-      // '&:not(:disabled):focus': {
-      //   color: 'black',
-      //   bg: 'white',
-      // },
+      '&:not(:disabled):hover': {
+        opacity: 1,
+      },
+      '&:not(:disabled):focus': {
+        opacity: 1,
+      },
+    },
+    icon: {
+      bg: 'transparent',
+      border: 'none',
+      padding: 0,
     },
   },
 };
@@ -76,7 +80,7 @@ const variants = {
 const defaultProps = {
   variant: 'primary',
   fontSize: 1,
-  fontWeight: 4,
+  fontWeight: 2,
   borderRadius: 1,
   boxShadow: 0,
   display: 'flex',

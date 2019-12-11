@@ -61,7 +61,7 @@ const PasswordReset = () => {
             errors={errors.email}
             ref={register}
           />
-          <Button title="Send email" />
+          <Button title="Reset Password" />
         </Form>
 
         <Row marginTop={4}>

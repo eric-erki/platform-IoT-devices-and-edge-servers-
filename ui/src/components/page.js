@@ -13,19 +13,18 @@ const GlobalStyle = createGlobalStyle`
 
   html {
     box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, "Roboto", "Helvetica Neue",
-      sans-serif;
+    font-family: 'Rubik', "Roboto", sans-serif;
     
     font-size: 16px;
     font-weight: 400;
     line-height: 1.2;
-    background-color: #222222;
+    background-color: ${props => props.theme.colors.background};
   }
 
   body {
     margin: 0;
     padding: 0;
-    text-rendering: optimizelegibility;
+    text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -40,6 +39,10 @@ const Page = ({ children }) => {
     <>
       <Helmet>
         {route.title && <title>{`${route.title} - Deviceplane`}</title>}
+        <link
+          href={`https://fonts.googleapis.com/css?family=Rubik&display=swap`}
+          rel="stylesheet"
+        />
       </Helmet>
       <GlobalStyle />
       <Box>

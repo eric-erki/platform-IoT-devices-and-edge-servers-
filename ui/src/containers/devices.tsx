@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   TextDropdownButton,
   Menu,
@@ -15,7 +15,7 @@ import { labelColors } from '../theme';
 import Layout from '../components/layout';
 import Card from '../components/card';
 import Table from '../components/table';
-import { Text, Button, Badge } from '../components/core';
+import { Badge } from '../components/core';
 import {
   DevicesFilter,
   Query,
@@ -58,7 +58,7 @@ const Devices = ({ route }) => {
         Header: 'Status',
         Cell: ({ row }) =>
           row.original.status === 'offline' ? (
-            <Badge bg="whites.8">offline</Badge>
+            <Badge bg="red">offline</Badge>
           ) : (
             <Badge bg="green">online</Badge>
           ),

@@ -6,12 +6,14 @@ import config from '../../config';
 import Card from '../../components/card';
 import { Column } from '../../components/core';
 
-const Terminal = styled.div`
-  display: flex;
-  border: 1px solid white;
-  border-radius: 3px;
-  padding: 12px;
-`;
+const Terminal = styled(Column)``;
+
+Terminal.defaultProps = {
+  padding: 3,
+  border: 0,
+  borderRadius: 1,
+  height: 10,
+};
 
 var process = require('process');
 
@@ -92,7 +94,7 @@ const DeviceSsh = ({
 
   return (
     <Card size="xlarge">
-      <Terminal>
+      <Terminal bg="inputBackground">
         <Column id="terminal" />
       </Terminal>
     </Card>

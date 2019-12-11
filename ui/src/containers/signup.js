@@ -65,7 +65,7 @@ const Signup = () => {
       <Card
         logo
         width={10}
-        title="Sign up"
+        title="Sign up for free"
         actions={[{ href: '/login', title: 'Log in', variant: 'secondary' }]}
       >
         {backendError && (

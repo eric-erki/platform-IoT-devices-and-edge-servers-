@@ -1,13 +1,11 @@
 import { mount, route, redirect, map, compose, withView, withData } from 'navi';
 
-import store from './store';
 import api from './api';
 
 const authenticate = routes => {
   return mount({
     '*': map((request, context) => {
-      const { user } = store.getState();
-      if (user) {
+      if (context.currentUser) {
         return routes;
       } else {
         return redirect(
@@ -37,12 +35,12 @@ export default mount({
   }),
   '/forgot': route({
     title: 'Reset Password',
-    getView: () => import('./containers/password-reset'),
+    getView: () => import('./containers/forgot'),
   }),
   '/recover/:token': route({
     title: 'Recover Password',
     getData: ({ params }) => ({ params }),
-    getView: () => import('./containers/password-recovery'),
+    getView: () => import('./containers/reset-password'),
   }),
   '/confirm/:token': route({
     title: 'Confirmation',
@@ -50,7 +48,10 @@ export default mount({
     getView: () => import('./containers/confirm'),
   }),
   '/projects': compose(
-    withData(request => ({ params: request.params })),
+    withData((request, context) => ({
+      params: request.params,
+      context,
+    })),
     authenticate(
       mount({
         '/': route({
@@ -72,7 +73,10 @@ export default mount({
   ),
 
   '/:project': compose(
-    withData(request => ({ params: request.params })),
+    withData((request, context) => ({
+      params: request.params,
+      context,
+    })),
     authenticate(
       mount({
         '/': redirect('devices'),

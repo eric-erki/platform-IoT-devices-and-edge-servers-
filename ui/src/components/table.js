@@ -1,9 +1,9 @@
 import React from 'react';
 import { useTable, useSortBy } from 'react-table';
 import styled from 'styled-components';
+import { Icon } from 'evergreen-ui';
 
 import { Text, Box, Column, Row } from './core';
-import { placeholder } from 'glamor';
 
 const Container = styled(Column)``;
 
@@ -18,7 +18,7 @@ Cell.defaultProps = {
   padding: 3,
 };
 
-const CellContent = styled(Box)`
+const CellContent = styled(Row)`
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -37,15 +37,18 @@ const TableRow = styled(Row)`
 `;
 
 const Header = styled(Row)`
+  min-height: 50px;
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
+  text-transform: uppercase;
+  align-items: center;
 `;
 
 Header.defaultProps = {
-  fontSize: 1,
+  fontSize: 0,
   fontWeight: 4,
   color: 'white',
-  bg: '#202020',
+  bg: 'whites.1',
 };
 
 const Table = ({ columns, data, onRowSelect, placeholder }) => {
@@ -77,13 +80,27 @@ const Table = ({ columns, data, onRowSelect, placeholder }) => {
               >
                 <CellContent>
                   {column.render('Header')}
-                  <span>
-                    {column.isSorted
-                      ? column.isSortedDesc
-                        ? ' 🔽'
-                        : ' 🔼'
-                      : ''}
-                  </span>
+                  <Row>
+                    {column.isSorted ? (
+                      column.isSortedDesc ? (
+                        <Icon
+                          icon="chevron-down"
+                          color="white"
+                          size={14}
+                          marginLeft={8}
+                        />
+                      ) : (
+                        <Icon
+                          icon="chevron-up"
+                          color="white"
+                          size={14}
+                          marginLeft={8}
+                        />
+                      )
+                    ) : (
+                      ''
+                    )}
+                  </Row>
                 </CellContent>
               </Cell>
             ))}

@@ -1,6 +1,5 @@
-import React from 'react';
 import styled from 'styled-components';
-import { space, color, typography, border } from 'styled-system';
+import { space, color, typography } from 'styled-system';
 
 const Badge = styled.div`
   background-color: ${props => props.theme.colors.white};
@@ -13,7 +12,7 @@ const Badge = styled.div`
 
 Badge.defaultProps = {
   fontSize: 0,
-  fontWeight: 5,
+  fontWeight: 3,
 };
 
 export default Badge;

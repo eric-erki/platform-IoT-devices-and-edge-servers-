@@ -8,6 +8,7 @@ const Value = styled.span`
 
 Value.defaultProps = {
   color: 'whites.7',
+  fontSize: 2,
 };
 
 export default Value;

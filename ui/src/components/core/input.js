@@ -9,13 +9,14 @@ import {
 } from 'styled-system';
 
 const Input = styled.input`
-  border: 1px solid #161616;
+  border: 1px solid ${props => props.theme.colors.black};
   outline: none;
   margin: 0;
+  padding: 10px;
   transition: border-color 150ms;
 
   &:focus {
-    border-color: ${props => props.theme.colors.white};
+    border-color: ${props => props.theme.colors.primary};
   }
 
   &::placeholder {
@@ -24,8 +25,12 @@ const Input = styled.input`
     opacity: .75;
   }
 
-  &:-internal-autofill-selected {
-    background: #181818 !important;
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover, 
+  input:-webkit-autofill:focus, 
+  input:-webkit-autofill:active  {
+      -webkit-box-shadow: 0 0 0 30px ${props =>
+        props.theme.colors.inputBackground} inset !important;
   }
 
   ${space} ${border} ${layout} ${color} ${typography} ${shadow}
@@ -36,6 +41,7 @@ Input.defaultProps = {
   bg: 'inputBackground',
   padding: 3,
   borderRadius: 1,
+  fontWeight: 2,
   boxShadow: 0,
   fontSize: 2,
 };

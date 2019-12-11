@@ -1,33 +1,51 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { Router, View } from 'react-navi';
 import { HelmetProvider } from 'react-helmet-async';
 import { ThemeProvider } from 'styled-components';
-import { Provider } from 'react-redux';
 
 import routes from './routes';
 import * as serviceWorker from './serviceWorker';
-import store from './store';
 import theme from './theme';
 
 import Page from './components/page';
 import Spinner from './components/spinner';
+import api from './api';
 
-const App = () => {
+const App = props => {
+  const [loaded, setLoaded] = useState();
+  const [currentUser, setCurrentUser] = useState(props.currentUser);
+
+  const load = async () => {
+    try {
+      const response = await api.user();
+      setCurrentUser(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+    setLoaded(true);
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  if (!loaded) {
+    return null;
+  }
+
   return (
-    <Provider store={store}>
-      <HelmetProvider>
-        <Router routes={routes}>
-          <ThemeProvider theme={theme}>
-            <Page>
-              <Suspense fallback={<Spinner />}>
-                <View />
-              </Suspense>
-            </Page>
-          </ThemeProvider>
-        </Router>
-      </HelmetProvider>
-    </Provider>
+    <HelmetProvider>
+      <Router routes={routes} context={{ currentUser, setCurrentUser }}>
+        <ThemeProvider theme={theme}>
+          <Page>
+            <Suspense fallback={<Spinner />}>
+              <View />
+            </Suspense>
+          </Page>
+        </ThemeProvider>
+      </Router>
+    </HelmetProvider>
   );
 };
 

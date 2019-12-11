@@ -73,7 +73,7 @@ const DeviceOverview = ({
       <Card size="xlarge" title={device.name} marginBottom={4}>
         <Row marginBottom={6}>
           {device.status === 'offline' ? (
-            <Badge bg="whites.8">offline</Badge>
+            <Badge bg="red">offline</Badge>
           ) : (
             <Badge bg="green">online</Badge>
           )}

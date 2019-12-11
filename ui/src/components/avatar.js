@@ -19,7 +19,7 @@ const Avatar = ({ name }) => (
     alignItems="center"
     justifyContent="center"
     bg="primary"
-    borderRadius={5}
+    borderRadius={6}
   >
     <Text color="black" fontWeight={3} fontSize={1}>
       {getInitials(name)}

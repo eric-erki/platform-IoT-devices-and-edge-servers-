@@ -1,10 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import { space, layout, color, border, typography } from 'styled-system';
-import { useNavigation, useActive } from 'react-navi';
-import { useSelector, useDispatch } from 'react-redux';
+import { useNavigation, useActive, useCurrentRoute } from 'react-navi';
 
-import { logout } from '../actions';
 import { Row, Text } from './core';
 import Popup from './popup';
 import Popover from './popover';
@@ -13,6 +11,7 @@ import CliDownload from '../containers/cli-download';
 import ChangePassword from '../containers/change-password';
 import Profile from '../containers/profile';
 import UserAccessKeys from '../containers/user-access-keys';
+import api from '../api';
 
 const MenuItem = styled.button`
   background: none;
@@ -45,14 +44,17 @@ const Divider = styled.div`
 `;
 
 const AvatarMenu = () => {
+  const {
+    data: {
+      context: { currentUser },
+    },
+  } = useCurrentRoute();
   const [showCLI, setShowCLI] = React.useState();
   const [showUserProfile, setShowUserProfile] = React.useState();
   const [showUserAccessKeys, setShowUserAccessKeys] = React.useState();
   const [showChangePassword, setShowChangePassword] = React.useState();
-  const dispatch = useDispatch();
   const navigation = useNavigation();
-  const user = useSelector(state => state.user);
-  const name = `${user.firstName} ${user.lastName}`;
+  const name = `${currentUser.firstName} ${currentUser.lastName}`;
 
   return (
     <>
@@ -60,20 +62,20 @@ const AvatarMenu = () => {
         <CliDownload />
       </Popup>
       <Popup show={showUserProfile} onClose={() => setShowUserProfile(false)}>
-        <Profile user={user} close={() => setShowUserProfile(false)} />
+        <Profile user={currentUser} close={() => setShowUserProfile(false)} />
       </Popup>
       <Popup
         show={showUserAccessKeys}
         onClose={() => setShowUserAccessKeys(false)}
       >
-        <UserAccessKeys user={user} />
+        <UserAccessKeys user={currentUser} />
       </Popup>
       <Popup
         show={showChangePassword}
         onClose={() => setShowChangePassword(false)}
       >
         <ChangePassword
-          user={user}
+          user={currentUser}
           close={() => setShowChangePassword(false)}
         />
       </Popup>
@@ -96,7 +98,7 @@ const AvatarMenu = () => {
               marginX={1}
               opacity={0.8}
             >
-              {user.email}
+              {currentUser.email}
             </Text>
             <Divider />
             <MenuItem
@@ -139,9 +141,9 @@ const AvatarMenu = () => {
               </MenuItem>
             )}
             <MenuItem
-              onClick={async () => {
-                await navigation.navigate('/login');
-                dispatch(logout);
+              onClick={() => {
+                navigation.navigate('/login');
+                api.logout();
               }}
               paddingBottom={3}
               marginBottom={2}

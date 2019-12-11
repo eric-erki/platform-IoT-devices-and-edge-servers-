@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { toaster, Alert, Code } from 'evergreen-ui';
+import { toaster, Alert, Code, Icon } from 'evergreen-ui';
 
 import api from '../api';
 import utils from '../utils';
 import Card from '../components/card';
 import Table from '../components/table';
 import Popup from '../components/popup';
-import { Text, Button } from '../components/core';
+import { Label, Button } from '../components/core';
 
 const UserAccessKeys = () => {
   const [accessKeys, setAccessKeys] = useState([]);
@@ -34,8 +34,8 @@ const UserAccessKeys = () => {
         Header: ' ',
         Cell: ({ row }) => (
           <Button
-            title="Delete"
-            variant="text"
+            title={<Icon size={16} icon="trash" color="white" />}
+            variant="icon"
             onClick={() => deleteAccessKey(row.original.id)}
           />
         ),
@@ -127,9 +127,7 @@ const UserAccessKeys = () => {
             paddingBottom={16}
             title="Save this key! This is the only time you'll be able to view it.  If you lose it, you'll need to create a new access key."
           />
-          <Text fontWeight={3} marginBottom={2}>
-            Access Key
-          </Text>
+          <Label>Access Key</Label>
           <Code background="white">{newAccessKey}</Code>
         </Card>
       </Popup>

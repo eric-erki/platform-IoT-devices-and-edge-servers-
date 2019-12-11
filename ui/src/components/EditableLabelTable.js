@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import { toaster } from 'evergreen-ui';
+import { toaster, Icon } from 'evergreen-ui';
 
 import utils from '../utils';
 import { Text, Row, Button, Input, Label } from './core';
@@ -63,14 +63,14 @@ const EditableLabelTable = ({ data }) => {
             return (
               <Row>
                 <Button
-                  title="Save"
+                  title={<Icon icon="floppy-disk" size={18} color="#6fccff" />}
                   onClick={() => saveLabel(index)}
-                  variant="text"
+                  variant="icon"
                   color="primary"
                 />
                 <Button
-                  title="Cancel"
-                  variant="text"
+                  title={<Icon icon="cross" size={18} color="white" />}
+                  variant="icon"
                   marginLeft={4}
                   onClick={() => cancelEdit(index)}
                 />
@@ -229,7 +229,7 @@ const EditableLabelTable = ({ data }) => {
       <Table
         columns={columns}
         data={tableData}
-        placeholder="No labels have been added yet."
+        placeholder="No labels have been added."
       />
     </>
   );

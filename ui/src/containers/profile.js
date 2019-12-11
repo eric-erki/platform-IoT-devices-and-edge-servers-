@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import useForm from 'react-hook-form';
-import { useSelector, useDispatch } from 'react-redux';
 import * as yup from 'yup';
 import { toaster, Alert } from 'evergreen-ui';
 
 import api from '../api';
 import utils from '../utils';
-import { setUser } from '../actions';
 import Card from '../components/card';
 import Field from '../components/field';
 import { Form, Button } from '../components/core';
@@ -24,7 +22,7 @@ const validationSchema = yup.object().shape({
 });
 
 const Profile = ({ close }) => {
-  const user = useSelector(state => state.user);
+  let user = {};
   const { register, handleSubmit, formState } = useForm({
     validationSchema,
     defaultValues: {
@@ -33,14 +31,12 @@ const Profile = ({ close }) => {
       company: user.company,
     },
   });
-  const dispatch = useDispatch();
   const [backendError, setBackendError] = useState();
 
   const submit = data =>
     api
       .updateUser(data)
       .then(response => {
-        dispatch(setUser(response.data));
         toaster.success('Profile updated.');
         close();
       })

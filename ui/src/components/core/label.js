@@ -2,14 +2,14 @@ import styled from 'styled-components';
 import { space, color, typography } from 'styled-system';
 
 const Label = styled.span`
-margin-bottom: 8px;
 ${space} ${color} ${typography}
 `;
 
 Label.defaultProps = {
   color: 'white',
-  fontWeight: 4,
+  fontWeight: 3,
   fontSize: 3,
+  marginBottom: 3,
 };
 
 export default Label;

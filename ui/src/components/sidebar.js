@@ -9,7 +9,7 @@ import { Row, Column, Link, Text } from './core';
 const links = [
   {
     title: 'Devices',
-    icon: 'desktop',
+    icon: 'layout-grid',
     to: '/devices',
   },
   {
@@ -19,12 +19,12 @@ const links = [
   },
   {
     title: 'Applications',
-    icon: 'application',
+    icon: 'applications',
     to: '/applications',
   },
   {
     title: 'IAM',
-    icon: 'user',
+    icon: 'people',
     to: '/iam',
   },
   {
@@ -41,22 +41,26 @@ const SidebarLink = styled(Link)`
   transition: background-color 200ms;
   border-radius: 4px;
   text-transform: uppercase;
-  font-size: 12px;
-  font-weight: 600;
 
-  background-color: ${props => (props.active ? '#181818' : 'inherit')};
-  color: ${props => (props.active ? '#57e3ff' : '#fff')};
+  background-color: ${props =>
+    props.active ? props.theme.colors.whites[0] : 'inherit'};
+  color: ${props =>
+    props.active ? props.theme.colors.primary : props.theme.colors.white};
 
   &:hover {
     background-color: #181818;
   }
 
   & span {
-    color: ${props => (props.active ? '#57e3ff' : '#fff')};
+    color: ${props =>
+      props.active ? props.theme.colors.primary : props.theme.colors.white};
   }
 
   & > div > svg {
-    fill: ${props => (props.active ? '#57e3ff' : '#fff')} !important;
+    fill: ${props =>
+      props.active
+        ? props.theme.colors.primary
+        : props.theme.colors.white} !important;
   }
 
   &:last-child {
@@ -91,7 +95,7 @@ const Sidebar = () => {
               paddingY={4}
               marginBottom={2}
               key={title}
-              fontWeight={3}
+              fontSize={1}
               active={useActive(href, { exact: false })}
             >
               <Column alignItems="center">

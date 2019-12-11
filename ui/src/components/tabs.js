@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { space, color, typography } from 'styled-system';
 import { useActive, useLinkProps } from 'react-navi';
 
 import { Row } from './core';
@@ -7,41 +8,55 @@ import { Row } from './core';
 const Container = styled(Row)``;
 
 const styles = `
-    appearance: none;
     border: none;
     outline: none;
-    text-decoration: none;
     border-radius: 0;
-    background-color: transparent;
     transition: background-color 150ms;
     border-radius: 4px;
     padding: 10px 14px;
     user-select: none;
-    font-weight: 600;
-    font-size: 14px;
     cursor: pointer;
     text-transform: uppercase;
 
-    &:hover {
-        background-color: black;
-    }
     &:not(:last-child) {
         margin-right: 18px;
     }
 `;
 
 const LinkTab = styled.a`
+  text-decoration: none;
+
+  ${color} ${typography} ${space}
+
   ${styles}
 
-  color: ${props => (props.active ? '#57e3ff' : 'white')};
-  background-color: ${props => (props.active ? 'black' : 'transparent')};
+  font-size: ${props => props.theme.fontSizes[1]}px;
+  font-weight: ${props => props.theme.fontWeights[2]};
+  color: ${props =>
+    props.active ? props.theme.colors.primary : props.theme.colors.white};
+  background-color: ${props =>
+    props.active ? props.theme.colors.black : 'transparent'};
+    &:hover {
+      background-color: ${props => props.theme.colors.black};
+    }
 `;
 
 const ButtonTab = styled.button`
+  appearance: none;
+
+  ${color} ${typography} ${space}
+
   ${styles}
 
-  color: ${props => (props.active ? '#57e3ff' : 'white')};
-  background-color: ${props => (props.active ? 'black' : 'transparent')};
+  font-size: ${props => props.theme.fontSizes[1]}px;
+  font-weight: ${props => props.theme.fontWeights[2]};
+  color: ${props =>
+    props.active ? props.theme.colors.primary : props.theme.colors.white};
+  background-color: ${props =>
+    props.active ? props.theme.colors.black : 'transparent'};
+  &:hover {
+    background-color: ${props => props.theme.colors.black};
+  }
 `;
 
 const Tab = ({ title, href, onClick, active = true }) => {

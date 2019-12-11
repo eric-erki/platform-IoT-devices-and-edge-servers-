@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigation } from 'react-navi';
-import { useDispatch } from 'react-redux';
+import { useNavigation, useCurrentRoute } from 'react-navi';
 import useForm from 'react-hook-form';
 import * as yup from 'yup';
 import { Alert } from 'evergreen-ui';
 
-import { login } from '../actions';
+import api from '../api';
 import Card from '../components/card';
 import Field from '../components/field';
 import { Column, Row, Form, Button } from '../components/core';
@@ -23,11 +22,11 @@ const Login = () => {
     validationSchema,
   });
   const navigation = useNavigation();
-  const dispatch = useDispatch();
   const [backendError, setBackendError] = useState();
 
   const submit = data => {
-    dispatch(login(data))
+    api
+      .login(data)
       .then(() => navigation.navigate('/'))
       .catch(error => {
         setBackendError('Invalid Username/Password');
@@ -40,6 +39,7 @@ const Login = () => {
       <Card
         logo
         title="Log in"
+        size="medium"
         actions={[{ href: '/signup', title: 'Sign up', variant: 'secondary' }]}
       >
         {backendError && (
@@ -75,7 +75,7 @@ const Login = () => {
           <Button justifyContent="center" title="Log in" />
         </Form>
         <Row marginTop={6}>
-          <Button variant="tertiary" href="/forgot" title="Recover password" />
+          <Button variant="text" href="/forgot" title="Forgot your password?" />
         </Row>
       </Card>
     </Column>

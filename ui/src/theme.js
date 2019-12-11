@@ -1,16 +1,17 @@
 const breakpoints = ['480px', '768px', '1024px'];
 
 const colors = {
-  primary: '#57e3ff',
-  background: '#222222',
+  primary: '#6fccff', //'#57e3ff',
+  background: '#151515',
 
   black: '#000',
   white: '#fff',
-  green: '#71F79F',
+  green: '#48E5C2',
+  red: '#D7263D',
 
   transparent: 'transparent',
 
-  inputBackground: '#181818',
+  inputBackground: '#101010',
 
   blacks: [
     'rgba(0,0,0,.05)',
@@ -61,11 +62,11 @@ export default {
     1024,
   ],
 
-  fontSizes: [12, 14, 16, 18, 24, 36, 48, 64, 72],
+  fontSizes: [13, 15, 16, 18, 24, 36, 48, 64, 72],
 
   fontWeights: [100, 300, 400, 500, 600, 700, 900],
 
-  radii: [0, 4, 8, 12, 16, 9999, '100%'],
+  radii: [0, 3, 6, 8, 12, 16, 9999, '100%'],
 
   sizes: [8, 12, 16, 24, 32, 40, 48, 64, 128, 256, 384, 448, 512, 768, 1024],
 

@@ -3,23 +3,19 @@ import { RHFInput } from 'react-hook-form-input';
 import styled from 'styled-components';
 import { space, color, typography } from 'styled-system';
 
-import { Column, Input, Textarea } from './core';
+import { Column, Input, Textarea, Label, Text } from './core';
 
-const Label = styled.label`
-margin-bottom: 8px;
+const FieldLabel = styled.label`
 ${space} ${color} ${typography}
 `;
-
-Label.defaultProps = {
-  color: 'white',
-  fontWeight: 4,
-  fontSize: 3,
-};
+FieldLabel.defaultProps = Label.defaultProps;
 
 const Field = forwardRef(
   (
     {
       label,
+      hint,
+      description,
       type,
       name,
       as,
@@ -64,7 +60,18 @@ const Field = forwardRef(
 
     return (
       <Column marginBottom={6}>
-        {label && <Label htmlFor={name}>{label}</Label>}
+        {label && <FieldLabel htmlFor={name}>{label}</FieldLabel>}
+        {description && (
+          <Text marginTop={2} fontSize={1} color="whites.7">
+            {description}
+          </Text>
+        )}
+        {hint && (
+          <Text marginTop={2} fontSize={1} color="whites.7">
+            {hint}
+          </Text>
+        )}
+
         {getComponent()}
       </Column>
     );
