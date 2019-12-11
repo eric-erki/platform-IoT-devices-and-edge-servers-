@@ -8,7 +8,7 @@ import utils from '../../utils';
 import Editor from '../../components/editor';
 import Card from '../../components/card';
 import Popup from '../../components/popup';
-import { Column, Text, Button, Link } from '../../components/core';
+import { Row, Column, Text, Button, Link } from '../../components/core';
 
 const ReleasedBy = ({ project, release }) => {
   if (release) {
@@ -77,7 +77,9 @@ const Release = ({
           <Text fontWeight={3} marginBottom={2}>
             Released By
           </Text>
-          <ReleasedBy project={params.project} release={release} />
+          <Row>
+            <ReleasedBy project={params.project} release={release} />
+          </Row>
         </Column>
 
         <Column marginBottom={4}>
