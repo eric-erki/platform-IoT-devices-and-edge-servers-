@@ -75,7 +75,7 @@ const Login = () => {
           <Button justifyContent="center" title="Log in" />
         </Form>
         <Row marginTop={4}>
-          <Button variant="tertiary" href="/forgot" title="Forgot password?" />
+          <Button variant="tertiary" href="/forgot" title="Recover password" />
         </Row>
       </Card>
     </Column>
