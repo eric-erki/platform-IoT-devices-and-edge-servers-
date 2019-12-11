@@ -2,7 +2,7 @@ import React from 'react';
 
 import Editor from '../../components/editor';
 import Card from '../../components/card';
-import { Column, Text, Link, Label } from '../../components/core';
+import { Column, Text, Link, Label, Value } from '../../components/core';
 import { DevicesFilterButtons } from '../../components/DevicesFilterButtons';
 
 const ApplicationOverview = ({
@@ -31,13 +31,13 @@ const ApplicationOverview = ({
             canRemoveFilter={false}
           />
         ) : (
-          <Text>
+          <Value>
             No scheduling rule set. You can set one in the{' '}
             <Link href={`/${params.project}/applications/${name}/scheduling`}>
               scheduling
             </Link>{' '}
             page.
-          </Text>
+          </Value>
         )}
       </Column>
 

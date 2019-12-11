@@ -125,7 +125,7 @@ const ProjectSettings = ({
                 value={confirmation}
               />
               <Button
-                marginTop={4}
+                marginTop={6}
                 type="submit"
                 title="Delete Project"
                 disabled={confirmation !== project.name}

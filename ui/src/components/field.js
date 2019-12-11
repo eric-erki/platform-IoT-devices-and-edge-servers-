@@ -6,15 +6,14 @@ import { space, color, typography } from 'styled-system';
 import { Column, Input, Textarea } from './core';
 
 const Label = styled.label`
-margin-bottom: 4px;
+margin-bottom: 8px;
 ${space} ${color} ${typography}
 `;
 
 Label.defaultProps = {
-  color: 'whites.8',
+  color: 'white',
   fontWeight: 4,
-  fontSize: 1,
-  marginBottom: 2,
+  fontSize: 3,
 };
 
 const Field = forwardRef(

@@ -7,6 +7,7 @@ export { default as Input } from './input';
 export { default as Textarea } from './textarea';
 export { default as Checkbox } from './checkbox';
 export { default as Label } from './label';
+export { default as Value } from './value';
 export { default as Badge } from './badge';
 export * from './box';
 export * from './form';

@@ -40,6 +40,9 @@ const SidebarLink = styled(Link)`
   align-items: center;
   transition: background-color 200ms;
   border-radius: 4px;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 600;
 
   background-color: ${props => (props.active ? '#181818' : 'inherit')};
   color: ${props => (props.active ? '#57e3ff' : '#fff')};
@@ -92,7 +95,7 @@ const Sidebar = () => {
               active={useActive(href, { exact: false })}
             >
               <Column alignItems="center">
-                <Icon icon={icon} color="white" size={18} />
+                <Icon icon={icon} color="white" size={24} />
                 <Text marginTop={2}>{title}</Text>
               </Column>
             </SidebarLink>

@@ -224,11 +224,7 @@ const EditableLabelTable = ({ data }) => {
         <Text fontSize={5} fontWeight={3}>
           Labels
         </Text>
-        <Button
-          title="Add Label"
-          onClick={() => addLabel()}
-          variant="secondary"
-        />
+        <Button title="Add Label" onClick={() => addLabel()} />
       </Row>
       <Table
         columns={columns}

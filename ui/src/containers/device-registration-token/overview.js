@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Column, Text, Label } from '../../components/core';
+import { Column, Label, Value } from '../../components/core';
 import Card from '../../components/card';
 import EditableLabelTable from '../../components/EditableLabelTable';
 
@@ -17,19 +17,17 @@ const DeviceRegistrationTokenOverview = ({
       >
         <Column marginBottom={6}>
           <Label>ID</Label>
-          <Text fontSize={3}>{deviceRegistrationToken.id}</Text>
+          <Value>{deviceRegistrationToken.id}</Value>
         </Column>
         <Column marginBottom={6}>
           <Label>Devices Registered</Label>
-          <Text fontSize={3}>
-            {deviceRegistrationToken.deviceCounts.allCount}
-          </Text>
+          <Value>{deviceRegistrationToken.deviceCounts.allCount}</Value>
         </Column>
         <Column>
           <Label>Maximum Device Registerations</Label>
-          <Text fontSize={3}>
+          <Value>
             {deviceRegistrationToken.maxRegistrations || 'Unlimited'}
-          </Text>
+          </Value>
         </Column>
       </Card>
       <Card marginTop={4}>

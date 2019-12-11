@@ -8,7 +8,15 @@ import utils from '../../utils';
 import Editor from '../../components/editor';
 import Card from '../../components/card';
 import Popup from '../../components/popup';
-import { Row, Column, Text, Button, Link, Label } from '../../components/core';
+import {
+  Row,
+  Column,
+  Text,
+  Button,
+  Link,
+  Label,
+  Value,
+} from '../../components/core';
 
 const ReleasedBy = ({ project, release }) => {
   if (release) {
@@ -82,7 +90,7 @@ const Release = ({
 
         <Column marginBottom={6}>
           <Label>Started</Label>
-          <Text>{moment(release.createdAt).fromNow()}</Text>
+          <Value>{moment(release.createdAt).fromNow()}</Value>
         </Column>
 
         <Label>Config</Label>
@@ -106,11 +114,7 @@ const Release = ({
             <strong>{params.application}</strong> using the config from release{' '}
             <strong>{release.id}</strong>.
           </Text>
-          <Button
-            marginTop={4}
-            title="Revert Release"
-            onClick={revertRelease}
-          />
+          <Button marginTop={6} title="Revert" onClick={revertRelease} />
         </Card>
       </Popup>
     </>

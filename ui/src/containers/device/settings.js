@@ -100,9 +100,9 @@ const DeviceSettings = ({
             title={backendError}
           />
         )}
-        <Row marginBottom={4}>
+        <Row marginBottom={6}>
           {device.status === 'offline' ? (
-            <Badge bg="whites.7">offline</Badge>
+            <Badge bg="whites.8">offline</Badge>
           ) : (
             <Badge bg="green">online</Badge>
           )}
@@ -130,7 +130,7 @@ const DeviceSettings = ({
             You are about to remove the <strong>{device.name}</strong> device.
           </Text>
 
-          <Button marginTop={4} title="Remove" onClick={submitDelete} />
+          <Button marginTop={6} title="Remove" onClick={submitDelete} />
         </Card>
       </Popup>
     </>

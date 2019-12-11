@@ -105,7 +105,6 @@ const ServiceAccount = ({
     <>
       <Card
         title={serviceAccount.name}
-        marginRight={5}
         size="xlarge"
         actions={[
           {
@@ -150,7 +149,7 @@ const ServiceAccount = ({
             You are about to delete the <strong>{serviceAccount.name}</strong>{' '}
             service account.
           </Text>
-          <Button marginTop={4} title="Delete" onClick={submitDelete} />
+          <Button marginTop={6} title="Delete" onClick={submitDelete} />
         </Card>
       </Popup>
     </>
@@ -167,7 +166,7 @@ const ServiceAccountAccessKeys = ({ projectId, serviceAccount }) => {
 
   const columns = useMemo(
     () => [
-      { Header: 'Access Key ID', accessor: 'id' },
+      { Header: 'Access Key ID', accessor: 'id', style: { flex: 3 } },
       {
         Header: 'Created At',
         accessor: 'createdAt',
@@ -252,7 +251,7 @@ const ServiceAccountAccessKeys = ({ projectId, serviceAccount }) => {
       <Card
         title="Access Keys"
         size="xlarge"
-        actions={[{ title: 'Create', onClick: createAccessKey }]}
+        actions={[{ title: 'Create Access Key', onClick: createAccessKey }]}
       >
         {backendError && (
           <Alert
@@ -263,7 +262,11 @@ const ServiceAccountAccessKeys = ({ projectId, serviceAccount }) => {
             title={backendError}
           />
         )}
-        <Table columns={columns} data={tableData} />
+        <Table
+          columns={columns}
+          data={tableData}
+          placeholder="No access keys have been created yet."
+        />
       </Card>
 
       <Popup

@@ -110,12 +110,7 @@ const Member = ({
               setValue={setValue}
             />
           ))}
-          <Button
-            marginTop={2}
-            title="Update"
-            type="submit"
-            disabled={!formState.dirty}
-          />
+          <Button title="Update" type="submit" disabled={!formState.dirty} />
         </Form>
       </Card>
       <Popup
@@ -131,7 +126,7 @@ const Member = ({
             </strong>
             ) from the project.
           </Text>
-          <Button marginTop={4} title="Remove Member" onClick={removeMember} />
+          <Button marginTop={6} title="Remove" onClick={removeMember} />
         </Card>
       </Popup>
     </>

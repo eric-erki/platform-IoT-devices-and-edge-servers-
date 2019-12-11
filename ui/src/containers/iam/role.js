@@ -127,7 +127,7 @@ const Role = ({
           <Text>
             You are about to delete the <strong>{role.name}</strong> role.
           </Text>
-          <Button marginTop={4} title="Delete" onClick={submitDelete} />
+          <Button marginTop={6} title="Delete" onClick={submitDelete} />
         </Card>
       </Popup>
     </>

@@ -1,14 +1,6 @@
 import React, { useMemo } from 'react';
 
-import {
-  Row,
-  Column,
-  Text,
-  Button,
-  Badge,
-  Link,
-  Label,
-} from '../../components/core';
+import { Row, Column, Value, Badge, Link, Label } from '../../components/core';
 import Card from '../../components/card';
 import Table from '../../components/table';
 import EditableLabelTable from '../../components/EditableLabelTable';
@@ -81,27 +73,27 @@ const DeviceOverview = ({
       <Card size="xlarge" title={device.name} marginBottom={4}>
         <Row marginBottom={6}>
           {device.status === 'offline' ? (
-            <Badge bg="whites.7">offline</Badge>
+            <Badge bg="whites.8">offline</Badge>
           ) : (
             <Badge bg="green">online</Badge>
           )}
         </Row>
         <Column marginBottom={6}>
           <Label>IP Address</Label>
-          <Text>
+          <Value>
             {device.info.hasOwnProperty('ipAddress')
               ? device.info.ipAddress
               : ''}
-          </Text>
+          </Value>
         </Column>
-        <Column marginBottom={6}>
+        <Column>
           <Label>Operating System</Label>
-          <Text>
+          <Value>
             {device.info.hasOwnProperty('osRelease') &&
             device.info.osRelease.hasOwnProperty('prettyName')
               ? device.info.osRelease.prettyName
               : '-'}
-          </Text>
+          </Value>
         </Column>
       </Card>
       <Card marginBottom={4} size="xlarge">

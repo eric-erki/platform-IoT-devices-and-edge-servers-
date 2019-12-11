@@ -58,7 +58,7 @@ const Devices = ({ route }) => {
         Header: 'Status',
         Cell: ({ row }) =>
           row.original.status === 'offline' ? (
-            <Badge bg="whites.7">offline</Badge>
+            <Badge bg="whites.8">offline</Badge>
           ) : (
             <Badge bg="green">online</Badge>
           ),

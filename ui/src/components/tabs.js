@@ -15,10 +15,12 @@ const styles = `
     background-color: transparent;
     transition: background-color 150ms;
     border-radius: 4px;
-    padding: 8px;
+    padding: 10px 14px;
     user-select: none;
-    font-weight: 500;
+    font-weight: 600;
+    font-size: 14px;
     cursor: pointer;
+    text-transform: uppercase;
 
     &:hover {
         background-color: black;

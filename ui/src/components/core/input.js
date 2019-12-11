@@ -32,7 +32,7 @@ const Input = styled.input`
 `;
 
 Input.defaultProps = {
-  color: 'white',
+  color: 'whites.9',
   bg: 'inputBackground',
   padding: 3,
   borderRadius: 1,

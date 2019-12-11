@@ -62,7 +62,7 @@ const CreateRelease = ({
           register={register}
           setValue={setValue}
         />
-        <Button marginTop={6} type="submit" title="Create" />
+        <Button type="submit" title="Create" />
       </Form>
       <Row marginTop={4}>
         <Button
