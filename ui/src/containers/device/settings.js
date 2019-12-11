@@ -53,7 +53,7 @@ const DeviceSettings = ({
 
   const submitDelete = () => {
     api
-      .deleteDevice({ projectId: params.project, deviceId: params.device })
+      .deleteDevice({ projectId: params.project, deviceId: device.id })
       .then(() => {
         toaster.success('Successfully deleted device.');
         navigation.navigate(`/${params.project}/devices`);
