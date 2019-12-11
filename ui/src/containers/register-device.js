@@ -6,7 +6,7 @@ import Layout from '../components/layout';
 import Card from '../components/card';
 import { Row, Text } from '../components/core';
 
-const getDockerCommand = ({ project, deviceRegistrationToken }) => {
+const getDockerCommand = deviceRegistrationToken => {
   if (window.location.hostname === 'localhost') {
     return [
       'go run cmd/agent/main.go',
@@ -14,7 +14,7 @@ const getDockerCommand = ({ project, deviceRegistrationToken }) => {
       '--conf-dir=./cmd/agent/conf',
       '--state-dir=./cmd/agent/state',
       '--log-level=debug',
-      `--project=${project}`,
+      `--project=${deviceRegistrationToken.projectId}`,
       `--registration-token=${deviceRegistrationToken.id}`,
       '# note, this is the local version',
     ].join(' ');
@@ -30,7 +30,7 @@ const getDockerCommand = ({ project, deviceRegistrationToken }) => {
       '-v /etc/os-release:/etc/os-release',
       `--label com.deviceplane.agent-version=${config.agentVersion}`,
       `deviceplane/agent:${config.agentVersion}`,
-      `--project=${project}`,
+      `--project=${deviceRegistrationToken.projectId}`,
       `--registration-token=${deviceRegistrationToken.id}`,
     ].join(' ');
   }
@@ -53,14 +53,11 @@ const AddDevice = ({
             is being used.
           </Text>
         </Row>
-        <Text>
+        <Text marginBottom={2}>
           Run the following command on the device you want to register:
         </Text>
         <Code fontFamily="mono" color="white" background="#222">
-          {getDockerCommand({
-            project: params.project,
-            deviceRegistrationToken,
-          })}
+          {getDockerCommand(deviceRegistrationToken)}
         </Code>
       </Card>
     </Layout>
