@@ -5,6 +5,7 @@ import { useNavigation } from 'react-navi';
 import Layout from '../components/layout';
 import Card from '../components/card';
 import Table from '../components/table';
+import { Text } from '../components/core';
 
 const Applications = ({
   route: {
@@ -43,7 +44,11 @@ const Applications = ({
           onRowSelect={row =>
             navigation.navigate(`/${params.project}/applications/${row.name}`)
           }
-          placeholder="There are no Applications."
+          placeholder={
+            <Text>
+              There are no <strong>Releases</strong>.
+            </Text>
+          }
         />
       </Card>
     </Layout>

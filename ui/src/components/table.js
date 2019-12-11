@@ -117,7 +117,7 @@ const Table = ({ columns, data, onRowSelect, placeholder }) => {
             borderBottom={0}
             borderColor="grays.3"
           >
-            <Text>{placeholder}</Text>
+            {placeholder}
           </Row>
         )}
         {rows.map((row, i) => {

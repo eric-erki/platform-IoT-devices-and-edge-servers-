@@ -10,7 +10,7 @@ import Layout from '../components/layout';
 import Card from '../components/card';
 import Field from '../components/field';
 import Popup from '../components/popup';
-import { Text, Button, Form, Input } from '../components/core';
+import { Text, Button, Form, Input, Label, Group } from '../components/core';
 
 const validationSchema = yup.object().shape({
   name: yup.string().required(),
@@ -116,13 +116,15 @@ const ProjectSettings = ({
               <p></p>Please type in the name of the project to confirm.
             </Text>
             <Form onSubmit={submitDelete}>
-              <Input
-                placeholder="Project name"
-                onChange={e => setConfirmation(e.target.value)}
-                value={confirmation}
-              />
+              <Group>
+                <Label>Project Name</Label>
+                <Input
+                  onChange={e => setConfirmation(e.target.value)}
+                  value={confirmation}
+                />
+              </Group>
+
               <Button
-                marginTop={6}
                 type="submit"
                 title="Delete Project"
                 disabled={confirmation !== project.name}

@@ -7,6 +7,7 @@ import { buildLabelColorMap, renderLabels } from '../helpers/labels';
 import Layout from '../components/layout';
 import Card from '../components/card';
 import Table from '../components/table';
+import { Text } from '../components/core';
 
 const Provisioning = ({
   route: {
@@ -72,7 +73,11 @@ const Provisioning = ({
               `/${params.project}/provisioning/device-registration-tokens/${name}`
             )
           }
-          placeholder="There are no Device Registration Tokens."
+          placeholder={
+            <Text>
+              There are no <strong>Device Registration Tokens</strong>.
+            </Text>
+          }
         />
       </Card>
     </Layout>

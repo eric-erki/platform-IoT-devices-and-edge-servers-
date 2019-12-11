@@ -316,7 +316,11 @@ const Devices = ({ route }) => {
           onRowSelect={({ name }) =>
             navigation.navigate(`/${route.data.params.project}/devices/${name}`)
           }
-          placeholder="There are no Devices."
+          placeholder={
+            <Text>
+              There are no <strong>Devices</strong>.
+            </Text>
+          }
         />
       </Card>
 

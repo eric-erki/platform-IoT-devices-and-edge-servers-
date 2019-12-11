@@ -4,6 +4,7 @@ import { useNavigation } from 'react-navi';
 
 import Card from '../../components/card';
 import Table from '../../components/table';
+import { Text } from '../../components/core';
 
 const ReleasedBy = ({ release }) => {
   if (release) {
@@ -65,7 +66,11 @@ const Releases = ({
             `/${params.project}/applications/${application.name}/releases/${id}`
           )
         }
-        placeholder="There are no Releases."
+        placeholder={
+          <Text>
+            There are no <strong>Releases</strong>.
+          </Text>
+        }
       />
     </Card>
   );

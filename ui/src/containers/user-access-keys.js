@@ -6,7 +6,7 @@ import utils from '../utils';
 import Card from '../components/card';
 import Table from '../components/table';
 import Popup from '../components/popup';
-import { Label, Button } from '../components/core';
+import { Label, Button, Text } from '../components/core';
 
 const UserAccessKeys = () => {
   const [accessKeys, setAccessKeys] = useState([]);
@@ -115,7 +115,11 @@ const UserAccessKeys = () => {
         <Table
           columns={columns}
           data={tableData}
-          placeholder="There are no User Access Keys."
+          placeholder={
+            <Text>
+              There are no <strong>User Access Keys</strong>.
+            </Text>
+          }
         />
       </Card>
       <Popup show={showPopup} onClose={() => setShowPopup(false)}>

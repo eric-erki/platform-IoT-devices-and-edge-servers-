@@ -3,6 +3,7 @@ import { useNavigation } from 'react-navi';
 
 import Card from '../../components/card';
 import Table from '../../components/table';
+import { Text } from '../../components/core';
 
 const Roles = ({
   route: {
@@ -36,7 +37,11 @@ const Roles = ({
         onRowSelect={({ name }) =>
           navigation.navigate(`/${params.project}/iam/roles/${name}`)
         }
-        placeholder="There are no Roles."
+        placeholder={
+          <Text>
+            There are no <strong>Roles</strong>.
+          </Text>
+        }
       />
     </Card>
   );

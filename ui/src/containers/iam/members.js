@@ -3,6 +3,7 @@ import { useNavigation } from 'react-navi';
 
 import Card from '../../components/card';
 import Table from '../../components/table';
+import { Text } from '../../components/core';
 
 const Members = ({
   route: {
@@ -48,7 +49,11 @@ const Members = ({
         onRowSelect={({ user }) => {
           navigation.navigate(`/${params.project}/iam/members/${user.id}`);
         }}
-        placeholder="There are no Members."
+        placeholder={
+          <Text>
+            There are no <strong>Members</strong>.
+          </Text>
+        }
       />
     </Card>
   );

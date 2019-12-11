@@ -45,16 +45,14 @@ const Divider = styled.div`
 
 const AvatarMenu = () => {
   const {
-    data: {
-      context: { currentUser },
-    },
+    data: { context },
   } = useCurrentRoute();
   const [showCLI, setShowCLI] = React.useState();
   const [showUserProfile, setShowUserProfile] = React.useState();
   const [showUserAccessKeys, setShowUserAccessKeys] = React.useState();
   const [showChangePassword, setShowChangePassword] = React.useState();
   const navigation = useNavigation();
-  const name = `${currentUser.firstName} ${currentUser.lastName}`;
+  const name = `${context.currentUser.firstName} ${context.currentUser.lastName}`;
 
   return (
     <>
@@ -62,20 +60,23 @@ const AvatarMenu = () => {
         <CliDownload />
       </Popup>
       <Popup show={showUserProfile} onClose={() => setShowUserProfile(false)}>
-        <Profile user={currentUser} close={() => setShowUserProfile(false)} />
+        <Profile
+          user={context.currentUser}
+          close={() => setShowUserProfile(false)}
+        />
       </Popup>
       <Popup
         show={showUserAccessKeys}
         onClose={() => setShowUserAccessKeys(false)}
       >
-        <UserAccessKeys user={currentUser} />
+        <UserAccessKeys user={context.currentUser} />
       </Popup>
       <Popup
         show={showChangePassword}
         onClose={() => setShowChangePassword(false)}
       >
         <ChangePassword
-          user={currentUser}
+          user={context.currentUser}
           close={() => setShowChangePassword(false)}
         />
       </Popup>
@@ -98,7 +99,7 @@ const AvatarMenu = () => {
               marginX={1}
               opacity={0.8}
             >
-              {currentUser.email}
+              {context.currentUser.email}
             </Text>
             <Divider />
             <MenuItem
@@ -141,9 +142,10 @@ const AvatarMenu = () => {
               </MenuItem>
             )}
             <MenuItem
-              onClick={() => {
+              onClick={async () => {
+                context.setCurrentUser(null);
+                await api.logout();
                 navigation.navigate('/login');
-                api.logout();
               }}
               paddingBottom={3}
               marginBottom={2}

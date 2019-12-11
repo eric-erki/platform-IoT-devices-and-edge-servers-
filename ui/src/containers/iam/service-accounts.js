@@ -3,6 +3,7 @@ import { useNavigation } from 'react-navi';
 
 import Card from '../../components/card';
 import Table from '../../components/table';
+import { Text } from '../../components/core';
 
 const ServiceAccounts = ({
   route: {
@@ -36,7 +37,11 @@ const ServiceAccounts = ({
         onRowSelect={({ name }) =>
           navigation.navigate(`/${params.project}/iam/service-accounts/${name}`)
         }
-        placeholder="There are no Service Accounts."
+        placeholder={
+          <Text>
+            There are no <strong>Service Accounts</strong>.
+          </Text>
+        }
       />
     </Card>
   );

@@ -19,7 +19,7 @@ const validationSchema = yup.object().shape({
 
 const Login = ({
   route: {
-    data: { params },
+    data: { params, context },
   },
 }) => {
   const { register, handleSubmit, errors } = useForm({
@@ -28,20 +28,18 @@ const Login = ({
   const navigation = useNavigation();
   const [backendError, setBackendError] = useState();
 
-  const submit = data => {
-    api
-      .login(data)
-      .then(() =>
-        navigation.navigate(
-          params.redirectTo
-            ? decodeURIComponent(params.redirectTo)
-            : '/projects'
-        )
-      )
-      .catch(error => {
-        setBackendError('Invalid credentials');
-        console.log(error);
-      });
+  const submit = async data => {
+    try {
+      await api.login(data);
+      const response = await api.user();
+      context.setCurrentUser(response.data);
+      navigation.navigate(
+        params.redirectTo ? decodeURIComponent(params.redirectTo) : '/projects'
+      );
+    } catch (error) {
+      setBackendError('Invalid credentials');
+      console.log(error);
+    }
   };
 
   return (
