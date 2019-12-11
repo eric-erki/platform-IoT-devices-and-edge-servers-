@@ -117,13 +117,16 @@ export default mount({
             '/register': route({
               title: 'Register Device',
               getData: async request => {
-                const response = await api.defaultDeviceRegistrationToken({
-                  projectId: request.params.project,
-                });
-
-                return {
-                  deviceRegistrationToken: response.data,
-                };
+                try {
+                  const response = await api.defaultDeviceRegistrationToken({
+                    projectId: request.params.project,
+                  });
+                  return {
+                    deviceRegistrationToken: response.data,
+                  };
+                } catch (e) {
+                  console.log(e);
+                }
               },
               getView: () => import('./containers/register-device'),
             }),
@@ -377,13 +380,17 @@ export default mount({
                   import('./containers/device-registration-token')
                 ),
                 withData(async request => {
-                  const response = await api.deviceRegistrationToken({
-                    projectId: request.params.project,
-                    tokenId: request.params.token,
-                  });
-                  return {
-                    deviceRegistrationToken: response.data,
-                  };
+                  try {
+                    const response = await api.deviceRegistrationToken({
+                      projectId: request.params.project,
+                      tokenId: request.params.token,
+                    });
+                    return {
+                      deviceRegistrationToken: response.data,
+                    };
+                  } catch (e) {
+                    console.log(e);
+                  }
                 }),
                 mount({
                   '/': redirect('overview'),

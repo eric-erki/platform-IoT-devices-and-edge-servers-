@@ -16,6 +16,9 @@ const Projects = ({
       {
         Header: 'Name',
         accessor: 'name',
+        style: {
+          flex: 2,
+        },
       },
       {
         Header: 'Devices',
@@ -31,10 +34,10 @@ const Projects = ({
   const tableData = useMemo(() => projects, [projects]);
 
   return (
-    <Layout title="Select Project" alignItems="center">
+    <Layout alignItems="center">
       <Card
-        size="large"
         title="Projects"
+        size="xlarge"
         actions={[
           {
             href: '/projects/create',

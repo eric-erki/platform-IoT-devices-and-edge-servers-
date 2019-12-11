@@ -8,7 +8,7 @@ const A = styled.a`
   cursor: pointer;
 
   &:hover {
-    filter: brightness(125%);
+    text-decoration: underline;
   }
 
   ${color} ${layout} ${space} ${typography}

@@ -4,7 +4,7 @@ import { Code } from 'evergreen-ui';
 import config from '../config';
 import Layout from '../components/layout';
 import Card from '../components/card';
-import { Row, Text } from '../components/core';
+import { Row, Text, Link } from '../components/core';
 
 const getDockerCommand = deviceRegistrationToken => {
   if (window.location.hostname === 'localhost') {
@@ -44,152 +44,37 @@ const AddDevice = ({
   return (
     <Layout alignItems="center">
       <Card title="Register Device">
-        <Row marginBottom={4}>
-          <Text>
-            Default device registration token with ID{' '}
-            <Code fontFamily="mono" background="#222" color="white">
-              {deviceRegistrationToken.id}
-            </Code>{' '}
-            is being used.
-          </Text>
-        </Row>
-        <Text marginBottom={2}>
-          Run the following command on the device you want to register:
-        </Text>
-        <Code fontFamily="mono" color="white" background="#222">
-          {getDockerCommand(deviceRegistrationToken)}
-        </Code>
+        {deviceRegistrationToken ? (
+          <>
+            <Row marginBottom={4}>
+              <Text>
+                Default device registration token with ID{' '}
+                <Code fontFamily="mono" background="#222" color="white">
+                  {deviceRegistrationToken.id}
+                </Code>{' '}
+                is being used.
+              </Text>
+            </Row>
+            <Text marginBottom={2}>
+              Run the following command on the device you want to register:
+            </Text>
+            <Code fontFamily="mono" color="white" background="#222">
+              {getDockerCommand(deviceRegistrationToken)}
+            </Code>
+          </>
+        ) : (
+          <>
+            <Text>
+              Create a <strong>default</strong> Device Registration Token from
+              the{' '}
+              <Link href={`/${params.project}/provisioning`}>Provisioning</Link>{' '}
+              page to enable device registration from the UI.{' '}
+            </Text>
+          </>
+        )}
       </Card>
     </Layout>
   );
 };
 
 export default AddDevice;
-
-// TODO: ADD THIS WARNING ABOUT DEFAULT TOKEN BEING DELETED
-
-// var addDeviceButtonHolder;
-// if (this.state.defaultDeviceRegistrationTokenExists) {
-//   addDeviceButtonHolder = (
-//     <Button
-//       appearance="primary"
-//       onClick={() => history.push(`/${projectName}/devices/add`)}
-//     >
-//       Add Device
-//     </Button>
-//   );
-// } else {
-//   addDeviceButtonHolder = (
-//     <Popover
-//       trigger="hover"
-//       isShown={this.state.popoverShown}
-//       content={
-//         <Pane
-//           display="flex"
-//           alignItems="center"
-//           justifyContent="center"
-//           flexDirection="column"
-//           width="250px"
-//           padding="20px"
-//           onMouseOver={() => {
-//             this.setState({ popoverShown: true });
-//           }}
-//           onMouseOut={() => {
-//             this.setState({ popoverShown: false });
-//           }}
-//         >
-//           <Text>
-//             There is no "default" device registration token, so adding
-//             devices from the UI is disabled.
-//           </Text>
-//           <Text paddingTop={minorScale(1)}>
-//             Device registration tokens can be created on the{' '}
-//             <Link
-//               style={{ color: 'blue' }}
-//               to={`/${projectName}/provisioning`}
-//             >
-//               Provisioning
-//             </Link>{' '}
-//             page.
-//           </Text>
-//         </Pane>
-//       }
-//     >
-//       <Pane
-//         appearance="primary"
-//         onMouseOver={() => {
-//           this.setState({ popoverShown: true });
-//         }}
-//         onMouseOut={() => {
-//           this.setState({ popoverShown: false });
-//         }}
-//       >
-//         <Button disabled={true}>Add Device</Button>
-//       </Pane>
-//     </Popover>
-//   );
-// }
-
-// class AddDevice extends Component {
-//   constructor(props) {
-//     super(props);
-//     this.state = {
-//       deviceRegistrationToken: null,
-//       project: null
-//     };
-//   }
-
-//   componentDidMount() {
-//     segment.page();
-
-//     this.getRegistrationToken();
-//     axios
-//       .get(`${config.endpoint}/projects/${this.props.projectName}`, {
-//         withCredentials: true
-//       })
-//       .then(response => {
-//         this.setState({
-//           project: response.data
-//         });
-//       })
-//       .catch(error => {
-//         console.log(error);
-//       });
-//   }
-
-//   getRegistrationToken = () => {
-//     axios
-//       .get(
-//         `${config.endpoint}/projects/${this.props.projectName}/deviceregistrationtokens/default`,
-//         {
-//           withCredentials: true
-//         }
-//       )
-//       .then(response => {
-//         this.setState({
-//           deviceRegistrationToken: response.data
-//         });
-//       })
-//       .catch(error => {
-//         console.log(error);
-//       });
-//   };
-
-//   handleAddNewDevice = () => {
-//     this.getRegistrationToken();
-//     toaster.success('New device token and command generated.');
-//   };
-
-//   render() {
-//     if (!this.state.deviceRegistrationToken || !this.state.project) {
-//       return <CustomSpinner />;
-//     }
-//     const heading = 'Add Device';
-
-//     var dockerCommand;
-
-//     return (
-
-//     );
-//   }
-// }

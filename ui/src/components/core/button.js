@@ -11,6 +11,7 @@ import {
   flexbox,
 } from 'styled-system';
 import { useLinkProps } from 'react-navi';
+import theme from '../../theme';
 
 const variants = {
   variants: {
@@ -19,31 +20,29 @@ const variants = {
       bg: 'primary',
       border: 0,
       '&:not(:disabled):hover': {
-        color: 'primary',
-        bg: 'black',
+        bg: 'transparent',
+        color: theme.colors.primary,
+        boxShadow: `0px 0px 0px 3px ${theme.colors.primary} inset`,
       },
       '&:not(:disabled):focus': {
-        color: 'primary',
-        bg: 'black',
+        bg: 'transparent',
+        color: theme.colors.primary,
+        boxShadow: `0px 0px 0px 3px ${theme.colors.primary} inset`,
       },
     },
     secondary: {
       color: 'white',
-      bg: 'black',
       border: 0,
       borderColor: 'white',
       '&:not(:disabled):hover': {
-        color: 'black',
-        bg: 'white',
+        boxShadow: `0px 0px 0px 3px #fff inset`,
       },
       '&:not(:disabled):focus': {
-        color: 'black',
-        bg: 'white',
+        boxShadow: `0px 0px 0px 3px #fff inset`,
       },
     },
     tertiary: {
       color: 'white',
-      bg: 'transparent',
       border: 0,
       borderColor: 'white',
       padding: 1,
@@ -59,7 +58,6 @@ const variants = {
     },
     text: {
       color: 'white',
-      bg: 'transparent',
       border: 'none',
       opacity: 0.8,
       padding: 0,
@@ -87,6 +85,7 @@ const defaultProps = {
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
+  bg: 'transparent',
 };
 
 export const Btn = styled.button`
@@ -98,6 +97,8 @@ export const Btn = styled.button`
   text-transform: capitalize;
   transition: all 200ms;
   padding: 10px 12px;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 
   &:disabled {
     cursor: not-allowed;
@@ -105,12 +106,12 @@ export const Btn = styled.button`
   }
 
   &:focus {
-    outline: none !important;
+    outline: none;
   }
 
-  ${variant(variants)}
-
   ${space} ${layout} ${typography} ${color} ${border} ${shadow} ${flexbox}
+
+  ${variant(variants)}
 `;
 
 Btn.defaultProps = defaultProps;
@@ -122,6 +123,8 @@ export const LinkButton = styled.a`
   text-transform: capitalize;
   transition: all 200ms;
   padding: 10px 12px;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 
   &:disabled {
     opacity: .4;
@@ -129,12 +132,12 @@ export const LinkButton = styled.a`
   }
 
   &:focus {
-    outline: none !important;
+    outline: none;
   }
 
-  ${variant(variants)}
-
   ${space} ${layout} ${typography} ${color} ${border} ${shadow} ${flexbox}
+
+  ${variant(variants)}
 `;
 LinkButton.defaultProps = defaultProps;
 
