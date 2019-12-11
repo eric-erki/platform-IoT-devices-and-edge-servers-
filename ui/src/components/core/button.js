@@ -47,12 +47,13 @@ const variants = {
       border: 0,
       borderColor: 'white',
       padding: '6px',
-      opacity: 0.7,
       '&:not(:disabled):hover': {
-        opacity: 1,
+        color: 'black',
+        bg: 'white',
       },
       '&:not(:disabled):focus': {
-        opacity: 1,
+        color: 'black',
+        bg: 'white',
       },
     },
   },
