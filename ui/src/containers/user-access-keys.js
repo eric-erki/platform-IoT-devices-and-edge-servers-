@@ -14,6 +14,42 @@ const UserAccessKeys = () => {
   const [backendError, setBackendError] = useState();
   const [showPopup, setShowPopup] = useState();
 
+  const columns = useMemo(
+    () => [
+      {
+        Header: 'Access Key ID',
+        accessor: 'id',
+        style: {
+          flex: 3,
+        },
+      },
+      {
+        Header: 'Created At',
+        accessor: 'createdAt',
+        style: {
+          flex: 2,
+        },
+      },
+      {
+        Header: ' ',
+        Cell: ({ row }) => (
+          <Button
+            title="Delete"
+            variant="tertiary"
+            onClick={() => deleteAccessKey(row.original.id)}
+          />
+        ),
+        cellStyle: {
+          flex: 1,
+          display: 'flex',
+          justifyContent: 'flex-end',
+        },
+      },
+    ],
+    []
+  );
+  const tableData = useMemo(() => accessKeys, [accessKeys]);
+
   const fetchAccessKeys = () => {
     api
       .userAccessKeys()
@@ -58,36 +94,6 @@ const UserAccessKeys = () => {
         }
       });
   };
-
-  const columns = useMemo(
-    () => [
-      {
-        Header: 'Access Key ID',
-        accessor: 'id',
-      },
-      {
-        Header: 'Created At',
-        accessor: 'createdAt',
-      },
-      {
-        Header: ' ',
-        Cell: ({ row }) => (
-          <Button
-            title="Delete"
-            variant="tertiary"
-            onClick={() => deleteAccessKey(row.original.id)}
-          />
-        ),
-        style: {
-          flex: 1,
-          display: 'flex',
-          justifyContent: 'center',
-        },
-      },
-    ],
-    []
-  );
-  const tableData = useMemo(() => accessKeys, [accessKeys]);
 
   return (
     <>

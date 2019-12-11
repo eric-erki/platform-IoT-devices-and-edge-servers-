@@ -36,7 +36,6 @@ const GlobalStyle = createGlobalStyle`
 
 const Page = ({ children }) => {
   const route = useCurrentRoute();
-  console.log(route);
   return (
     <>
       <Helmet>

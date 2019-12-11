@@ -37,10 +37,9 @@ const variants = {
       color: 'white',
       bg: 'transparent',
       border: 'none',
-      opacity: 0.8,
       padding: 0,
       '&:not(:disabled):hover': {
-        opacity: 1,
+        opacity: 0.8,
       },
     },
   },
@@ -48,8 +47,6 @@ const variants = {
 
 const defaultProps = {
   variant: 'primary',
-  paddingY: '10px',
-  paddingX: 3,
   fontSize: 1,
   fontWeight: 4,
   borderRadius: 1,
@@ -67,15 +64,16 @@ export const Btn = styled.button`
   cursor: pointer;
   text-transform: capitalize;
   transition: all 200ms;
+  padding: 10px 12px;
 
   &:disabled {
     cursor: not-allowed;
     opacity: .4;
   }
 
-  ${space} ${layout} ${typography} ${color} ${border} ${shadow} ${flexbox}
-
   ${variant(variants)}
+
+  ${space} ${layout} ${typography} ${color} ${border} ${shadow} ${flexbox}
 `;
 
 Btn.defaultProps = defaultProps;
@@ -86,15 +84,16 @@ export const LinkButton = styled.a`
   cursor: pointer;
   text-transform: capitalize;
   transition: all 200ms;
+  padding: 10px 12px;
 
   &:disabled {
     opacity: .4;
     cursor: not-allowed;
   }
 
-  ${space} ${layout} ${typography} ${color} ${border} ${shadow} ${flexbox}
-
   ${variant(variants)}
+
+  ${space} ${layout} ${typography} ${color} ${border} ${shadow} ${flexbox}
 `;
 LinkButton.defaultProps = defaultProps;
 

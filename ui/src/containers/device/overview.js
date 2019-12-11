@@ -2,9 +2,9 @@ import React, { useMemo } from 'react';
 import { Table, Badge } from 'evergreen-ui';
 
 import config from '../../config';
-import Card from '../../components/card';
 import { Row, Column, Text, Button } from '../../components/core';
-import { EditableLabelTable } from '../../components/EditableLabelTable';
+import Card from '../../components/card';
+import EditableLabelTable from '../../components/EditableLabelTable';
 
 const checkServices = applicationStatusInfo => {
   for (var i = 0; i < applicationStatusInfo.length; i++) {
@@ -101,9 +101,6 @@ const DeviceOverview = ({
         </Text>
       </Column>
       <Column marginBottom={4}>
-        <Text fontWeight={3} marginBottom={2}>
-          Labels
-        </Text>
         <EditableLabelTable
           getEndpoint={`${config.endpoint}/projects/${params.project}/devices/${device.id}`}
           setEndpoint={`${config.endpoint}/projects/${params.project}/devices/${device.id}/labels`}

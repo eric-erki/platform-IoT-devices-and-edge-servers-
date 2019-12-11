@@ -1,8 +1,8 @@
 import React from 'react';
 
-import Card from '../../components/card';
 import { Column, Text } from '../../components/core';
-import { EditableLabelTable } from '../../components/EditableLabelTable';
+import Card from '../../components/card';
+import EditableLabelTable from '../../components/EditableLabelTable';
 
 const DeviceRegistrationTokenOverview = ({
   route: {
@@ -36,10 +36,8 @@ const DeviceRegistrationTokenOverview = ({
         <Text>{deviceRegistrationToken.maxRegistrations || 'Unlimited'}</Text>
       </Column>
       <Column>
-        <Text fontWeight={4} fontSize={2} marginBottom={1}>
-          Labels
-        </Text>
         <EditableLabelTable
+          data={deviceRegistrationToken.labels}
           getEndpoint={`projects/${params.project}/deviceregistrationtokens/${deviceRegistrationToken.id}`}
           setEndpoint={`projects/${params.project}/deviceregistrationtokens/${deviceRegistrationToken.id}/labels`}
           deleteEndpoint={`projects/${params.project}/deviceregistrationtokens/${deviceRegistrationToken.id}/labels`}

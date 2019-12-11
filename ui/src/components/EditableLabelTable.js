@@ -1,80 +1,110 @@
-import React, { Component, Fragment } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import styled from 'styled-components';
 import axios from 'axios';
-import {
-  Pane,
-  Table,
-  Dialog,
-  IconButton,
-  TextInputField,
-  toaster,
-} from 'evergreen-ui';
+import { toaster } from 'evergreen-ui';
 
 import utils from '../utils';
+import { Text, Row, Button, Input } from './core';
+import Table from './table';
 
-export class EditableLabelTable extends Component {
-  constructor(props) {
-    super(props);
+const CellInput = styled(Input)`
+  width: 100%;
+`;
 
-    this.state = {
-      labels: [],
-    };
+CellInput.defaultProps = {
+  padding: 1,
+};
+
+const EditableCell = ({ mode, value, autoFocus }) => {
+  if (mode === 'edit') {
+    return <CellInput autoFocus={autoFocus} />;
   }
+  return <Text>{value}</Text>;
+};
 
-  componentDidMount() {
-    axios
-      .get(this.props.getEndpoint, {
-        withCredentials: true,
-      })
-      .then(response => {
-        this.setState({
-          labels: this.initializeLabels(response.data.labels),
-        });
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  }
+const EditableLabelTable = ({ data }) => {
+  const [labels, setLabels] = useState([]);
+  const [showRemoveDialog, setShowRemoveDialog] = useState();
 
-  initializeLabels = keyValues => {
-    var labels = [];
-    var labelKeys = Object.keys(keyValues);
-    for (var i = 0; i < labelKeys.length; i++) {
-      labels.push({
-        key: labelKeys[i],
-        value: keyValues[labelKeys[i]],
-        mode: 'default',
-        keyValidationMessage: null,
-        valueValidationMessage: null,
-        showRemoveDialog: false,
-      });
-    }
-    return labels.sort(function(a, b) {
-      if (a.key < b.key) {
-        return -1;
-      }
-      if (a.key > b.key) {
-        return 1;
-      }
-      return 0;
-    });
+  useEffect(() => {
+    setLabels(
+      Object.keys(data)
+        .map(key => ({ key, value: data[key], mode: 'default' }))
+        .sort((a, b) => {
+          if (a.key < b.key) {
+            return -1;
+          }
+          if (a.key > b.key) {
+            return 1;
+          }
+          return 0;
+        })
+    );
+  }, []);
+
+  const columns = useMemo(
+    () => [
+      {
+        Header: 'Key',
+        Cell: ({ row: { original } }) => (
+          <EditableCell mode={original.mode} value={original.key} autoFocus />
+        ),
+      },
+      {
+        Header: 'Value',
+        Cell: ({ row: { original } }) => (
+          <EditableCell mode={original.mode} value={original.key} />
+        ),
+      },
+      {
+        Header: ' ',
+        Cell: ({ row: { index, original } }) => {
+          if (original.mode === 'edit') {
+            return (
+              <Row>
+                <Button
+                  title="Save"
+                  variant="tertiary"
+                  color="primary"
+                  onClick={() => saveLabel(index)}
+                />
+                <Button
+                  title="Cancel"
+                  variant="tertiary"
+                  marginLeft={4}
+                  onClick={() => cancelEdit(index)}
+                />
+              </Row>
+            );
+          }
+          return (
+            <Row>
+              <Button
+                title="Edit"
+                variant="tertiary"
+                color="primary"
+                onClick={() => setEdit(index)}
+              />
+              <Button title="Delete" variant="tertiary" marginLeft={4} />
+            </Row>
+          );
+        },
+        cellStyle: {
+          display: 'flex',
+          flex: 1,
+          justifyContent: 'flex-end',
+        },
+      },
+    ],
+    []
+  );
+  const tableData = useMemo(() => labels, [labels]);
+
+  const addLabel = (label = { key: '', value: '', mode: 'edit' }) => {
+    setLabels([...labels, label]);
   };
 
-  createNewLabel = () => {
-    var labels = this.state.labels;
-    labels.push({
-      key: '',
-      value: '',
-      mode: 'new',
-      keyValidationMessage: null,
-      valueValidationMessage: null,
-      showRemoveDialog: false,
-    });
-    this.setState({
-      labels: labels,
-    });
-  };
-
-  handleUpdate = (i, property) => {
+  const handleUpdate = (i, property) => {
     return event => {
       var labels = this.state.labels;
       labels[i][property] = event.target.value;
@@ -84,39 +114,25 @@ export class EditableLabelTable extends Component {
     };
   };
 
-  setEdit = i => {
-    var editLabels = this.state.labels;
-    editLabels[i]['mode'] = 'edit';
-    this.setState({
-      labels: editLabels,
-    });
+  const saveLabel = () => {};
+
+  const setEdit = index => {
+    setLabels(
+      labels.map((label, i) =>
+        index === i ? { ...label, mode: 'edit' } : label
+      )
+    );
   };
 
-  cancelEdit = i => {
-    var editLabels = this.state.labels;
-    editLabels[i]['mode'] = 'default';
-    this.setState({
-      labels: editLabels,
-    });
+  const cancelEdit = index => {
+    setLabels(
+      labels.map((label, i) =>
+        index === i ? { ...label, mode: 'default' } : label
+      )
+    );
   };
 
-  setShowRemoveDialog = i => {
-    var showRemoveDialogLabels = this.state.labels;
-    showRemoveDialogLabels[i]['showRemoveDialog'] = true;
-    this.setState({
-      labels: showRemoveDialogLabels,
-    });
-  };
-
-  hideShowRemoveDialog = i => {
-    var showRemoveDialogLabels = this.state.labels;
-    showRemoveDialogLabels[i]['showRemoveDialog'] = false;
-    this.setState({
-      labels: showRemoveDialogLabels,
-    });
-  };
-
-  setLabel = (key, value, i) => {
+  const setLabel = (key, value, i) => {
     var updatedLabels = this.state.labels;
     var keyValidationMessage = utils.checkName('key', key);
     var valueValidationMessage = utils.checkName('value', value);
@@ -167,7 +183,7 @@ export class EditableLabelTable extends Component {
     }
   };
 
-  deleteLabel = (key, i) => {
+  const deleteLabel = (key, i) => {
     if (key !== '') {
       axios
         .delete(this.props.deleteEndpoint + `/${key}`, {
@@ -198,161 +214,146 @@ export class EditableLabelTable extends Component {
     }
   };
 
-  renderLabel(Label, i) {
-    switch (Label.mode) {
-      case 'default':
-        return (
-          <Fragment key={Label.key}>
-            <Table.Row>
-              <Table.TextCell>{Label.key}</Table.TextCell>
-              <Table.TextCell>{Label.value}</Table.TextCell>
-              <Table.TextCell flexBasis={75} flexShrink={0} flexGrow={0}>
-                <Pane display="flex">
-                  <IconButton
-                    icon="edit"
-                    height={24}
-                    appearance="minimal"
-                    onClick={() => this.setEdit(i)}
-                  />
-                  <IconButton
-                    icon="trash"
-                    height={24}
-                    appearance="minimal"
-                    onClick={() => this.setShowRemoveDialog(i)}
-                  />
-                </Pane>
-              </Table.TextCell>
-            </Table.Row>
-            <Pane>
-              <Dialog
-                isShown={Label.showRemoveDialog}
-                title="Remove Label"
-                intent="danger"
-                onCloseComplete={() => this.hideShowRemoveDialog(i)}
-                onConfirm={() => this.deleteLabel(Label.key, i)}
-                confirmLabel="Remove Label"
-              >
-                You are about to remove label <strong>{Label.key}</strong>.
-              </Dialog>
-            </Pane>
-          </Fragment>
-        );
-      case 'edit':
-        return (
-          <Table.Row key={Label.key} height="auto">
-            <Table.TextCell>{Label.key}</Table.TextCell>
-            <Table.TextCell>
-              <TextInputField
-                label=""
-                name={`edit-${Label.key}`}
-                value={Label.value}
-                onChange={event => this.handleUpdate(i, 'value')(event)}
-                isInvalid={Label.valueValidationMessage !== null}
-                validationMessage={Label.valueValidationMessage}
-                marginTop={8}
-                marginBottom={8}
-              />
-            </Table.TextCell>
-            <Table.TextCell flexBasis={75} flexShrink={0} flexGrow={0}>
-              <Pane display="flex">
-                <IconButton
-                  icon="floppy-disk"
-                  height={24}
-                  appearance="minimal"
-                  onClick={() => this.setLabel(Label.key, Label.value, i)}
-                />
-                <IconButton
-                  icon="cross"
-                  height={24}
-                  appearance="minimal"
-                  onClick={() => this.cancelEdit(i)}
-                />
-              </Pane>
-            </Table.TextCell>
-          </Table.Row>
-        );
-      case 'new':
-        return (
-          <Table.Row key={`new-${i}`} height="auto">
-            <Table.TextCell>
-              <TextInputField
-                label=""
-                name={`new-key-${i}`}
-                value={Label.key}
-                onChange={event => this.handleUpdate(i, 'key')(event)}
-                isInvalid={Label.keyValidationMessage !== null}
-                validationMessage={Label.keyValidationMessage}
-                marginTop={8}
-                marginBottom={8}
-              />
-            </Table.TextCell>
-            <Table.TextCell>
-              <TextInputField
-                label=""
-                name={`new-value-${i}`}
-                value={Label.value}
-                onChange={event => this.handleUpdate(i, 'value')(event)}
-                isInvalid={Label.valueValidationMessage !== null}
-                validationMessage={Label.valueValidationMessage}
-                marginTop={8}
-                marginBottom={8}
-              />
-            </Table.TextCell>
-            <Table.TextCell flexBasis={75} flexShrink={0} flexGrow={0}>
-              <Pane display="flex">
-                <IconButton
-                  icon="floppy-disk"
-                  height={24}
-                  appearance="minimal"
-                  onClick={() => this.setLabel(Label.key, Label.value, i)}
-                />
-                <IconButton
-                  icon="cross"
-                  height={24}
-                  appearance="minimal"
-                  onClick={() => this.deleteLabel(Label.key, i)}
-                />
-              </Pane>
-            </Table.TextCell>
-          </Table.Row>
-        );
-      default:
-        return <Fragment />;
-    }
-  }
+  return (
+    <>
+      <Row
+        marginBottom={2}
+        justifyContent="space-between"
+        alignItems="flex-end"
+      >
+        <Text fontWeight={3}>Labels</Text>
+        <Button
+          title="Add Label"
+          onClick={() => addLabel()}
+          variant="secondary"
+        />
+      </Row>
+      <Table columns={columns} data={tableData} />
+    </>
+  );
 
-  render() {
-    return (
-      <Table>
-        <Table.Head>
-          <Table.TextHeaderCell>Key</Table.TextHeaderCell>
-          <Table.TextHeaderCell>Value</Table.TextHeaderCell>
-          <Table.TextHeaderCell
-            flexBasis={75}
-            flexShrink={0}
-            flexGrow={0}
-          ></Table.TextHeaderCell>
-        </Table.Head>
-        <Table.Body>
-          {this.state.labels.map((label, i) => this.renderLabel(label, i))}
-          <Table.Row key="add">
-            <Table.TextCell>
-              <IconButton
-                icon="plus"
-                height={24}
-                appearance="minimal"
-                onClick={() => this.createNewLabel()}
-              />
-            </Table.TextCell>
-            <Table.TextCell></Table.TextCell>
-            <Table.TextCell
-              flexBasis={75}
-              flexShrink={0}
-              flexGrow={0}
-            ></Table.TextCell>
-          </Table.Row>
-        </Table.Body>
-      </Table>
-    );
-  }
-}
+  // renderLabel(Label, i) {
+  //   switch (Label.mode) {
+  //     case 'default':
+  //       return (
+  //         <Fragment key={Label.key}>
+  //           <Table.Row>
+  //             <Table.TextCell>{Label.key}</Table.TextCell>
+  //             <Table.TextCell>{Label.value}</Table.TextCell>
+  //             <Table.TextCell flexBasis={75} flexShrink={0} flexGrow={0}>
+  //               <Pane display="flex">
+  //                 <IconButton
+  //                   icon="edit"
+  //                   height={24}
+  //                   appearance="minimal"
+  //                   onClick={() => this.setEdit(i)}
+  //                 />
+  //                 <IconButton
+  //                   icon="trash"
+  //                   height={24}
+  //                   appearance="minimal"
+  //                   onClick={() => this.setShowRemoveDialog(i)}
+  //                 />
+  //               </Pane>
+  //             </Table.TextCell>
+  //           </Table.Row>
+  //           <Pane>
+  //             <Dialog
+  //               isShown={Label.showRemoveDialog}
+  //               title="Remove Label"
+  //               intent="danger"
+  //               onCloseComplete={() => this.hideShowRemoveDialog(i)}
+  //               onConfirm={() => this.deleteLabel(Label.key, i)}
+  //               confirmLabel="Remove Label"
+  //             >
+  //               You are about to remove label <strong>{Label.key}</strong>.
+  //             </Dialog>
+  //           </Pane>
+  //         </Fragment>
+  //       );
+  //     case 'edit':
+  //       return (
+  //         <Table.Row key={Label.key} height="auto">
+  //           <Table.TextCell>{Label.key}</Table.TextCell>
+  //           <Table.TextCell>
+  //             <TextInputField
+  //               label=""
+  //               name={`edit-${Label.key}`}
+  //               value={Label.value}
+  //               onChange={event => this.handleUpdate(i, 'value')(event)}
+  //               isInvalid={Label.valueValidationMessage !== null}
+  //               validationMessage={Label.valueValidationMessage}
+  //               marginTop={8}
+  //               marginBottom={8}
+  //             />
+  //           </Table.TextCell>
+  //           <Table.TextCell flexBasis={75} flexShrink={0} flexGrow={0}>
+  //             <Pane display="flex">
+  //               <IconButton
+  //                 icon="floppy-disk"
+  //                 height={24}
+  //                 appearance="minimal"
+  //                 onClick={() => this.setLabel(Label.key, Label.value, i)}
+  //               />
+  //               <IconButton
+  //                 icon="cross"
+  //                 height={24}
+  //                 appearance="minimal"
+  //                 onClick={() => this.cancelEdit(i)}
+  //               />
+  //             </Pane>
+  //           </Table.TextCell>
+  //         </Table.Row>
+  //       );
+  //     case 'new':
+  //       return (
+  //         <Table.Row key={`new-${i}`} height="auto">
+  //           <Table.TextCell>
+  //             <TextInputField
+  //               label=""
+  //               name={`new-key-${i}`}
+  //               value={Label.key}
+  //               onChange={event => this.handleUpdate(i, 'key')(event)}
+  //               isInvalid={Label.keyValidationMessage !== null}
+  //               validationMessage={Label.keyValidationMessage}
+  //               marginTop={8}
+  //               marginBottom={8}
+  //             />
+  //           </Table.TextCell>
+  //           <Table.TextCell>
+  //             <TextInputField
+  //               label=""
+  //               name={`new-value-${i}`}
+  //               value={Label.value}
+  //               onChange={event => this.handleUpdate(i, 'value')(event)}
+  //               isInvalid={Label.valueValidationMessage !== null}
+  //               validationMessage={Label.valueValidationMessage}
+  //               marginTop={8}
+  //               marginBottom={8}
+  //             />
+  //           </Table.TextCell>
+  //           <Table.TextCell flexBasis={75} flexShrink={0} flexGrow={0}>
+  //             <Pane display="flex">
+  //               <IconButton
+  //                 icon="floppy-disk"
+  //                 height={24}
+  //                 appearance="minimal"
+  //                 onClick={() => this.setLabel(Label.key, Label.value, i)}
+  //               />
+  //               <IconButton
+  //                 icon="cross"
+  //                 height={24}
+  //                 appearance="minimal"
+  //                 onClick={() => this.deleteLabel(Label.key, i)}
+  //               />
+  //             </Pane>
+  //           </Table.TextCell>
+  //         </Table.Row>
+  //       );
+  //     default:
+  //       return <Fragment />;
+  //   }
+  // }
+};
+
+export default EditableLabelTable;
