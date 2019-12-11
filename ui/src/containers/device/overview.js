@@ -66,19 +66,14 @@ const DeviceOverview = ({
   },
 }) => {
   return (
-    <Card size="xlarge">
-      <Column marginBottom={5}>
-        <Text fontSize={5} fontWeight={3}>
-          {device.name}
-        </Text>
-        <Row marginTop={2}>
-          {device.status === 'offline' ? (
-            <Badge bg="whites.7">offline</Badge>
-          ) : (
-            <Badge bg="green">online</Badge>
-          )}
-        </Row>
-      </Column>
+    <Card size="xlarge" title={device.name}>
+      <Row marginBottom={4}>
+        {device.status === 'offline' ? (
+          <Badge bg="whites.7">offline</Badge>
+        ) : (
+          <Badge bg="green">online</Badge>
+        )}
+      </Row>
       <Column marginBottom={4}>
         <Text fontWeight={3} marginBottom={2}>
           IP Address

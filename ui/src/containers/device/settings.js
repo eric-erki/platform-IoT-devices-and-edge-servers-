@@ -9,7 +9,7 @@ import utils from '../../utils';
 import Card from '../../components/card';
 import Field from '../../components/field';
 import Popup from '../../components/popup';
-import { Text, Form, Button, Badge } from '../../components/core';
+import { Row, Column, Text, Form, Button, Badge } from '../../components/core';
 
 const validationSchema = yup.object().shape({
   name: yup.string().required(),
@@ -75,7 +75,13 @@ const DeviceSettings = ({
     <>
       <Card
         title="Device Settings"
-        actions={[{ title: 'Remove', onClick: () => setShowPopup(true) }]}
+        actions={[
+          {
+            title: 'Remove',
+            onClick: () => setShowPopup(true),
+            variant: 'secondary',
+          },
+        ]}
       >
         {backendError && (
           <Alert
@@ -86,15 +92,21 @@ const DeviceSettings = ({
             title={backendError}
           />
         )}
-        {device.status === 'offline' ? (
-          <Badge bg="whites.7">offline</Badge>
-        ) : (
-          <Badge bg="green">online</Badge>
-        )}
-        <Text>
-          <strong>ID: </strong>
-          {device.id}
-        </Text>
+        <Row marginBottom={4}>
+          {device.status === 'offline' ? (
+            <Badge bg="whites.7">offline</Badge>
+          ) : (
+            <Badge bg="green">online</Badge>
+          )}
+        </Row>
+
+        <Column marginBottom={4}>
+          <Text fontWeight={3} marginBottom={2}>
+            ID
+          </Text>
+          <Text>{device.id}</Text>
+        </Column>
+
         <Form onSubmit={handleSubmit(submit)}>
           <Field label="Name" name="name" ref={register} errors={errors.name} />
           <Button type="submit" title="Update" disabled={!formState.dirty} />

@@ -1,8 +1,17 @@
 import React, { useEffect } from 'react';
+import styled from 'styled-components';
 
 import '../../lib/xterm.css';
 import config from '../../config';
 import Card from '../../components/card';
+import { Column } from '../../components/core';
+
+const Terminal = styled.div`
+  display: flex;
+  border: 1px solid white;
+  border-radius: 3px;
+  padding: 12px;
+`;
 
 var process = require('process');
 
@@ -17,69 +26,77 @@ var ws = require('websocket-stream');
 var xterm = require('xterm');
 require('xterm/lib/addons/fit/fit');
 
-const setup = () => {
-  var conn = new Client();
-  var term = new xterm();
-  var wndopts = { term: 'xterm' };
+const DeviceSsh = ({
+  route: {
+    data: { params, device },
+  },
+}) => {
+  useEffect(() => {
+    var conn = new Client();
+    var term = new xterm();
+    var wndopts = { term: 'xterm' };
 
-  window.term = term;
+    window.term = term;
 
-  // Store current size for initialization
-  term.on('resize', function(rev) {
-    wndopts.rows = rev.rows;
-    wndopts.cols = rev.cols;
-  });
-
-  term.on('title', function(title) {
-    document.title = title;
-  });
-
-  conn
-    .on('ready', function() {
-      conn.shell(wndopts, function(err, stream) {
-        if (err) throw err;
-        stream
-          .on('close', function() {
-            conn.end();
-          })
-          .on('data', function(data) {
-            term.write(data.toString());
-          })
-          .stderr.on('data', function(data) {
-            term.write(data.toString());
-          });
-        term.on('key', function(key, kev) {
-          stream.write(key);
-        });
-        term.on('resize', function(rev) {
-          stream.setWindow(rev.rows, rev.cols, 480, 640);
-        });
-      });
-    })
-    .on('error', function(err) {
-      term.write(err.toString());
-    })
-    .on('close', function() {
-      term.write('\r\nConnection lost.\r\n');
+    // Store current size for initialization
+    term.on('resize', function(rev) {
+      wndopts.rows = rev.rows;
+      wndopts.cols = rev.cols;
     });
 
-  term.open(document.getElementById('terminal'));
-  term.fit();
-  window.onresize = term.fit.bind(term);
+    term.on('title', function(title) {
+      document.title = title;
+    });
 
-  conn.connect({
-    sock: ws(
-      `${config.wsEndpoint}/projects/${this.props.projectName}/devices/${this.props.device.id}/ssh`,
-      ['binary']
-    ),
-    username: '',
-  });
-};
+    conn
+      .on('ready', function() {
+        conn.shell(wndopts, function(err, stream) {
+          if (err) throw err;
+          stream
+            .on('close', function() {
+              conn.end();
+            })
+            .on('data', function(data) {
+              term.write(data.toString());
+            })
+            .stderr.on('data', function(data) {
+              term.write(data.toString());
+            });
+          term.on('key', function(key, kev) {
+            stream.write(key);
+          });
+          term.on('resize', function(rev) {
+            stream.setWindow(rev.rows, rev.cols, 480, 640);
+          });
+        });
+      })
+      .on('error', function(err) {
+        term.write(err.toString());
+      })
+      .on('close', function() {
+        term.write('\r\nConnection lost.\r\n');
+      });
 
-const DeviceSsh = () => {
-  useEffect(setup, []);
+    term.open(document.getElementById('terminal'));
+    term.fit();
+    window.onresize = term.fit.bind(term);
 
-  return <Card id="terminal" />;
+    conn.connect({
+      sock: ws(
+        `${config.wsEndpoint}/projects/${params.projectName}/devices/${device.id}/ssh`,
+        ['binary']
+      ),
+      username: '',
+    });
+  }, []);
+
+  return (
+    <Card size="xlarge">
+      <Terminal>
+        <Column id="terminal" width="100%" />
+      </Terminal>
+    </Card>
+  );
 };
 
 export default DeviceSsh;
