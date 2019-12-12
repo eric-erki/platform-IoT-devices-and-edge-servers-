@@ -2,15 +2,21 @@ import React, { forwardRef } from 'react';
 import { RHFInput } from 'react-hook-form-input';
 import styled from 'styled-components';
 import { space, color, typography } from 'styled-system';
+import { Icon } from 'evergreen-ui';
 
-import { Group, Column, Input, Textarea, Label, Text } from './core';
+import theme from '../theme';
+import utils from '../utils';
+import { Group, Row, Column, Input, Textarea, Label, Text } from './core';
 
 const Container = styled(Group)`
-  &:not(:last-child) {
+  margin-bottom: ${props =>
+    props.group
+      ? props.theme.sizes[2]
+      : props.theme.sizes[Group.defaultProps.marginBottom]}px;
+
+  &:last-of-type {
     margin-bottom: ${props =>
-      props.group
-        ? props.theme.sizes[2]
-        : props.theme.sizes[Group.defaultProps.marginBottom]}px;
+      props.theme.sizes[Group.defaultProps.marginBottom]}px !important;
   }
 `;
 
@@ -36,10 +42,12 @@ const Field = forwardRef(
       onChangeEvent,
       autoComplete = 'off',
       group,
+      errors = [],
       ...props
     },
     ref
   ) => {
+    errors = Array.isArray(errors) ? errors : [errors];
     const getComponent = () => {
       if (as) {
         return (
@@ -89,6 +97,14 @@ const Field = forwardRef(
             {hint}
           </Text>
         )}
+        {errors.map(({ message }) => (
+          <Row marginTop={2} alignItems="center">
+            <Icon icon="error" color={theme.colors.red} size={14} />
+            <Text color="red" marginLeft={2}>
+              {utils.capitalize(message)}
+            </Text>
+          </Row>
+        ))}
       </Container>
     );
   }

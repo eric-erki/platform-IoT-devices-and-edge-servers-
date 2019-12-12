@@ -1,9 +1,10 @@
 import styled from 'styled-components';
-import { space, color, typography } from 'styled-system';
+import { layout, space, color, typography, border } from 'styled-system';
 
 const Text = styled.span`
-word-wrap: break-word;
-  ${color} ${space} ${typography}
+  word-wrap: break-word;
+  text-overflow: ellipsis;
+  ${color} ${space} ${typography} ${layout} ${border}
 `;
 
 Text.defaultProps = {

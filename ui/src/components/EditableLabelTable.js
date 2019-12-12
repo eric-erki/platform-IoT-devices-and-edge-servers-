@@ -1,14 +1,12 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
 import { toaster, Icon } from 'evergreen-ui';
 
 import theme from '../theme';
-import utils from '../utils';
 import Card from './card';
 import Table from './table';
 import Popup from './popup';
-import { Text, Row, Button, Input, Label } from './core';
+import { Text, Row, Button, Input } from './core';
 
 const CellInput = styled(Input)`
   width: 100%;
@@ -25,7 +23,11 @@ const EditableCell = ({ mode, value, autoFocus, onChange }) => {
       <CellInput autoFocus={autoFocus} value={value} onChange={onChange} />
     );
   }
-  return <Text>{value}</Text>;
+  return (
+    <Text textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
+      {value}
+    </Text>
+  );
 };
 
 const EditableLabelTable = ({ data, onAdd, onRemove }) => {
@@ -56,7 +58,7 @@ const EditableLabelTable = ({ data, onAdd, onRemove }) => {
         Header: 'Key',
         Cell: ({ row: { index, original } }) => (
           <EditableCell
-            mode={original.mode}
+            mode={original.mode === 'edit' ? 'default' : original.mode}
             value={original.editedKey}
             onChange={e => editLabel(index, 'editedKey', e.target.value)}
             autoFocus
@@ -70,6 +72,7 @@ const EditableLabelTable = ({ data, onAdd, onRemove }) => {
           height: 32,
           display: 'flex',
           alignItems: 'center',
+          overflow: 'hidden',
         },
       },
       {
@@ -107,7 +110,8 @@ const EditableLabelTable = ({ data, onAdd, onRemove }) => {
                   }
                   disabled={
                     !(original.editedKey && original.editedValue) ||
-                    data.find(({ key }) => key === original.editedKey)
+                    (original.mode === 'new' &&
+                      data.find(({ key }) => key === original.editedKey))
                   }
                   onClick={() => saveLabel(original, index)}
                   variant="icon"

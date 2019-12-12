@@ -1,22 +1,33 @@
 import React, { useState } from 'react';
 import { useNavigation } from 'react-navi';
 import useForm from 'react-hook-form';
+import * as yup from 'yup';
 import { toaster } from 'evergreen-ui';
 
 import api from '../../api';
 import utils from '../../utils';
+import validators from '../../validators';
 import Card from '../../components/card';
 import Editor from '../../components/editor';
 import Field from '../../components/field';
 import Alert from '../../components/alert';
 import { Row, Button, Form } from '../../components/core';
 
+const validationSchema = yup.object().shape({
+  name: validators.name.required(),
+  description: yup.string(),
+  config: yup.string().required(),
+});
+
 const CreateRole = ({
   route: {
     data: { params },
   },
 }) => {
-  const { handleSubmit, register, setValue } = useForm();
+  const { handleSubmit, register, setValue } = useForm({
+    validationSchema,
+    mode: 'onBlur',
+  });
   const navigation = useNavigation();
   const [backendError, setBackendError] = useState();
 

@@ -6,13 +6,14 @@ import * as yup from 'yup';
 
 import utils from '../../utils';
 import api from '../../api';
+import validators from '../../validators';
 import Field from '../../components/field';
 import Card from '../../components/card';
 import Alert from '../../components/alert';
 import { Row, Form, Button } from '../../components/core';
 
 const validationSchema = yup.object().shape({
-  name: yup.string().required(),
+  name: validators.name.required(),
   description: yup.string(),
 });
 

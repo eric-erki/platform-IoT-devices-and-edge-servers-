@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import useForm from 'react-hook-form';
 import { useNavigation } from 'react-navi';
+import * as yup from 'yup';
 import { toaster } from 'evergreen-ui';
 
 import api from '../../api';
@@ -11,12 +12,17 @@ import Field from '../../components/field';
 import Alert from '../../components/alert';
 import { Form, Row, Button } from '../../components/core';
 
+const validationSchema = yup.object().shape({
+  rawConfig: yup.string().required(),
+});
+
 const CreateRelease = ({
   route: {
     data: { params, application },
   },
 }) => {
   const { register, handleSubmit, setValue } = useForm({
+    validationSchema,
     defaultValues: {
       rawConfig: application.latestRelease
         ? application.latestRelease.rawConfig

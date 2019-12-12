@@ -79,7 +79,13 @@ const Sidebar = () => {
   const projectSelected = !!route.data.params.project;
 
   return (
-    <Column width={136} alignSelf="stretch" bg="black" alignItems="center">
+    <Column
+      width={136}
+      alignSelf="stretch"
+      bg="black"
+      alignItems="center"
+      flexShrink={0}
+    >
       <Row paddingY={5}>
         <Link href="/">
           <Logo />

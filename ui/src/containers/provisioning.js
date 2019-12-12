@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import moment from 'moment';
 import { useNavigation } from 'react-navi';
 
@@ -15,7 +15,9 @@ const Provisioning = ({
   },
 }) => {
   const navigation = useNavigation();
-  const [labelColorMap, setLabelColorMap] = useState();
+  const [labelColorMap] = useState(
+    buildLabelColorMap({}, labelColors, deviceRegistrationTokens)
+  );
   const columns = useMemo(
     () => [
       { Header: 'Name', accessor: 'name' },
@@ -46,12 +48,6 @@ const Provisioning = ({
   const tableData = useMemo(() => deviceRegistrationTokens, [
     deviceRegistrationTokens,
   ]);
-
-  useEffect(() => {
-    setLabelColorMap(
-      buildLabelColorMap({}, labelColors, deviceRegistrationTokens)
-    );
-  }, []);
 
   return (
     <Layout title="Provisioning">

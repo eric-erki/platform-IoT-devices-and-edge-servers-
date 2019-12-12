@@ -27,6 +27,7 @@ const ServiceAccount = ({
   },
 }) => {
   const { register, handleSubmit, errors, formState, setValue } = useForm({
+    mode: 'onBlur',
     defaultValues: {
       name: serviceAccount.name,
       description: serviceAccount.description,

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { Icon } from 'evergreen-ui';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import { Column } from './core';
 
@@ -93,19 +93,33 @@ const Popup = ({ children, show, onClose }) => {
     };
   }, [show]);
 
-  if (!show) {
-    return null;
-  }
-
   return (
-    <Overlay>
-      <Container ref={node}>
-        <CloseButton onClick={onClose}>
-          <Icon icon="cross" size={20} color="white" />
-        </CloseButton>
-        <Content>{children}</Content>
-      </Container>
-    </Overlay>
+    <AnimatePresence>
+      {show && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.25 }}
+        >
+          <Overlay>
+            <Container ref={node}>
+              <CloseButton onClick={onClose}>
+                <Icon icon="cross" size={20} color="white" />
+              </CloseButton>
+              <motion.div
+                initial={{ opacity: 1, y: 150, scale: 0.75 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -150, scale: 0.5 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Content>{children}</Content>
+              </motion.div>
+            </Container>
+          </Overlay>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

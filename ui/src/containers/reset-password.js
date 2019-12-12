@@ -86,7 +86,6 @@ const PasswordRecovery = ({
             type="password"
             label="New Password"
             name="password"
-            hint="Password must be at least 8 characters, contain at least one lower case letter, one upper case letter, and no spaces."
             ref={register}
             errors={errors.password}
           />

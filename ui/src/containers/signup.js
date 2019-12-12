@@ -10,6 +10,7 @@ import Card from '../components/card';
 import Field from '../components/field';
 import Alert from '../components/alert';
 import { Column, Button, Form, Text, Link } from '../components/core';
+import validators from '../validators';
 
 const validationSchema = yup.object().shape({
   firstName: yup
@@ -21,21 +22,14 @@ const validationSchema = yup.object().shape({
     .required()
     .max(64),
   company: yup.string().max(64),
-  email: yup
-    .string()
-    .email()
-    .required()
-    .max(64),
-  password: yup
-    .string()
-    .required()
-    .min(8)
-    .max(64),
+  email: validators.email.required(),
+  password: validators.password.required(),
 });
 
 const Signup = () => {
   const { register, handleSubmit, errors } = useForm({
     validationSchema,
+    mode: 'onBlur',
   });
   const navigation = useNavigation();
   const [backendError, setBackendError] = useState();

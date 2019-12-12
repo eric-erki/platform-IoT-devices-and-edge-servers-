@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { space, color, typography, border } from 'styled-system';
 
 const Code = styled.code`
+    display: inline-block;
     ${space} ${color} ${typography} ${border}
 `;
 

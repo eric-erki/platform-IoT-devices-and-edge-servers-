@@ -6,6 +6,7 @@ import { toaster } from 'evergreen-ui';
 
 import api from '../api';
 import utils from '../utils';
+import validators from '../validators';
 import Layout from '../components/layout';
 import Card from '../components/card';
 import Field from '../components/field';
@@ -13,12 +14,13 @@ import Alert from '../components/alert';
 import { Button, Row, Form } from '../components/core';
 
 const validationSchema = yup.object().shape({
-  name: yup.string().required(),
+  name: validators.name.required(),
 });
 
 const ProjectCreate = () => {
   const navigation = useNavigation();
   const { register, handleSubmit, errors } = useForm({
+    mode: 'onBlur',
     validationSchema,
   });
   const [backendError, setBackendError] = useState();

@@ -2,14 +2,22 @@ import React, { useState } from 'react';
 import useForm from 'react-hook-form';
 import { useNavigation } from 'react-navi';
 import { toaster } from 'evergreen-ui';
+import * as yup from 'yup';
 
 import api from '../../api';
 import utils from '../../utils';
+import validators from '../../validators';
 import Card from '../../components/card';
 import Field from '../../components/field';
 import Popup from '../../components/popup';
 import Alert from '../../components/alert';
 import { Text, Button, Form } from '../../components/core';
+
+const validationSchema = yup.object().shape({
+  name: validators.name.required(),
+  description: yup.string(),
+  maxRegistrations: yup.number().max(10000000),
+});
 
 const DeviceRegistrationTokenSettings = ({
   route: {
@@ -18,6 +26,8 @@ const DeviceRegistrationTokenSettings = ({
 }) => {
   const navigation = useNavigation();
   const { register, handleSubmit, formState, errors } = useForm({
+    validationSchema,
+    mode: 'onBlur',
     defaultValues: {
       name: deviceRegistrationToken.name,
       description: deviceRegistrationToken.description,

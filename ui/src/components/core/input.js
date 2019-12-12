@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import {
   typography,
@@ -7,13 +8,29 @@ import {
   border,
   shadow,
 } from 'styled-system';
+import { Icon } from 'evergreen-ui';
 
-const Input = styled.input`
+import theme from '../../theme';
+
+const Container = styled.div`
+  display: flex;
+  align-items: center;
+  position: relative;
+
+  & svg {
+    position: absolute;
+    right: 12px;
+    cursor: pointer;
+  }
+`;
+
+const StyledInput = styled.input`
   border: 1px solid ${props => props.theme.colors.grays[0]};
   outline: none;
   margin: 0;
   padding: 10px;
   transition: border-color 200ms;
+  width: 100%;
 
   &:focus {
     border-color: ${props => props.theme.colors.primary};
@@ -36,7 +53,7 @@ const Input = styled.input`
   ${space} ${border} ${layout} ${color} ${typography} ${shadow}
 `;
 
-Input.defaultProps = {
+StyledInput.defaultProps = {
   color: 'grays.11',
   bg: 'grays.0',
   padding: 3,
@@ -44,6 +61,23 @@ Input.defaultProps = {
   fontWeight: 2,
   boxShadow: 0,
   fontSize: 2,
+};
+
+const Input = props => {
+  const [type, setType] = useState(props.type);
+  return (
+    <Container>
+      <StyledInput {...props} type={type} />
+      {props.type === 'password' && (
+        <Icon
+          size={14}
+          icon={type === 'password' ? 'eye-off' : 'eye-open'}
+          color={theme.colors.white}
+          onClick={() => setType(type === 'password' ? 'text' : 'password')}
+        />
+      )}
+    </Container>
+  );
 };
 
 export default Input;

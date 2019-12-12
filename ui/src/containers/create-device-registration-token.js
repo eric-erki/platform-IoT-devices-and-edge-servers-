@@ -6,6 +6,7 @@ import { toaster } from 'evergreen-ui';
 
 import api from '../api';
 import utils from '../utils';
+import validators from '../validators';
 import Layout from '../components/layout';
 import Card from '../components/card';
 import Field from '../components/field';
@@ -13,9 +14,9 @@ import Alert from '../components/alert';
 import { Row, Button, Form } from '../components/core';
 
 const validationSchema = yup.object().shape({
-  name: yup.string().required(),
+  name: validators.name.required(),
   description: yup.string(),
-  maxRegistration: yup.number(),
+  maxRegistration: yup.number().max(10000000),
 });
 
 const CreateDeviceRegistrationToken = ({
@@ -23,7 +24,10 @@ const CreateDeviceRegistrationToken = ({
     data: { params },
   },
 }) => {
-  const { register, handleSubmit } = useForm({ validationSchema });
+  const { register, handleSubmit } = useForm({
+    validationSchema,
+    mode: 'onBlur',
+  });
   const navigation = useNavigation();
   const [backendError, setBackendError] = useState();
 

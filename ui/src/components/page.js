@@ -51,14 +51,20 @@ const GlobalStyle = createGlobalStyle`
   //TODO: Create custom Select component
   select {
     background: ${props => props.theme.colors.grays[0]} !important;
-    color: ${props => props.theme.colors.white} !important;
+    color: ${props => props.theme.colors.grays[11]} !important;
     box-shadow: none !important;
     outline: none !important;
     border: 1px solid ${props => props.theme.colors.white} !important;
+    font-size: 16px !important;
   }
 
   svg[data-icon="caret-down"] {
     fill: ${props => props.theme.colors.white} !important;
+  }
+
+  div[data-evergreen-toaster-container] {
+    position: relative;
+    z-index: 99999999999;
   }
 `;
 

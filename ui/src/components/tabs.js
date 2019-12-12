@@ -17,6 +17,7 @@ const styles = `
     user-select: none;
     cursor: pointer;
     text-transform: uppercase;
+    white-space: nowrap;
 
     &:not(:last-child) {
         margin-right: 18px;
@@ -80,7 +81,7 @@ const Tab = ({ title, href, onClick, active = true }) => {
 
 const Tabs = ({ content = [] }) => {
   return (
-    <Container>
+    <Container marginX={4}>
       {content.map(tab => (
         <Tab key={tab.title} {...tab} />
       ))}

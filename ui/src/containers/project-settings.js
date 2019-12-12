@@ -6,6 +6,7 @@ import * as yup from 'yup';
 
 import api from '../api';
 import utils from '../utils';
+import validators from '../validators';
 import Layout from '../components/layout';
 import Card from '../components/card';
 import Field from '../components/field';
@@ -14,7 +15,7 @@ import Alert from '../components/alert';
 import { Text, Button, Form, Input, Label, Group } from '../components/core';
 
 const validationSchema = yup.object().shape({
-  name: yup.string().required(),
+  name: validators.name.required(),
   datadogApiKey: yup.string(),
 });
 
@@ -29,6 +30,7 @@ const ProjectSettings = ({
       name: project.name,
       datadogApiKey: project.datadogApiKey,
     },
+    mode: 'onBlur',
   });
   const navigation = useNavigation();
   const [showDeletePopup, setShowDeletePopup] = React.useState();

@@ -26,7 +26,7 @@ const validationSchema = yup.object().shape({
 const Profile = ({ close }) => {
   const {
     data: {
-      context: { currentUser },
+      context: { currentUser, setCurrentUser },
     },
   } = useCurrentRoute();
   const { register, handleSubmit, formState } = useForm({
@@ -42,6 +42,7 @@ const Profile = ({ close }) => {
   const submit = async data => {
     try {
       await api.updateUser(data);
+      setCurrentUser({ ...currentUser, ...data });
       toaster.success('Profile updated.');
       close();
     } catch (error) {

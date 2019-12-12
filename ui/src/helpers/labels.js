@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Row, Box } from '../components/core';
+import { Row, Text } from '../components/core';
 
 export function buildLabelColorMap(oldLabelColorMap, labelColors, items) {
   var x = [];
@@ -22,35 +22,40 @@ export function buildLabelColorMap(oldLabelColorMap, labelColors, items) {
 
 export function renderLabels(labels, labelColorMap) {
   return (
-    <Row flexWrap="wrap">
+    <Row flexWrap="wrap" overflow="hidden">
       {Object.keys(labels).map((key, i) => (
-        <Row marginRight={2} marginY={2} overflow="hidden" key={key}>
-          <Box
+        <Row
+          marginRight={2}
+          marginY={2}
+          overflow="hidden"
+          key={key}
+          fontSize={0}
+          fontWeight={3}
+        >
+          <Text
             backgroundColor={labelColorMap[key]}
-            paddingX={6}
-            paddingY={2}
+            paddingX={2}
+            paddingY={1}
             color="black"
-            borderTopLeftRadius={3}
-            borderBottomLeftRadius={3}
-            textOverflow="ellipsis"
+            borderTopLeftRadius={1}
+            borderBottomLeftRadius={1}
             overflow="hidden"
             whiteSpace="nowrap"
           >
             {key}
-          </Box>
-          <Box
-            backgroundColor="grays.1"
-            paddingX={6}
-            paddingY={2}
-            borderTopRightRadius={3}
-            borderBottomRightRadius={3}
-            textOverflow="ellipsis"
+          </Text>
+          <Text
+            backgroundColor="grays.4"
+            paddingX={2}
+            paddingY={1}
+            borderTopRightRadius={1}
+            borderBottomRightRadius={1}
             overflow="hidden"
             whiteSpace="nowrap"
             color="white"
           >
             {labels[key]}
-          </Box>
+          </Text>
         </Row>
       ))}
     </Row>

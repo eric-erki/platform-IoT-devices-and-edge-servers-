@@ -13,7 +13,6 @@ const UserAccessKeys = () => {
   const [accessKeys, setAccessKeys] = useState([]);
   const [newAccessKey, setNewAccessKey] = useState();
   const [backendError, setBackendError] = useState();
-  const [showPopup, setShowPopup] = useState();
 
   const columns = useMemo(
     () => [
@@ -51,11 +50,13 @@ const UserAccessKeys = () => {
   );
   const tableData = useMemo(() => accessKeys, [accessKeys]);
 
-  const fetchAccessKeys = () => {
-    api
-      .userAccessKeys()
-      .then(({ data }) => setAccessKeys(data))
-      .catch(console.error);
+  const fetchAccessKeys = async () => {
+    try {
+      const { data } = await api.userAccessKeys();
+      setAccessKeys(data);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
@@ -67,7 +68,6 @@ const UserAccessKeys = () => {
       const response = await api.createUserAccessKey();
       setAccessKeys([response.data, ...accessKeys]);
       setNewAccessKey(response.data.value);
-      setShowPopup(true);
     } catch (error) {
       if (utils.is4xx(error.response.status)) {
         setBackendError(utils.convertErrorMessage(error.response.data));

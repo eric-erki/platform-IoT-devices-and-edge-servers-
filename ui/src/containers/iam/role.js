@@ -6,6 +6,7 @@ import { toaster } from 'evergreen-ui';
 
 import api from '../../api';
 import utils from '../../utils';
+import validators from '../../validators';
 import Editor from '../../components/editor';
 import Card from '../../components/card';
 import Field from '../../components/field';
@@ -14,8 +15,9 @@ import Alert from '../../components/alert';
 import { Text, Button, Form } from '../../components/core';
 
 const validationSchema = yup.object().shape({
-  name: yup.string().required(),
+  name: validators.name.required(),
   description: yup.string(),
+  config: yup.string().required(),
 });
 
 const Role = ({
@@ -24,6 +26,7 @@ const Role = ({
   },
 }) => {
   const { register, handleSubmit, errors, formState, setValue } = useForm({
+    mode: 'onBlur',
     validationSchema,
     defaultValues: {
       name: role.name,
