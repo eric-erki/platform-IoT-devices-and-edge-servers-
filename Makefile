@@ -14,17 +14,14 @@ state-reset:
 controller:
 	./scripts/build-controller
 
-push-controller: controller
-	docker push deviceplane/deviceplane:${CONTROLLER_VERSION}
+controller-with-db:
+	./scripts/build-controller-with-db
 
 agent-binaries:
 	./scripts/build-agent-binaries
 
 cli:
 	./scripts/build-cli
-
-push-cli: cli
-	docker push deviceplane/cli:${CLI_VERSION}
 
 cli-binaries:
 	./scripts/build-cli-binaries
