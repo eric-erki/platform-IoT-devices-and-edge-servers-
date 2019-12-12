@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 
+import api from '../../api';
 import { Row, Column, Value, Badge, Link, Label } from '../../components/core';
 import Card from '../../components/card';
 import Table from '../../components/table';
@@ -99,9 +100,20 @@ const DeviceOverview = ({
       <Column marginBottom={4}>
         <EditableLabelTable
           data={device.labels}
-          getEndpoint={`projects/${params.project}/devices/${device.id}`}
-          setEndpoint={`projects/${params.project}/devices/${device.id}/labels`}
-          deleteEndpoint={`projects/${params.project}/devices/${device.id}/labels`}
+          onAdd={label =>
+            api.addDeviceLabel({
+              projectId: params.project,
+              deviceId: device.id,
+              data: label,
+            })
+          }
+          onRemove={labelId =>
+            api.removeDeviceLabel({
+              projectId: params.project,
+              deviceId: device.id,
+              labelId,
+            })
+          }
         />
       </Column>
       <Card title="Services" size="xlarge">

@@ -1,10 +1,9 @@
 import React from 'react';
-import { Code } from 'evergreen-ui';
 
 import config from '../config';
 import Layout from '../components/layout';
 import Card from '../components/card';
-import { Row, Text, Link } from '../components/core';
+import { Row, Text, Link, Code } from '../components/core';
 
 const getDockerCommand = deviceRegistrationToken => {
   if (window.location.hostname === 'localhost') {
@@ -49,18 +48,13 @@ const AddDevice = ({
             <Row marginBottom={4}>
               <Text>
                 Default device registration token with ID{' '}
-                <Code fontFamily="mono" background="#222" color="white">
-                  {deviceRegistrationToken.id}
-                </Code>{' '}
-                is being used.
+                <Code>{deviceRegistrationToken.id}</Code> is being used.
               </Text>
             </Row>
             <Text marginBottom={2}>
               Run the following command on the device you want to register:
             </Text>
-            <Code fontFamily="mono" color="white" background="#222">
-              {getDockerCommand(deviceRegistrationToken)}
-            </Code>
+            <Code>{getDockerCommand(deviceRegistrationToken)}</Code>
           </>
         ) : (
           <>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { toaster, Icon } from 'evergreen-ui';
 
+import theme from '../theme';
 import api from '../api';
 import utils from '../utils';
 import Card from '../components/card';
@@ -34,7 +35,7 @@ const UserAccessKeys = () => {
         Header: ' ',
         Cell: ({ row }) => (
           <Button
-            title={<Icon size={16} icon="trash" color="white" />}
+            title={<Icon size={16} icon="trash" color={theme.colors.white} />}
             variant="icon"
             onClick={() => deleteAccessKey(row.original.id)}
           />

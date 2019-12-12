@@ -1,5 +1,6 @@
 import React from 'react';
 
+import api from '../../api';
 import { Column, Label, Value } from '../../components/core';
 import Card from '../../components/card';
 import EditableLabelTable from '../../components/EditableLabelTable';
@@ -34,9 +35,20 @@ const DeviceRegistrationTokenOverview = ({
       <Column marginTop={4}>
         <EditableLabelTable
           data={deviceRegistrationToken.labels}
-          getEndpoint={`projects/${params.project}/deviceregistrationtokens/${deviceRegistrationToken.id}`}
-          setEndpoint={`projects/${params.project}/deviceregistrationtokens/${deviceRegistrationToken.id}/labels`}
-          deleteEndpoint={`projects/${params.project}/deviceregistrationtokens/${deviceRegistrationToken.id}/labels`}
+          onAdd={label =>
+            api.addDeviceRegistrationTokenLabel({
+              projectId: params.project,
+              tokenId: deviceRegistrationToken.id,
+              data: label,
+            })
+          }
+          onRemove={labelId =>
+            api.removeDeviceRegistrationTokenLabel({
+              projectId: params.project,
+              tokenId: deviceRegistrationToken.id,
+              labelId,
+            })
+          }
         />
       </Column>
     </>

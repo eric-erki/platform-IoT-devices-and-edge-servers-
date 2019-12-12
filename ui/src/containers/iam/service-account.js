@@ -1,8 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import useForm from 'react-hook-form';
 import { useNavigation } from 'react-navi';
-import { toaster, Code, Icon } from 'evergreen-ui';
+import { toaster, Icon } from 'evergreen-ui';
 
+import theme from '../../theme';
 import api from '../../api';
 import utils from '../../utils';
 import Card from '../../components/card';
@@ -17,6 +18,7 @@ import {
   Form,
   Label,
   Checkbox,
+  Code,
 } from '../../components/core';
 
 const ServiceAccount = ({
@@ -183,7 +185,7 @@ const ServiceAccountAccessKeys = ({ projectId, serviceAccount }) => {
         Header: ' ',
         Cell: ({ row }) => (
           <Button
-            title={<Icon name="trashcan" size={18} color="white" />}
+            title={<Icon name="trash" size={18} color={theme.colors.white} />}
             variant="icon"
             onClick={() => deleteAccessKey(row.original.id)}
           />

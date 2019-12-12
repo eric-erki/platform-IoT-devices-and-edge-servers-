@@ -77,7 +77,7 @@ const Field = forwardRef(
           <Column marginBottom={Label.defaultProps.marginBottom}>
             {label && <FieldLabel htmlFor={name}>{label}</FieldLabel>}
             {description && (
-              <Text marginTop={2} fontSize={1} color="grays.7">
+              <Text marginTop={2} fontSize={1} color="grays.8">
                 {description}
               </Text>
             )}
@@ -85,7 +85,7 @@ const Field = forwardRef(
         )}
         {getComponent()}
         {hint && (
-          <Text marginTop={2} fontSize={0} color="grays.7">
+          <Text marginTop={2} fontSize={0} color="grays.8">
             {hint}
           </Text>
         )}

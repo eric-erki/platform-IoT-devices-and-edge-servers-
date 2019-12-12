@@ -105,7 +105,7 @@ const DeviceRegistrationTokenSettings = ({
             <strong>{deviceRegistrationToken.name}</strong> Device Registration
             Token.
           </Text>
-          <Button title="Delete" marginTop={4} onClick={submitDelete} />
+          <Button title="Delete" marginTop={5} onClick={submitDelete} />
         </Card>
       </Popup>
     </Card>

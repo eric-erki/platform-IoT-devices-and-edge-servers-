@@ -39,7 +39,7 @@ export function renderLabels(labels, labelColorMap) {
             {key}
           </Box>
           <Box
-            backgroundColor="#E4E7EB"
+            backgroundColor="grays.10"
             paddingX={6}
             paddingY={2}
             borderTopRightRadius={3}

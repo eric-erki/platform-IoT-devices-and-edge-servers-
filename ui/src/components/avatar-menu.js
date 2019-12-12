@@ -23,7 +23,7 @@ const MenuItem = styled.button`
   padding: 0;
 
   &:hover {
-    background-color: #181818;
+    background-color: ${props => props.theme.colors.grays[0]};
   }
   ${space} ${layout} ${color} ${border} ${typography}
 `;

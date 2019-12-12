@@ -70,7 +70,7 @@ const Card = ({
               {title}
             </Text>
             {subtitle && (
-              <Text fontSize={1} fontWeight={2} color="grays.7" marginTop={1}>
+              <Text fontSize={1} fontWeight={2} color="grays.8" marginTop={1}>
                 {subtitle}
               </Text>
             )}

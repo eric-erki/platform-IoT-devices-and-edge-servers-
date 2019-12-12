@@ -78,6 +78,12 @@ const api = {
   deleteDevice: ({ projectId, deviceId }) =>
     del(`projects/${projectId}/devices/${deviceId}`),
 
+  addDeviceLabel: ({ projectId, deviceId, data }) =>
+    put(`projects/${projectId}/devices/${deviceId}/labels`, data),
+
+  removeDeviceLabel: ({ projectId, deviceId, labelId }) =>
+    del(`projects/${projectId}/devices/${deviceId}/labels/${labelId}`),
+
   defaultDeviceRegistrationToken: ({ projectId }) =>
     get(`projects/${projectId}/deviceregistrationtokens/default`),
 
@@ -111,6 +117,17 @@ const api = {
 
   deleteDeviceRegistrationToken: ({ projectId, tokenId }) =>
     del(`projects/${projectId}/deviceregistrationtokens/${tokenId}`),
+
+  addDeviceRegistrationTokenLabel: ({ projectId, tokenId, data }) =>
+    put(
+      `projects/${projectId}/deviceregistrationtokens/${tokenId}/labels`,
+      data
+    ),
+
+  removeDeviceRegistrationTokenLabel: ({ projectId, tokenId, labelId }) =>
+    del(
+      `projects/${projectId}/deviceregistrationtokens/${tokenId}/labels/${labelId}`
+    ),
 
   applications: ({ projectId }) =>
     get(`projects/${projectId}/applications?full`),
