@@ -166,7 +166,6 @@ export class DevicesFilter extends Component<Props, State> {
               width="auto"
               placeholder="Key"
               padding={2}
-              marginBottom={2}
               onChange={(event: any) => {
                 const { value: key } = event.target;
                 this.setState({
@@ -182,7 +181,7 @@ export class DevicesFilter extends Component<Props, State> {
 
             <Select
               className={selectClassName}
-              marginBottom={12}
+              marginY={12}
               value={cond.operator}
               onChange={(event: any) => {
                 const { value: operator } = event.target;
@@ -259,7 +258,6 @@ export class DevicesFilter extends Component<Props, State> {
                 }),
               });
             }}
-            marginRight={16}
           >
             <option value={OperatorExists}>{OperatorExists}</option>
             <option value={OperatorNotExists}>{OperatorNotExists}</option>
@@ -320,7 +318,6 @@ export class DevicesFilter extends Component<Props, State> {
                 }),
               });
             }}
-            marginRight={16}
           >
             <option value="online">Online</option>
             <option value="offline">Offline</option>
@@ -339,6 +336,7 @@ export class DevicesFilter extends Component<Props, State> {
       <Popup show={show} onClose={onClose}>
         <Card
           border
+          size="xlarge"
           title="Filter Devices"
           actions={[
             {
@@ -354,7 +352,7 @@ export class DevicesFilter extends Component<Props, State> {
         >
           {filter.map((condition, index) => (
             <Group key={index}>
-              <Row justifyContent="space-between" alignItems="flex-start">
+              <Row justifyContent="space-between" alignItems="center">
                 <Select
                   value={condition.type}
                   onChange={event => {

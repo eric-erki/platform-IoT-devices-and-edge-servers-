@@ -33,7 +33,7 @@ const variants = {
     secondary: {
       color: 'white',
       border: 0,
-      borderColor: 'grays.10',
+      borderColor: 'white',
       '&:not(:disabled):hover': {
         borderColor: 'white',
         boxShadow: `0px 0px 0px 2px ${theme.colors.white} inset`,
