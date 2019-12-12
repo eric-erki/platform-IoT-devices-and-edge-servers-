@@ -89,6 +89,9 @@ const Devices = ({ route }) => {
           row.original.labels
             ? renderLabels(row.original.labels, labelColorMap)
             : null,
+        style: {
+          flex: 2,
+        },
       },
     ],
     []

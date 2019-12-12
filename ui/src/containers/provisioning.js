@@ -41,6 +41,9 @@ const Provisioning = ({
         Header: 'Labels',
         Cell: ({ row: { original } }) =>
           original.labels ? renderLabels(original.labels, labelColorMap) : null,
+        style: {
+          flex: 2,
+        },
       },
     ],
     []

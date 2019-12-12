@@ -39,8 +39,8 @@ export function renderLabels(labels, labelColorMap) {
             color="black"
             borderTopLeftRadius={1}
             borderBottomLeftRadius={1}
-            overflow="hidden"
             whiteSpace="nowrap"
+            overflow="hidden"
           >
             {key}
           </Text>
@@ -52,7 +52,6 @@ export function renderLabels(labels, labelColorMap) {
             borderBottomRightRadius={1}
             overflow="hidden"
             whiteSpace="nowrap"
-            color="white"
           >
             {labels[key]}
           </Text>
