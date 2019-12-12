@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, forwardRef } from 'react';
 import styled from 'styled-components';
 import {
   typography,
@@ -63,11 +63,11 @@ StyledInput.defaultProps = {
   fontSize: 2,
 };
 
-const Input = props => {
+const Input = forwardRef((props, ref) => {
   const [type, setType] = useState(props.type);
   return (
     <Container>
-      <StyledInput {...props} type={type} />
+      <StyledInput {...props} type={type} ref={ref} />
       {props.type === 'password' && (
         <Icon
           size={14}
@@ -78,6 +78,6 @@ const Input = props => {
       )}
     </Container>
   );
-};
+});
 
 export default Input;

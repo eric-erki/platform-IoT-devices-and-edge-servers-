@@ -22,7 +22,7 @@ const CreateServiceAccount = ({
     data: { params },
   },
 }) => {
-  const { register, handleSubmit } = useForm({ validationSchema });
+  const { register, handleSubmit, errors } = useForm({ validationSchema });
   const navigation = useNavigation();
   const [backendError, setBackendError] = useState();
 
@@ -45,12 +45,20 @@ const CreateServiceAccount = ({
     <Card title="Create Service Account" size="medium">
       <Alert show={backendError} variant="error" description={backendError} />
       <Form onSubmit={handleSubmit(submit)}>
-        <Field required autoFocus label="Name" name="name" ref={register} />
+        <Field
+          required
+          autoFocus
+          label="Name"
+          name="name"
+          ref={register}
+          errors={errors.name}
+        />
         <Field
           type="textarea"
           label="Description"
           name="description"
           ref={register}
+          errors={errors.description}
         />
         <Button title="Create" type="submit" />
       </Form>
