@@ -16,27 +16,30 @@ process.version = '1.0.0';
 var Client = require('ssh2/lib/client');
 var ws = require('websocket-stream');
 var xterm = require('xterm');
-require('xterm/lib/addons/fit/fit');
+//var fit = require('xterm-addon-fit');
+//require('xterm/lib/addons/fit/fit');
 
 export default class DeviceSsh extends Component {
   componentDidMount() {
     segment.page();
 
     var conn = new Client();
-    var term = new xterm();
+    var term = new xterm.Terminal();
+    //const fitAddon = new fit.FitAddon();
+    //term.loadAddon(fitAddon);
     var wndopts = { term: 'xterm' };
 
     window.term = term;
 
     // Store current size for initialization
-    term.on('resize', function(rev) {
+    /*term.on('resize', function(rev) {
       wndopts.rows = rev.rows;
       wndopts.cols = rev.cols;
     });
 
     term.on('title', function(title) {
       document.title = title;
-    });
+    });*/
 
     conn
       .on('ready', function() {
@@ -52,10 +55,10 @@ export default class DeviceSsh extends Component {
             .stderr.on('data', function(data) {
               term.write(data.toString());
             });
-          term.on('data', function(data) {
-            stream.write(data);
+          term.onData(function(key, kev) {
+            stream.write(key);
           });
-          term.on('resize', function(rev) {
+          term.onResize(function(rev) {
             stream.setWindow(rev.rows, rev.cols, 480, 640);
           });
         });
@@ -68,8 +71,8 @@ export default class DeviceSsh extends Component {
       });
 
     term.open(document.getElementById('terminal'));
-    term.fit();
-    window.onresize = term.fit.bind(term);
+    //fitAddon.fit();
+    //window.onresize = term.fit.bind(term);
 
     conn.connect({
       sock: ws(
