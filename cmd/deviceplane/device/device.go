@@ -11,13 +11,24 @@ import (
 	"strings"
 
 	"github.com/deviceplane/deviceplane/cmd/deviceplane/cliutils"
+	"github.com/deviceplane/deviceplane/pkg/models"
 	"golang.org/x/sync/errgroup"
 
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
 
 func deviceListAction(c *kingpin.ParseContext) error {
-	devices, err := config.APIClient.ListDevices(context.TODO(), *config.Flags.Project)
+	var filters []models.Filter
+	for _, textFilter := range *deviceFilterListFlag {
+		filter, err := parseTextFilter(textFilter)
+		if err != nil {
+			return err
+		}
+
+		filters = append(filters, filter)
+	}
+
+	devices, err := config.APIClient.ListDevices(context.TODO(), filters, *config.Flags.Project)
 	if err != nil {
 		return err
 	}

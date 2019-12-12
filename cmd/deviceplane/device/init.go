@@ -14,6 +14,8 @@ var (
 
 	deviceArg *string = &[]string{""}[0]
 
+	deviceFilterListFlag *[]string = &[][]string{[]string{}}[0]
+
 	deviceMetricsServiceArg     *string = &[]string{""}[0]
 	deviceMetricsApplicationArg *string = &[]string{""}[0]
 
@@ -28,6 +30,7 @@ func Initialize(c *global.Config) {
 	deviceCmd := c.App.Command("device", "Manage devices.")
 
 	deviceListCmd := deviceCmd.Command("list", "List devices.")
+	deviceListCmd.Flag("filter", `Label key/values used to filter devices. e.g. "--filter status=online --filter labels.location=hq2"`).StringsVar(deviceFilterListFlag)
 	cliutils.AddFormatFlag(deviceOutputFlag, deviceListCmd,
 		cliutils.FormatTable,
 		cliutils.FormatYAML,
@@ -71,7 +74,7 @@ func addDeviceArg(cmd *kingpin.CmdClause) *kingpin.ArgClause {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 		defer cancel()
 
-		devices, err := config.APIClient.ListDevices(ctx, *config.Flags.Project)
+		devices, err := config.APIClient.ListDevices(ctx, nil, *config.Flags.Project)
 		if err != nil {
 			return []string{}
 		}
