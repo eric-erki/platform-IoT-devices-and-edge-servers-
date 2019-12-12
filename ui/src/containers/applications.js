@@ -15,7 +15,7 @@ const Applications = ({
   const navigation = useNavigation();
   const columns = useMemo(
     () => [
-      { Header: 'Name', accessor: 'name' },
+      { Header: 'Name', accessor: 'name', style: { flex: 2 } },
       {
         Header: 'Last Release',
         Cell: ({ row: { original } }) =>

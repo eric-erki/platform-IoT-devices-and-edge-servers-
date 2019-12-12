@@ -63,6 +63,9 @@ const Devices = ({ route }) => {
             <Badge bg="green">online</Badge>
           ),
         sortType: 'basic',
+        style: {
+          flex: '0 0 100px',
+        },
       },
       {
         Header: 'Name',
@@ -74,6 +77,9 @@ const Devices = ({ route }) => {
           row.original.info.hasOwnProperty('ipAddress')
             ? row.original.info.ipAddress
             : '',
+        style: {
+          flex: '0 0 150px',
+        },
       },
       {
         Header: 'OS',

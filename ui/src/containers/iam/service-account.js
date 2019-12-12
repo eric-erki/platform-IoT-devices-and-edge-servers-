@@ -1,11 +1,13 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import useForm from 'react-hook-form';
 import { useNavigation } from 'react-navi';
+import * as yup from 'yup';
 import { toaster, Icon } from 'evergreen-ui';
 
 import theme from '../../theme';
 import api from '../../api';
 import utils from '../../utils';
+import validators from '../../validators';
 import Card from '../../components/card';
 import Field from '../../components/field';
 import Popup from '../../components/popup';
@@ -21,6 +23,12 @@ import {
   Code,
 } from '../../components/core';
 
+const validationSchema = yup.object().shape({
+  name: validators.name.required(),
+  description: yup.string().required(),
+  roles: yup.array(),
+});
+
 const ServiceAccount = ({
   route: {
     data: { params, serviceAccount, roles },
@@ -28,6 +36,7 @@ const ServiceAccount = ({
 }) => {
   const { register, handleSubmit, errors, formState, setValue } = useForm({
     mode: 'onBlur',
+    validationSchema,
     defaultValues: {
       name: serviceAccount.name,
       description: serviceAccount.description,
