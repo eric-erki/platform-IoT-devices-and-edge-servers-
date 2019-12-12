@@ -16,7 +16,7 @@ import {
   DevicePropertyConditionParams,
 } from './DevicesFilter';
 
-import { Row, Text } from './core';
+import { Row, Text, Button } from './core';
 
 interface Props {
   query: Query;
@@ -31,25 +31,27 @@ const ConditionComp = ({ type, params }) => {
     case LabelValueCondition:
       return (
         <>
-          <Text fontWeight={4} marginRight={2}>
+          <Text fontWeight={3} marginRight={2} color="black">
             {params.key}
           </Text>
 
-          <Text fontWeight={3} marginRight={2}>
+          <Text fontWeight={2} marginRight={2} color="black">
             {params.operator}
           </Text>
 
-          <Text fontWeight={4}>{params.value}</Text>
+          <Text fontWeight={3} color="black">
+            {params.value}
+          </Text>
         </>
       );
     case LabelExistenceCondition:
       return (
         <>
-          <Text fontWeight={4} marginRight={2}>
+          <Text fontWeight={3} marginRight={2} color="black">
             {params.key}
           </Text>
 
-          <Text fontWeight={500} marginRight={2}>
+          <Text fontWeight={2} marginRight={2} color="black">
             {params.operator}
           </Text>
         </>
@@ -58,18 +60,23 @@ const ConditionComp = ({ type, params }) => {
       return (
         <>
           <Text
-            fontWeight={4}
+            fontWeight={3}
             marginRight={2}
+            color="black"
             css={{ textTransform: 'capitalize' }}
           >
             {params.property}
           </Text>
 
-          <Text fontWeight={500} marginRight={2}>
+          <Text fontWeight={2} marginRight={2} color="black">
             {params.operator}
           </Text>
 
-          <Text style={{ textTransform: 'capitalize' }} fontWeight={4}>
+          <Text
+            style={{ textTransform: 'capitalize' }}
+            fontWeight={3}
+            color="black"
+          >
             {params.value}
           </Text>
         </>
@@ -77,8 +84,9 @@ const ConditionComp = ({ type, params }) => {
     default:
       return (
         <Text
-          fontWeight={500}
+          fontWeight={2}
           marginRight={2}
+          color="black"
           style={{ textTransform: 'capitalize' }}
         >
           Error rendering label.
@@ -93,27 +101,25 @@ export const DevicesFilterButtons = ({
   canRemoveFilter,
 }) => {
   return (
-    <Row paddingX={4} paddingBottom={4} flexWrap="wrap" padding={5}>
+    <Row flexWrap="wrap" padding={3}>
       {query.map((filter, index) => (
         <Row alignItems="center" key={index} margin={3}>
-          <Row bg="#B7D4EF" borderRadius={3} padding={2} alignItems="center">
+          <Row bg="white" borderRadius={1} padding={2} alignItems="center">
             {filter.map((condition, i) => (
               <React.Fragment key={i}>
                 <ConditionComp {...condition} />
                 {i < filter.length - 1 && (
-                  <Text fontSize={0} fontWeight={4} marginX={4}>
+                  <Text fontSize={0} fontWeight={4} marginX={4} color="grays.4">
                     OR
                   </Text>
                 )}
               </React.Fragment>
             ))}
             {canRemoveFilter && (
-              <Icon
-                marginLeft={4}
-                icon="cross"
-                cursor="pointer"
-                color="white"
-                size={14}
+              <Button
+                marginLeft={3}
+                variant="icon"
+                title={<Icon icon="cross" color="black" size={14} />}
                 onClick={() => (removeFilter ? removeFilter(index) : null)}
               />
             )}

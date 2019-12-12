@@ -29,7 +29,7 @@ export function renderLabels(labels, labelColorMap) {
             backgroundColor={labelColorMap[key]}
             paddingX={6}
             paddingY={2}
-            color="white"
+            color="black"
             borderTopLeftRadius={3}
             borderBottomLeftRadius={3}
             textOverflow="ellipsis"
@@ -39,7 +39,7 @@ export function renderLabels(labels, labelColorMap) {
             {key}
           </Box>
           <Box
-            backgroundColor="grays.10"
+            backgroundColor="grays.1"
             paddingX={6}
             paddingY={2}
             borderTopRightRadius={3}
@@ -47,6 +47,7 @@ export function renderLabels(labels, labelColorMap) {
             textOverflow="ellipsis"
             overflow="hidden"
             whiteSpace="nowrap"
+            color="white"
           >
             {labels[key]}
           </Box>

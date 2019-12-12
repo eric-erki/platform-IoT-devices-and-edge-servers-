@@ -73,6 +73,7 @@ const variants = {
       bg: 'transparent',
       border: 'none',
       padding: 0,
+      boxShadow: 'none',
     },
   },
 };
