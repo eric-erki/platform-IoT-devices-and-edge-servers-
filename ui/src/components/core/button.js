@@ -42,21 +42,6 @@ const variants = {
         boxShadow: `0px 0px 0px 2px ${theme.colors.white} inset`,
       },
     },
-    tertiary: {
-      color: 'white',
-      border: 0,
-      borderColor: 'white',
-      padding: 1,
-      fontSize: 0,
-      '&:not(:disabled):hover': {
-        color: 'black',
-        bg: 'white',
-      },
-      '&:not(:disabled):focus': {
-        color: 'black',
-        bg: 'white',
-      },
-    },
     text: {
       color: 'white',
       border: 'none',

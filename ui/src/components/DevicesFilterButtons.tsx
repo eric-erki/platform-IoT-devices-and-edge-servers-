@@ -16,7 +16,7 @@ import {
   DevicePropertyConditionParams,
 } from './DevicesFilter';
 
-import { Row, Text, Button } from './core';
+import { Row, Text, Button, Badge } from './core';
 
 interface Props {
   query: Query;
@@ -101,15 +101,24 @@ export const DevicesFilterButtons = ({
   canRemoveFilter,
 }) => {
   return (
-    <Row flexWrap="wrap" padding={3}>
+    <Row flexWrap="wrap">
       {query.map((filter, index) => (
-        <Row alignItems="center" key={index} margin={3}>
-          <Row bg="white" borderRadius={1} padding={2} alignItems="center">
+        <Row alignItems="center" key={index} marginRight={4}>
+          <Row
+            border={0}
+            borderRadius={1}
+            borderColor="white"
+            padding={2}
+            alignItems="center"
+          >
             {filter.map((condition, i) => (
               <React.Fragment key={i}>
-                <ConditionComp {...condition} />
+                <Badge>
+                  <ConditionComp {...condition} />
+                </Badge>
+
                 {i < filter.length - 1 && (
-                  <Text fontSize={0} fontWeight={4} marginX={4} color="grays.4">
+                  <Text fontSize={0} fontWeight={3} marginX={4}>
                     OR
                   </Text>
                 )}
@@ -117,9 +126,9 @@ export const DevicesFilterButtons = ({
             ))}
             {canRemoveFilter && (
               <Button
-                marginLeft={3}
+                marginLeft={2}
                 variant="icon"
-                title={<Icon icon="cross" color="black" size={14} />}
+                title={<Icon icon="cross" color="white" size={14} />}
                 onClick={() => (removeFilter ? removeFilter(index) : null)}
               />
             )}

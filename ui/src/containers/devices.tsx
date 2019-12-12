@@ -15,7 +15,7 @@ import { labelColors } from '../theme';
 import Layout from '../components/layout';
 import Card from '../components/card';
 import Table from '../components/table';
-import { Badge, Text } from '../components/core';
+import { Row, Badge, Text } from '../components/core';
 import {
   DevicesFilter,
   Query,
@@ -288,7 +288,7 @@ const Devices = ({ route }) => {
                 {
                   title: 'Clear Filters',
                   onClick: clearFilters,
-                  variant: 'tertiary',
+                  variant: 'text',
                 },
               ]
             : []),
@@ -304,11 +304,13 @@ const Devices = ({ route }) => {
         ]}
       >
         {filterQuery.length > 0 && (
-          <DevicesFilterButtons
-            canRemoveFilter
-            query={filterQuery}
-            removeFilter={removeFilter}
-          />
+          <Row marginBottom={4}>
+            <DevicesFilterButtons
+              canRemoveFilter
+              query={filterQuery}
+              removeFilter={removeFilter}
+            />
+          </Row>
         )}
         <Table
           columns={columns}
