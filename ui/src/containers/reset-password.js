@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from 'react-navi';
 import useForm from 'react-hook-form';
+import * as yup from 'yup';
 import { toaster } from 'evergreen-ui';
 
 import api from '../api';
 import utils from '../utils';
+import validators from '../validators';
 import Card from '../components/card';
 import Field from '../components/field';
 import Alert from '../components/alert';
 import { Column, Button, Form } from '../components/core';
+
+const validationSchema = yup.object().shape({
+  password: validators.password.required(),
+});
 
 const isTokenExpired = expiration => {
   const expiratonTime = new Date(expiration).getTime();
@@ -24,7 +30,7 @@ const PasswordRecovery = ({
   },
 }) => {
   const navigation = useNavigation();
-  const { register, handleSubmit, errors } = useForm();
+  const { register, handleSubmit, errors } = useForm({ validationSchema });
   const [invalidToken, setInvalidToken] = useState();
   const [backendError, setBackendError] = useState();
 

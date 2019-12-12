@@ -114,6 +114,7 @@ const Role = ({
             name="config"
             register={register}
             setValue={setValue}
+            errors={errors.config}
           />
           <Button title="Update" type="submit" disabled={!formState.dirty} />
         </Form>

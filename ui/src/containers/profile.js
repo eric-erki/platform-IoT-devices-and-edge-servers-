@@ -29,7 +29,7 @@ const Profile = ({ close }) => {
       context: { currentUser, setCurrentUser },
     },
   } = useCurrentRoute();
-  const { register, handleSubmit, formState } = useForm({
+  const { register, handleSubmit, formState, errors } = useForm({
     validationSchema,
     defaultValues: {
       firstName: currentUser.firstName,
@@ -59,14 +59,27 @@ const Profile = ({ close }) => {
     <Card title="Profile" border>
       <Alert show={backendError} variant="error" description={backendError} />
       <Form onSubmit={handleSubmit(submit)}>
-        <Field required label="First Name" name="firstName" ref={register} />
-        <Field required label="Last Name" name="lastName" ref={register} />
-        <Field label="Company" name="company" ref={register} />
-        <Button
-          title="Update Profile"
-          type="submit"
-          disabled={!formState.dirty}
+        <Field
+          required
+          label="First Name"
+          name="firstName"
+          ref={register}
+          errors={errors.firstName}
         />
+        <Field
+          required
+          label="Last Name"
+          name="lastName"
+          ref={register}
+          errors={errors.lastName}
+        />
+        <Field
+          label="Company"
+          name="company"
+          ref={register}
+          errors={errors.company}
+        />
+        <Button title="Update" type="submit" disabled={!formState.dirty} />
       </Form>
     </Card>
   );

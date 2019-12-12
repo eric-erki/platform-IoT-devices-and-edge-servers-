@@ -16,7 +16,7 @@ import { Row, Button, Form } from '../components/core';
 const validationSchema = yup.object().shape({
   name: validators.name.required(),
   description: yup.string(),
-  maxRegistration: yup.number().max(10000000),
+  maxRegistrations: yup.number().max(10000000),
 });
 
 const CreateDeviceRegistrationToken = ({
@@ -24,7 +24,7 @@ const CreateDeviceRegistrationToken = ({
     data: { params },
   },
 }) => {
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit, errors } = useForm({
     validationSchema,
     mode: 'onBlur',
   });
@@ -55,12 +55,20 @@ const CreateDeviceRegistrationToken = ({
       <Card title="Create Device Registration Token" size="medium">
         <Alert show={backendError} variant="error" description={backendError} />
         <Form onSubmit={handleSubmit(submit)}>
-          <Field required autoFocus label="Name" name="name" ref={register} />
+          <Field
+            required
+            autoFocus
+            label="Name"
+            name="name"
+            ref={register}
+            errors={errors.name}
+          />
           <Field
             label="Description"
             type="textarea"
             name="description"
             ref={register}
+            errors={errors.description}
           />
           <Field
             type="number"
@@ -68,6 +76,7 @@ const CreateDeviceRegistrationToken = ({
             name="maxRegistrations"
             description="Limits the number of devices that can be registered using this token."
             hint="Leave empty to allow unlimited registrations."
+            errors={errors.maxRegistrations}
             ref={register}
           />
           <Button title="Create" type="submit" />

@@ -21,7 +21,7 @@ const CreateRelease = ({
     data: { params, application },
   },
 }) => {
-  const { register, handleSubmit, setValue } = useForm({
+  const { register, handleSubmit, setValue, errors } = useForm({
     validationSchema,
     defaultValues: {
       rawConfig: application.latestRelease
@@ -62,6 +62,7 @@ const CreateRelease = ({
           name="rawConfig"
           register={register}
           setValue={setValue}
+          errors={errors.rawConfig}
         />
         <Button type="submit" title="Create" />
       </Form>

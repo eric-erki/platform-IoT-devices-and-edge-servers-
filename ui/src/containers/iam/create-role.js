@@ -24,7 +24,7 @@ const CreateRole = ({
     data: { params },
   },
 }) => {
-  const { handleSubmit, register, setValue } = useForm({
+  const { handleSubmit, register, setValue, errors } = useForm({
     validationSchema,
     mode: 'onBlur',
   });
@@ -49,13 +49,21 @@ const CreateRole = ({
     <Card title="Create Role">
       <Alert show={backendError} variant="error" description={backendError} />
       <Form onSubmit={handleSubmit(submit)}>
-        <Field required autoFocus label="Name" name="name" ref={register} />
+        <Field
+          required
+          autoFocus
+          label="Name"
+          name="name"
+          ref={register}
+          errors={errors.name}
+        />
 
         <Field
           type="textarea"
           label="Description"
           name="description"
           ref={register}
+          errors={errors.description}
         />
 
         <Field
@@ -64,6 +72,7 @@ const CreateRole = ({
           name="config"
           register={register}
           setValue={setValue}
+          errors={errors.config}
         />
         <Button title="Create" type="submit" />
       </Form>

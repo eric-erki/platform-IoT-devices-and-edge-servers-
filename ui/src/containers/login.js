@@ -4,16 +4,14 @@ import useForm from 'react-hook-form';
 import * as yup from 'yup';
 
 import api from '../api';
+import validators from '../validators';
 import Card from '../components/card';
 import Field from '../components/field';
 import Alert from '../components/alert';
 import { Column, Row, Form, Button } from '../components/core';
 
 const validationSchema = yup.object().shape({
-  email: yup
-    .string()
-    .email()
-    .required(),
+  email: validators.email.required(),
   password: yup.string().required(),
 });
 
