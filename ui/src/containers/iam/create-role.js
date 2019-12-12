@@ -32,16 +32,15 @@ const CreateRole = ({
   const [backendError, setBackendError] = useState();
 
   const submit = async data => {
+    setBackendError(null);
     try {
       await api.createRole({ projectId: params.project, data });
+      toaster.success('Role created successfully.');
       navigation.navigate(`/${params.project}/iam/roles`);
     } catch (error) {
-      if (utils.is4xx(error.response.status) && error.response.data) {
-        setBackendError(utils.convertErrorMessage(error.response.data));
-      } else {
-        toaster.danger('Role was not created.');
-        console.log(error);
-      }
+      setBackendError(utils.parseError(error));
+      toaster.danger('Role was not created.');
+      console.log(error);
     }
   };
 

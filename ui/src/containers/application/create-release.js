@@ -33,6 +33,7 @@ const CreateRelease = ({
   const [backendError, setBackendError] = useState();
 
   const submit = async data => {
+    setBackendError(null);
     try {
       await api.createRelease({
         projectId: params.project,
@@ -43,12 +44,9 @@ const CreateRelease = ({
         `/${params.project}/applications/${application.name}`
       );
     } catch (error) {
-      if (utils.is4xx(error.response.status)) {
-        setBackendError(utils.convertErrorMessage(error.response.data));
-      } else {
-        toaster.danger('Release was not created.');
-        console.log(error);
-      }
+      setBackendError(utils.parseError(error));
+      toaster.danger('Release was not created.');
+      console.log(error);
     }
   };
 

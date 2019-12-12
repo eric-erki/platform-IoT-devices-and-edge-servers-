@@ -30,20 +30,16 @@ const CreateApplication = ({
   const navigation = useNavigation();
   const [backendError, setBackendError] = useState();
 
-  const submit = data => {
-    api
-      .createApplication({ projectId: params.project, data })
-      .then(() => {
-        navigation.navigate(`/${params.project}/applications/${data.name}`);
-      })
-      .catch(error => {
-        if (utils.is4xx(error.response.status)) {
-          setBackendError(utils.convertErrorMessage(error.response.data));
-        } else {
-          toaster.danger('Application was not created.');
-          console.log(error);
-        }
-      });
+  const submit = async data => {
+    setBackendError(null);
+    try {
+      await api.createApplication({ projectId: params.project, data });
+      navigation.navigate(`/${params.project}/applications/${data.name}`);
+    } catch (error) {
+      setBackendError(utils.parseError(error));
+      toaster.danger('Application was not created.');
+      console.log(error);
+    }
   };
 
   return (

@@ -17,6 +17,7 @@ import {
   Label,
   Value,
 } from '../../components/core';
+import { toaster } from 'evergreen-ui';
 
 const ReleasedBy = ({ project, release }) => {
   if (release) {
@@ -49,6 +50,7 @@ const Release = ({
   const navigation = useNavigation();
 
   const revertRelease = async () => {
+    setBackendError(null);
     try {
       await api.createRelease({
         projectId: params.project,
@@ -56,12 +58,11 @@ const Release = ({
         data: { rawConfig: release.rawConfig },
       });
       navigation.navigate(`/${params.project}/applications/${application.id}`);
+      toaster.success('Release was reverted successfully.');
     } catch (error) {
-      if (utils.is4xx(error.response.status) && error.response.data) {
-        setBackendError(utils.convertErrorMessage(error.response.data));
-      } else {
-        console.log(error);
-      }
+      setBackendError(utils.parseError(error));
+      toaster.danger('Release was not reverted.');
+      console.log(error);
     }
     setShowConfirmPopup(false);
   };

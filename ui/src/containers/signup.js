@@ -35,19 +35,17 @@ const Signup = () => {
   const [backendError, setBackendError] = useState();
 
   const submit = async data => {
+    setBackendError(null);
     try {
       await api.signup(data);
       navigation.navigate('/login');
       toaster.success('Please check your email to confirm your registration.');
     } catch (error) {
-      if (utils.is4xx(error.response.status) && error.response.data) {
-        setBackendError(utils.convertErrorMessage(error.response.data));
-      } else {
-        toaster.danger(
-          'Something went wrong with your registration. Please contact us at support@deviceplane.com.'
-        );
-        console.log(error);
-      }
+      setBackendError(utils.parseError(error));
+      toaster.danger(
+        'Something went wrong with your registration. Please contact us at support@deviceplane.com.'
+      );
+      console.log(error);
     }
   };
 

@@ -40,18 +40,16 @@ const Profile = ({ close }) => {
   const [backendError, setBackendError] = useState();
 
   const submit = async data => {
+    setBackendError(null);
     try {
       await api.updateUser(data);
       setCurrentUser({ ...currentUser, ...data });
-      toaster.success('Profile updated.');
+      toaster.success('Profile updated successfully.');
       close();
     } catch (error) {
-      if (utils.is4xx(error.response.status) && error.response.data) {
-        setBackendError(utils.convertErrorMessage(error.response.data));
-      } else {
-        toaster.danger('Profile was not updated.');
-        console.log(error);
-      }
+      setBackendError(utils.parseError(error));
+      toaster.danger('Profile was not updated.');
+      console.log(error);
     }
   };
 

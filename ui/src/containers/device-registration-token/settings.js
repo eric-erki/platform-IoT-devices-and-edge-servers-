@@ -51,8 +51,9 @@ const DeviceRegistrationTokenSettings = ({
       navigation.navigate(`/${params.project}/provisioning`);
       toaster.success('Device Registration Token updated successfully.');
     } catch (error) {
-      console.log(error);
+      setBackendError(utils.parseError(error));
       toaster.danger('Device Registration Token was not updated.');
+      console.log(error);
     }
   };
 
@@ -66,12 +67,9 @@ const DeviceRegistrationTokenSettings = ({
       toaster.success('Successfully deleted Device Registration Token.');
       navigation.navigate(`/${params.project}/provisioning`);
     } catch (error) {
-      if (utils.is4xx(error.response.status) && error.response.data) {
-        setBackendError(utils.convertErrorMessage(error.response.data));
-      } else {
-        toaster.danger('Device Registration Token was not deleted.');
-        console.log(error);
-      }
+      setBackendError(utils.parseError(error));
+      toaster.danger('Device Registration Token was not deleted.');
+      console.log(error);
     }
     setShowDeletePopup(false);
   };

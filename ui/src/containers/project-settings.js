@@ -41,15 +41,12 @@ const ProjectSettings = ({
     setBackendError(null);
     try {
       await api.updateProject({ projectId: project.name, data });
-      toaster.success('Successfully updated project.');
+      toaster.success('Project updated successfully.');
       navigation.navigate(`/${data.name}`);
     } catch (error) {
-      if (utils.is4xx(error.response.status) && error.response.data) {
-        setBackendError(utils.convertErrorMessage(error.response.data));
-      } else {
-        toaster.danger('Project was not updated.');
-        console.log(error);
-      }
+      setBackendError(utils.parseError(error));
+      toaster.danger('Project was not updated.');
+      console.log(error);
     }
   };
 
@@ -58,15 +55,12 @@ const ProjectSettings = ({
     setBackendError(null);
     try {
       await api.deleteProject({ projectId: project.name });
-      toaster.success('Successfully deleted project.');
+      toaster.success('Project deleted successfully.');
       navigation.navigate(`/projects`);
     } catch (error) {
-      if (utils.is4xx(error.response.status) && error.response.data) {
-        setBackendError(utils.convertErrorMessage(error.response.data));
-      } else {
-        toaster.danger('Project was not deleted.');
-        console.log(error);
-      }
+      setBackendError(utils.parseError(error));
+      toaster.danger('Project was not deleted.');
+      console.log(error);
     }
     setShowDeletePopup(false);
   };

@@ -5,6 +5,7 @@ import * as yup from 'yup';
 import { toaster } from 'evergreen-ui';
 
 import api from '../api';
+import utils from '../utils';
 import validators from '../validators';
 import Card from '../components/card';
 import Field from '../components/field';
@@ -20,25 +21,21 @@ const PasswordReset = () => {
   const navigation = useNavigation();
   const [backendError, setBackendError] = useState();
 
-  const submit = data => {
-    api
-      .resetPassword(data)
-      .then(() => {
-        navigation.navigate(`/login`);
-        toaster.success(
-          'Password recovery email sent. Please check your email to reset your password.'
-        );
-      })
-      .catch(error => {
-        if (error.response.status === 404) {
-          setBackendError(true);
-        } else {
-          toaster.danger(
-            'There was an error with your e-mail. Please contact us at info@deviceplane.com.'
-          );
-          console.log(error);
-        }
-      });
+  const submit = async data => {
+    setBackendError(null);
+    try {
+      await api.resetPassword(data);
+      navigation.navigate(`/login`);
+      toaster.success(
+        'Password recovery email sent. Please check your email to reset your password.'
+      );
+    } catch (error) {
+      setBackendError(utils.parseError(error));
+      toaster.danger(
+        'There was an error with your e-mail. Please contact us at info@deviceplane.com.'
+      );
+      console.log(error);
+    }
   };
 
   return (

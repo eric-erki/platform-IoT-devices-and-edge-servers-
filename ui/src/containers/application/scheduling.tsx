@@ -58,11 +58,9 @@ const Scheduling = ({
         `/${params.project}/applications/${application.name}`
       );
     } catch (error) {
-      if (utils.is4xx(error.response.status)) {
-        setBackendError(utils.convertErrorMessage(error.response.data));
-      } else {
-        console.log(error);
-      }
+      setBackendError(utils.parseError(error));
+      toaster.danger('Scheduling rule was not updated.');
+      console.log(error);
     }
   };
 

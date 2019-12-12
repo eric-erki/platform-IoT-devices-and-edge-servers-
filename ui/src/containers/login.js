@@ -27,6 +27,7 @@ const Login = ({
   const [backendError, setBackendError] = useState();
 
   const submit = async data => {
+    setBackendError(null);
     try {
       await api.login(data);
       const response = await api.user();

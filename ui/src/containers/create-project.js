@@ -25,18 +25,16 @@ const ProjectCreate = () => {
   });
   const [backendError, setBackendError] = useState();
 
-  const submit = data => {
-    api
-      .createProject(data)
-      .then(() => navigation.navigate(`/`))
-      .catch(error => {
-        if (utils.is4xx(error.response.status)) {
-          setBackendError(utils.convertErrorMessage(error.response.data));
-        } else {
-          toaster.danger('Project was not created.');
-          console.log(error);
-        }
-      });
+  const submit = async data => {
+    setBackendError(null);
+    try {
+      await api.createProject(data);
+      navigation.navigate(`/`);
+    } catch (error) {
+      setBackendError(utils.parseError(error));
+      toaster.danger('Project was not created.');
+      console.log(error);
+    }
   };
 
   return (

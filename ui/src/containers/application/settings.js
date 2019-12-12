@@ -35,47 +35,37 @@ const ApplicationSettings = ({
   const [showDeletePopup, setShowDeletePopup] = useState();
   const navigation = useNavigation();
 
-  const submit = data => {
-    setBackendError(false);
-    api
-      .updateApplication({
+  const submit = async data => {
+    setBackendError(null);
+    try {
+      await api.updateApplication({
         projectId: params.project,
         applicationId: application.id,
         data,
-      })
-      .then(() => {
-        toaster.success('Application updated successfully.');
-        navigation.navigate(`/${params.project}/applications/${data.name}`);
-      })
-      .catch(error => {
-        if (utils.is4xx(error.response.status)) {
-          setBackendError(utils.convertErrorMessage(error.response.data));
-        } else {
-          toaster.danger('Application was not updated.');
-          console.log(error);
-        }
       });
+      toaster.success('Application updated successfully.');
+      navigation.navigate(`/${params.project}/applications/${data.name}`);
+    } catch (error) {
+      setBackendError(utils.parseError(error));
+      toaster.danger('Application was not updated.');
+      console.log(error);
+    }
   };
 
-  const submitDelete = () => {
-    api
-      .deleteApplication({
+  const submitDelete = async () => {
+    try {
+      await api.deleteApplication({
         projectId: params.project,
         applicationId: application.name,
-      })
-      .then(() => {
-        toaster.success('Successfully deleted application.');
-        navigation.navigate(`/${params.project}/applications`);
-      })
-      .catch(error => {
-        if (utils.is4xx(error.response.status)) {
-          setBackendError(utils.convertErrorMessage(error.response.data));
-        } else {
-          toaster.danger('Application was not deleted.');
-          console.log(error);
-        }
-      })
-      .finally(() => setShowDeletePopup(false));
+      });
+      toaster.success('Successfully deleted application.');
+      navigation.navigate(`/${params.project}/applications`);
+    } catch (error) {
+      setBackendError(utils.parseError(error));
+      toaster.danger('Application was not deleted.');
+      console.log(error);
+    }
+    setShowDeletePopup(false);
   };
 
   return (

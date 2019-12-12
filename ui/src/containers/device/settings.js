@@ -42,45 +42,38 @@ const DeviceSettings = ({
   const [backendError, setBackendError] = useState();
   const [showPopup, setShowPopup] = useState();
 
-  const submit = data => {
-    api
-      .updateDevice({
+  const submit = async data => {
+    setBackendError(null);
+    try {
+      await api.updateDevice({
         projectId: params.project,
         deviceId: device.id,
         data,
-      })
-      .then(() => {
-        toaster.success('Device updated successfully.');
-        navigation.navigate(`/${params.project}/devices/${data.name}`);
-      })
-      .catch(error => {
-        if (utils.is4xx(error.response.status)) {
-          setBackendError(utils.convertErrorMessage(error.response.data));
-        } else {
-          toaster.danger('Device was not updated.');
-          console.log(error);
-        }
       });
+      toaster.success('Device updated successfully.');
+      navigation.navigate(`/${params.project}/devices/${data.name}`);
+    } catch (error) {
+      setBackendError(utils.parseError(error));
+      toaster.danger('Device was not updated.');
+      console.log(error);
+    }
   };
 
-  const submitDelete = () => {
-    api
-      .deleteDevice({ projectId: params.project, deviceId: device.id })
-      .then(() => {
-        toaster.success('Successfully deleted device.');
-        navigation.navigate(`/${params.project}/devices`);
-      })
-      .catch(error => {
-        if (utils.is4xx(error.response.status)) {
-          setBackendError(utils.convertErrorMessage(error.response.data));
-        } else {
-          toaster.danger('Device was not removed.');
-          console.log(error);
-        }
-      })
-      .finally(() => {
-        setShowPopup(false);
+  const submitDelete = async () => {
+    setBackendError(null);
+    try {
+      await api.deleteDevice({
+        projectId: params.project,
+        deviceId: device.id,
       });
+      toaster.success('Successfully deleted device.');
+      navigation.navigate(`/${params.project}/devices`);
+    } catch (error) {
+      setBackendError(utils.parseError(error));
+      toaster.danger('Device was not removed.');
+      console.log(error);
+    }
+    setShowPopup(false);
   };
 
   return (

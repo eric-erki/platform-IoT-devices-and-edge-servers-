@@ -46,15 +46,12 @@ const Role = ({
         roleId: role.id,
         data,
       });
-      toaster.success('Successfully updated role.');
+      toaster.success('Role was updated successfully.');
       navigation.navigate(`/${params.project}/iam/roles`);
     } catch (error) {
-      if (utils.is4xx(error.response.status) && error.response.data) {
-        setBackendError(utils.convertErrorMessage(error.response.data));
-      } else {
-        toaster.danger('Role was not updated.');
-        console.log(error);
-      }
+      setBackendError(utils.parseError(error));
+      toaster.danger('Role was not updated.');
+      console.log(error);
     }
   };
 
@@ -65,12 +62,9 @@ const Role = ({
       toaster.success('Successfully deleted role.');
       navigation.navigate(`/${params.project}/iam/roles`);
     } catch (error) {
-      if (utils.is4xx(error.response.status) && error.response.data) {
-        setBackendError(utils.convertErrorMessage(error.response.data));
-      } else {
-        toaster.danger('Role was not deleted.');
-        console.log(error);
-      }
+      setBackendError(utils.parseError(error));
+      toaster.danger('Role was not deleted.');
+      console.log(error);
     }
     setShowDeletePopup(false);
   };

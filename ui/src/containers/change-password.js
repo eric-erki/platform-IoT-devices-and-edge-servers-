@@ -21,18 +21,15 @@ const ChangePassword = ({ close }) => {
   const [backendError, setBackendError] = useState();
 
   const submit = async data => {
+    setBackendError(null);
     try {
       await api.updateUser(data);
-      toaster.success('Password updated.');
+      toaster.success('Password updated successfully.');
       close();
     } catch (error) {
-      const message = utils.parseError(error);
-      if (message) {
-        setBackendError(message);
-      } else {
-        toaster.danger('Password was not updated.');
-        console.log(error);
-      }
+      setBackendError(utils.parseError(error));
+      toaster.danger('Password was not updated.');
+      console.log(error);
     }
   };
 

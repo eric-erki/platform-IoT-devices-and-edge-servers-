@@ -25,6 +25,7 @@ const AddMember = ({
   const [backendError, setBackendError] = useState();
 
   const submit = async data => {
+    setBackendError(null);
     try {
       const {
         data: { userId },
@@ -62,12 +63,9 @@ const AddMember = ({
         toaster.success('Member was added successfully.');
       }
     } catch (error) {
-      if (utils.is4xx(error.response.status) && error.response.data) {
-        setBackendError(utils.convertErrorMessage(error.response.data));
-      } else {
-        console.log(error);
-        toaster.danger('Member was not added.');
-      }
+      setBackendError(utils.parseError(error));
+      toaster.danger('Member was not added.');
+      console.log(error);
     }
   };
 

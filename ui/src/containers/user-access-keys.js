@@ -64,32 +64,28 @@ const UserAccessKeys = () => {
   }, []);
 
   const createAccessKey = async () => {
+    setBackendError(null);
     try {
       const response = await api.createUserAccessKey();
       setAccessKeys([response.data, ...accessKeys]);
       setNewAccessKey(response.data.value);
+      toaster.success('Access key created successfully.');
     } catch (error) {
-      if (utils.is4xx(error.response.status)) {
-        setBackendError(utils.convertErrorMessage(error.response.data));
-      } else {
-        toaster.danger('Access key was not created successfully.');
-        console.log(error);
-      }
+      setBackendError(utils.parseError(error));
+      toaster.danger('Access key was not created.');
+      console.log(error);
     }
   };
 
   const deleteAccessKey = async id => {
     try {
       await api.deleteUserAccessKey({ id });
-      toaster.success('Successfully deleted access key.');
+      toaster.success('Access key deleted successfully.');
       fetchAccessKeys();
     } catch (error) {
-      if (utils.is4xx(error.response.status) && error.response.data) {
-        setBackendError(utils.convertErrorMessage(error.response.data));
-      } else {
-        toaster.danger('Access key was not deleted.');
-        console.log(error);
-      }
+      setBackendError(utils.parseError(error));
+      toaster.danger('Access key was not deleted.');
+      console.log(error);
     }
   };
 

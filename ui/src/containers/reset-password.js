@@ -48,23 +48,19 @@ const PasswordRecovery = ({
       });
   }, []);
 
-  const submit = ({ password }) => {
-    api
-      .updatePassword({ password, token })
-      .then(() => {
-        toaster.success('Password successfully changed.');
-        navigation.navigate(`/login`);
-      })
-      .catch(error => {
-        if (utils.is4xx(error.response.status)) {
-          setBackendError(utils.convertErrorMessage(error.response.data));
-        } else {
-          toaster.danger(
-            'Something went wrong with changing your password. Please contact us at support@deviceplane.com.'
-          );
-          console.log(error);
-        }
-      });
+  const submit = async ({ password }) => {
+    setBackendError(null);
+    try {
+      await api.updatePassword({ password, token });
+      toaster.success('Password changed successfully.');
+      navigation.navigate(`/login`);
+    } catch (error) {
+      setBackendError(utils.parseError(error));
+      toaster.danger(
+        'Something went wrong with changing your password. Please contact us at support@deviceplane.com.'
+      );
+      console.log(error);
+    }
   };
 
   if (invalidToken) {

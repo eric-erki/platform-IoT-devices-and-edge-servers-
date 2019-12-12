@@ -30,14 +30,12 @@ const CreateServiceAccount = ({
     setBackendError(null);
     try {
       await api.createServiceAccount({ projectId: params.project, data });
+      toaster.success('Service acccount created successfully.');
       navigation.navigate(`/${params.project}/iam/service-accounts/`);
     } catch (error) {
-      if (utils.is4xx(error.response.status)) {
-        setBackendError(utils.convertErrorMessage(error.response.data));
-      } else {
-        toaster.danger('Service Account was not created.');
-        console.log(error);
-      }
+      setBackendError(utils.parseError(error));
+      toaster.danger('Service Account was not created.');
+      console.log(error);
     }
   };
 
