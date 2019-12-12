@@ -61,7 +61,7 @@ func FilterMetrics(
 		for _, label := range correspondingConfig.Labels {
 			labelValue, ok := device.Labels[label]
 			if ok {
-				addTag("deviceplane.labels"+"."+label, labelValue)
+				addTag("deviceplane.labels."+label, labelValue)
 			}
 		}
 
