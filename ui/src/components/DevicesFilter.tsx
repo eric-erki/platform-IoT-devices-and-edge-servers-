@@ -198,12 +198,6 @@ export class DevicesFilter extends Component<Props, State> {
               <option value={OperatorIs}>{OperatorIs}</option>
               <option value={OperatorIsNot}>{OperatorIsNot}</option>
             </Select>
-            <style>{`
-              .${selectClassName} > select {
-                padding-top: 7px;
-                padding-bottom: 7px;
-              }
-            `}</style>
             <Input
               width="auto"
               placeholder="Value"
@@ -233,6 +227,7 @@ export class DevicesFilter extends Component<Props, State> {
             width="auto"
             placeholder="Key"
             padding={2}
+            marginRight={3}
             onChange={(event: any) => {
               const { value: key } = event.target;
               this.setState({

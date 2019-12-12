@@ -54,8 +54,16 @@ const GlobalStyle = createGlobalStyle`
     color: ${props => props.theme.colors.grays[11]} !important;
     box-shadow: none !important;
     outline: none !important;
-    border: 1px solid ${props => props.theme.colors.white} !important;
+    border: 1px solid ${props => props.theme.colors.black} !important;
     font-size: 16px !important;
+    height: 36px !important;
+    transition: border-color 150ms;
+  }
+  select:not(:disabled):focus {
+    border-color: ${props => props.theme.colors.primary} !important;
+  }
+  .📦h_32px {
+    height: 36px !important;
   }
 
   svg[data-icon="caret-down"] {
