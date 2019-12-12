@@ -43,8 +43,14 @@ const Alert = ({ show, title, description, variant = 'info', children }) => {
       marginBottom={5}
     >
       <Column marginBottom={children ? 4 : 0}>
-        <Row alignItems="center">
-          <Icon icon={getIcon(variant)} color={color} size={18} />
+        <Row alignItems="flex-start">
+          <Icon
+            icon={getIcon(variant)}
+            color={color}
+            size={14}
+            flexShrink={0}
+            marginTop={2}
+          />
           {!title && description && (
             <Text color="grays.10" marginLeft={2}>
               {description}

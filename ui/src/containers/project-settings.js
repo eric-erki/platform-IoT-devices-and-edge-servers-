@@ -42,7 +42,7 @@ const ProjectSettings = ({
     try {
       await api.updateProject({ projectId: project.name, data });
       toaster.success('Successfully updated project.');
-      navigation.navigate(`/${data.name}/settings`);
+      navigation.navigate(`/${data.name}`);
     } catch (error) {
       if (utils.is4xx(error.response.status) && error.response.data) {
         setBackendError(utils.convertErrorMessage(error.response.data));

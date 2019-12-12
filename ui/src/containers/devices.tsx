@@ -91,6 +91,7 @@ const Devices = ({ route }) => {
             : null,
         style: {
           flex: 2,
+          overflow: 'hidden',
         },
       },
     ],

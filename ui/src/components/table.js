@@ -3,7 +3,7 @@ import { useTable, useSortBy } from 'react-table';
 import styled from 'styled-components';
 import { Icon } from 'evergreen-ui';
 
-import { Column, Row } from './core';
+import { Box, Column, Row } from './core';
 
 const Container = styled(Column)``;
 
@@ -18,14 +18,8 @@ Cell.defaultProps = {
   padding: 3,
 };
 
-const CellContent = styled(Row)`
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-`;
-
 const TableRow = styled(Row)`
-  align-items: center;
+  align-items: flex-start;
   border-bottom: 1px solid ${props => props.theme.colors.grays[2]};
   cursor: ${props => (props.selectable ? 'pointer' : 'default')};
   transition: background-color 150ms;
@@ -80,30 +74,28 @@ const Table = ({ columns, data, onRowSelect, placeholder }) => {
                 {...column.getHeaderProps(column.getSortByToggleProps())}
                 style={column.style}
               >
-                <CellContent>
-                  {column.render('Header')}
-                  <Row>
-                    {column.isSorted ? (
-                      column.isSortedDesc ? (
-                        <Icon
-                          icon="chevron-down"
-                          color="white"
-                          size={14}
-                          marginLeft={8}
-                        />
-                      ) : (
-                        <Icon
-                          icon="chevron-up"
-                          color="white"
-                          size={14}
-                          marginLeft={8}
-                        />
-                      )
+                {column.render('Header')}
+                <Row>
+                  {column.isSorted ? (
+                    column.isSortedDesc ? (
+                      <Icon
+                        icon="chevron-down"
+                        color="white"
+                        size={14}
+                        marginLeft={8}
+                      />
                     ) : (
-                      ''
-                    )}
-                  </Row>
-                </CellContent>
+                      <Icon
+                        icon="chevron-up"
+                        color="white"
+                        size={14}
+                        marginLeft={8}
+                      />
+                    )
+                  ) : (
+                    ''
+                  )}
+                </Row>
               </Cell>
             ))}
           </Row>
@@ -130,9 +122,7 @@ const Table = ({ columns, data, onRowSelect, placeholder }) => {
             >
               {row.cells.map(cell => (
                 <Cell {...cell.getCellProps()} style={cell.column.style || {}}>
-                  <CellContent style={cell.column.cellStyle || {}}>
-                    {cell.render('Cell')}
-                  </CellContent>
+                  {cell.render('Cell')}
                 </Cell>
               ))}
             </TableRow>

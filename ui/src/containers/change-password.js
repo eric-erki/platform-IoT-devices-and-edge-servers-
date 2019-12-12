@@ -20,21 +20,20 @@ const ChangePassword = ({ close }) => {
   const { register, handleSubmit, errors } = useForm({ validationSchema });
   const [backendError, setBackendError] = useState();
 
-  const submit = data => {
-    api
-      .updateUser(data)
-      .then(() => {
-        toaster.success('Password updated.');
-        close();
-      })
-      .catch(error => {
-        if (utils.is4xx(error.response.status) && error.response.data) {
-          setBackendError(utils.convertErrorMessage(error.response.data));
-        } else {
-          toaster.danger('Password was not updated.');
-          console.log(error);
-        }
-      });
+  const submit = async data => {
+    try {
+      await api.updateUser(data);
+      toaster.success('Password updated.');
+      close();
+    } catch (error) {
+      const message = utils.parseError(error);
+      if (message) {
+        setBackendError(message);
+      } else {
+        toaster.danger('Password was not updated.');
+        console.log(error);
+      }
+    }
   };
 
   return (

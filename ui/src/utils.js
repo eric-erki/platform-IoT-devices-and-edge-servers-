@@ -15,4 +15,12 @@ export default {
   },
 
   capitalize: message => message.replace(/^\w/, c => c.toUpperCase()),
+
+  parseError: ({ status, data }) => {
+    if (data) {
+      return this.capitalize(data);
+    }
+
+    return null;
+  },
 };

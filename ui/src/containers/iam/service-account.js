@@ -117,6 +117,7 @@ const ServiceAccount = ({
     <>
       <Card
         title={serviceAccount.name}
+        subtitle={serviceAccount.description}
         size="xlarge"
         actions={[
           {

@@ -98,8 +98,14 @@ const Field = forwardRef(
           </Text>
         )}
         {errors.map(({ message }) => (
-          <Row marginTop={2} alignItems="center">
-            <Icon icon="error" color={theme.colors.red} size={14} />
+          <Row marginTop={2} alignItems="flex-start">
+            <Icon
+              icon="error"
+              color={theme.colors.red}
+              size={14}
+              flexShrink={0}
+              marginTop={2}
+            />
             <Text color="red" marginLeft={2}>
               {utils.capitalize(message)}
             </Text>
