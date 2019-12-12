@@ -100,8 +100,8 @@ const Scheduling = ({
       <Alert show={backendError} variant="error" description={backendError} />
       <Row bg="grays.0" borderRadius={'5px'} minHeight={'60px'}>
         <DevicesFilterButtons
+          canRemoveFilter
           query={schedulingRule}
-          canRemoveFilter={true}
           removeFilter={removeFilter}
         />
       </Row>
@@ -111,7 +111,7 @@ const Scheduling = ({
         onClose={() => setShowFilterDialog(false)}
         onSubmit={addFilter}
       />
-      <Button title="Set Rule" marginTop={6} onClick={submit} />
+      <Button title="Set Scheduling Rule" marginTop={6} onClick={submit} />
     </Card>
   );
 };

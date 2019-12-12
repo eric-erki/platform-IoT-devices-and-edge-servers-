@@ -4,7 +4,6 @@ import { space, border, flexbox, typography } from 'styled-system';
 const Group = styled.div`
     display: flex;
     flex-direction: column;
-    margin-bottom: ${props => props.theme.sizes[5]}px;
 
     &:last-child {
         margin-bottom: 0;
@@ -12,5 +11,9 @@ const Group = styled.div`
 
     ${space} ${border} ${flexbox} ${typography}
 `;
+
+Group.defaultProps = {
+  marginBottom: 6,
+};
 
 export default Group;

@@ -6,11 +6,11 @@ import { space, color, typography } from 'styled-system';
 import { Group, Column, Input, Textarea, Label, Text } from './core';
 
 const Container = styled(Group)`
-  &:not(:last-of-type) {
+  &:not(:last-child) {
     margin-bottom: ${props =>
       props.group
         ? props.theme.sizes[2]
-        : props.theme.sizes[Label.defaultProps.marginBottom]}px;
+        : props.theme.sizes[Group.defaultProps.marginBottom]}px;
   }
 `;
 

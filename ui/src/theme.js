@@ -1,10 +1,10 @@
 const breakpoints = ['480px', '768px', '1024px'];
 
 const colors = {
-  primary: '#6fccff', //'#57e3ff',
+  primary: '#6fccff',
 
   black: '#000',
-  white: '#fff',
+  white: '#E6E6E6',
   green: '#48E5C2',
   red: '#D7263D',
 

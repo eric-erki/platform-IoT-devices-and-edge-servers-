@@ -9,7 +9,7 @@ import {
 } from 'styled-system';
 
 const Input = styled.input`
-  border: 1px solid ${props => props.theme.colors.black};
+  border: 1px solid ${props => props.theme.colors.grays[0]};
   outline: none;
   margin: 0;
   padding: 10px;

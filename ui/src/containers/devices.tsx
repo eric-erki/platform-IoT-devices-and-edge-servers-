@@ -326,7 +326,7 @@ const Devices = ({ route }) => {
 
       <DevicesFilter
         show={showFilterDialog}
-        onClose={() => showFilterDialog(false)}
+        onClose={() => setShowFilterDialog(false)}
         onSubmit={addFilter}
       />
     </Layout>

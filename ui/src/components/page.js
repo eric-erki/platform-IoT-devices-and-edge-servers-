@@ -47,6 +47,19 @@ const GlobalStyle = createGlobalStyle`
   .ace_active-line {
     background: ${props => props.theme.colors.grays[2]} !important;
   }
+
+  //TODO: Create custom Select component
+  select {
+    background: ${props => props.theme.colors.grays[0]} !important;
+    color: ${props => props.theme.colors.white} !important;
+    box-shadow: none !important;
+    outline: none !important;
+    border: 1px solid ${props => props.theme.colors.white} !important;
+  }
+
+  svg[data-icon="caret-down"] {
+    fill: ${props => props.theme.colors.white} !important;
+  }
 `;
 
 const Page = ({ children }) => {
