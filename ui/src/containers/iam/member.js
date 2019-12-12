@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import useForm from 'react-hook-form';
 import { useNavigation } from 'react-navi';
+import * as yup from 'yup';
 import { toaster } from 'evergreen-ui';
 
 import api from '../../api';
@@ -9,12 +10,18 @@ import Popup from '../../components/popup';
 import Field from '../../components/field';
 import { Text, Button, Checkbox, Form, Label } from '../../components/core';
 
+const validationSchema = yup.object().shape({
+  roles: yup.object(),
+});
+
 const Member = ({
   route: {
     data: { params, member, roles },
   },
 }) => {
-  const { register, handleSubmit, setValue, formState } = useForm({
+  const { register, handleSubmit, setValue, formState, errors } = useForm({
+    validationSchema,
+    mode: 'onBlur',
     defaultValues: {
       roles: roles.reduce(
         (obj, role) => ({
@@ -109,6 +116,7 @@ const Member = ({
               as={<Checkbox label={role.name} />}
               register={register}
               setValue={setValue}
+              errors={errors.roles && errors.roles[role.name]}
             />
           ))}
           <Button title="Update" type="submit" disabled={!formState.dirty} />

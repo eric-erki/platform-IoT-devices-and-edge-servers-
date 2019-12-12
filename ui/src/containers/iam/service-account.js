@@ -25,8 +25,8 @@ import {
 
 const validationSchema = yup.object().shape({
   name: validators.name.required(),
-  description: yup.string().required(),
-  roles: yup.array(),
+  description: yup.string(),
+  roles: yup.object(),
 });
 
 const ServiceAccount = ({
@@ -155,6 +155,7 @@ const ServiceAccount = ({
               as={<Checkbox label={role.name} />}
               register={register}
               setValue={setValue}
+              errors={errors.roles && errors.roles[role.name]}
             />
           ))}
           <Button title="Update" type="submit" disabled={!formState.dirty} />
