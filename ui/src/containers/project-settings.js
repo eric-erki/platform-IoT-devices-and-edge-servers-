@@ -30,7 +30,6 @@ const ProjectSettings = ({
       name: project.name,
       datadogApiKey: project.datadogApiKey,
     },
-    mode: 'onBlur',
   });
   const navigation = useNavigation();
   const [showDeletePopup, setShowDeletePopup] = React.useState();

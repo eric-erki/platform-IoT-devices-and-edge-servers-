@@ -29,7 +29,6 @@ const validationSchema = yup.object().shape({
 const Signup = () => {
   const { register, handleSubmit, errors } = useForm({
     validationSchema,
-    mode: 'onBlur',
   });
   const navigation = useNavigation();
   const [backendError, setBackendError] = useState();

@@ -26,7 +26,6 @@ const CreateRole = ({
 }) => {
   const { handleSubmit, register, setValue, errors } = useForm({
     validationSchema,
-    mode: 'onBlur',
   });
   const navigation = useNavigation();
   const [backendError, setBackendError] = useState();

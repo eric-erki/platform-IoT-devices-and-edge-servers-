@@ -21,7 +21,6 @@ const Member = ({
 }) => {
   const { register, handleSubmit, setValue, formState, errors } = useForm({
     validationSchema,
-    mode: 'onBlur',
     defaultValues: {
       roles: roles.reduce(
         (obj, role) => ({

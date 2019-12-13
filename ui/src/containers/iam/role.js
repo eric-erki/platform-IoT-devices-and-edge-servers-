@@ -26,7 +26,6 @@ const Role = ({
   },
 }) => {
   const { register, handleSubmit, errors, formState, setValue } = useForm({
-    mode: 'onBlur',
     validationSchema,
     defaultValues: {
       name: role.name,

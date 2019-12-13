@@ -25,13 +25,11 @@ const CreateApplication = ({
 }) => {
   const { register, handleSubmit, errors } = useForm({
     validationSchema,
-    mode: 'onBlur',
   });
   const navigation = useNavigation();
   const [backendError, setBackendError] = useState();
 
   const submit = async data => {
-    setBackendError(null);
     try {
       await api.createApplication({ projectId: params.project, data });
       navigation.navigate(`/${params.project}/applications/${data.name}`);

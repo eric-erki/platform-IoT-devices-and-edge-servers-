@@ -33,7 +33,6 @@ const DeviceSettings = ({
 }) => {
   const { register, handleSubmit, formState, errors } = useForm({
     validationSchema,
-    mode: 'onBlur',
     defaultValues: {
       name: device.name,
     },

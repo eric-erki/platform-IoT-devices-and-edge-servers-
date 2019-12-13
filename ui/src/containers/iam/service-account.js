@@ -35,7 +35,6 @@ const ServiceAccount = ({
   },
 }) => {
   const { register, handleSubmit, errors, formState, setValue } = useForm({
-    mode: 'onBlur',
     validationSchema,
     defaultValues: {
       name: serviceAccount.name,

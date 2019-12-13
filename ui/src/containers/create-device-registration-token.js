@@ -29,7 +29,6 @@ const CreateDeviceRegistrationToken = ({
 }) => {
   const { register, handleSubmit, errors } = useForm({
     validationSchema,
-    mode: 'onBlur',
   });
   const navigation = useNavigation();
   const [backendError, setBackendError] = useState();

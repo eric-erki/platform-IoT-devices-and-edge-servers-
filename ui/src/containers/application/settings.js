@@ -24,7 +24,6 @@ const ApplicationSettings = ({
   },
 }) => {
   const { register, handleSubmit, errors, formState } = useForm({
-    mode: 'onBlur',
     validationSchema,
     defaultValues: {
       name: application.name,

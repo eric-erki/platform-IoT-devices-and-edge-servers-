@@ -30,7 +30,6 @@ const DeviceRegistrationTokenSettings = ({
   const navigation = useNavigation();
   const { register, handleSubmit, formState, errors } = useForm({
     validationSchema,
-    mode: 'onBlur',
     defaultValues: {
       name: deviceRegistrationToken.name,
       description: deviceRegistrationToken.description,
