@@ -85,7 +85,6 @@ export const labelColors = [
   '#A682FF',
   '#EB8258',
   '#FFD131',
-  '#FB62F6',
   '#BAD4AA',
   '#9DFFF9',
   '#F2BEFC',
