@@ -14,18 +14,6 @@ import Card from '../../components/card';
 import Table from '../../components/table';
 import EditableLabelTable from '../../components/EditableLabelTable';
 
-const checkServices = applicationStatusInfo => {
-  for (var i = 0; i < applicationStatusInfo.length; i++) {
-    if (
-      applicationStatusInfo[i].serviceStatuses &&
-      applicationStatusInfo[i].serviceStatuses.length > 0
-    ) {
-      return true;
-    }
-  }
-  return false;
-};
-
 const DeviceServices = ({ project, applicationStatusInfo }) => {
   const columns = useMemo(
     () => [
@@ -88,7 +76,7 @@ const DeviceOverview = ({
       <Card size="xlarge" title={device.name} marginBottom={4}>
         <Row marginBottom={6}>
           {device.status === 'offline' ? (
-            <Badge bg="green">offline</Badge>
+            <Badge bg="red">offline</Badge>
           ) : (
             <Badge bg="green">online</Badge>
           )}
