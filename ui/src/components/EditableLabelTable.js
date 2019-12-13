@@ -140,6 +140,7 @@ const EditableLabelTable = ({ data, onAdd, onRemove }) => {
         },
         style: {
           alignItems: 'center',
+          justifyContent: 'flex-end',
           minHeight: '56px',
         },
       },

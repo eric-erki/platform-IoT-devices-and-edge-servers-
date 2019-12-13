@@ -1,11 +1,9 @@
 import React from 'react';
 
-import { Row, Text, Link } from './core';
+import { Row } from './core';
 import AvatarMenu from './avatar-menu';
-import { useCurrentRoute } from 'react-navi';
 
 const Header = ({ children }) => {
-  const route = useCurrentRoute();
   return (
     <Row
       alignItems="center"

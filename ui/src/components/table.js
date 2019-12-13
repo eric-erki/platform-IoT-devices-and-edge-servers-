@@ -3,7 +3,7 @@ import { useTable, useSortBy } from 'react-table';
 import styled from 'styled-components';
 import { Icon } from 'evergreen-ui';
 
-import { Box, Column, Row } from './core';
+import { Column, Row } from './core';
 
 const Container = styled(Column)``;
 
