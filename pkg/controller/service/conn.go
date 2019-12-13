@@ -37,6 +37,23 @@ func (s *Service) initiateSSH(w http.ResponseWriter, r *http.Request,
 	})
 }
 
+func (s *Service) initiateReboot(w http.ResponseWriter, r *http.Request,
+	projectID, authenticatedUserID, authenticatedServiceAccountID,
+	deviceID string,
+) {
+	s.withHijackedWebSocketConnection(w, r, func(conn net.Conn) {
+		s.withDeviceConnection(w, r, projectID, deviceID, func(deviceConn net.Conn) {
+			resp, err := client.InitiateReboot(deviceConn)
+			if err != nil {
+				http.Error(w, err.Error(), codes.StatusDeviceConnectionFailure)
+				return
+			}
+
+			utils.ProxyResponseFromDevice(w, resp)
+		})
+	})
+}
+
 func (s *Service) imagePullProgress(w http.ResponseWriter, r *http.Request,
 	projectID, authenticatedUserID, authenticatedServiceAccountID,
 	deviceID string,
