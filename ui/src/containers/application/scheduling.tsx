@@ -18,7 +18,7 @@ import {
 } from '../../components/DevicesFilter';
 import Card from '../../components/card';
 import Alert from '../../components/alert';
-import { Button, Row } from '../../components/core';
+import { Button, Row, Text } from '../../components/core';
 
 interface Props {
   application: any;
@@ -96,12 +96,20 @@ const Scheduling = ({
       ]}
     >
       <Alert show={backendError} variant="error" description={backendError} />
-      <Row bg="grays.0" borderRadius={'5px'} minHeight={'60px'}>
-        <DevicesFilterButtons
-          canRemoveFilter
-          query={schedulingRule}
-          removeFilter={removeFilter}
-        />
+      <Row bg="grays.0" borderRadius={1} minHeight={7} padding={2}>
+        {schedulingRule.length ? (
+          <DevicesFilterButtons
+            canRemoveFilter
+            query={schedulingRule}
+            removeFilter={removeFilter}
+          />
+        ) : (
+          <Row flex={1} justifyContent="center" alignItems="center">
+            <Text>
+              There are no <strong>Filters</strong>.
+            </Text>
+          </Row>
+        )}
       </Row>
       <DevicesFilter
         whitelistedConditions={[LabelValueCondition]}
