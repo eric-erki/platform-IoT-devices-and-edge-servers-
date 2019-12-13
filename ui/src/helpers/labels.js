@@ -45,7 +45,7 @@ export function renderLabels(labels, labelColorMap) {
             {key}
           </Text>
           <Text
-            backgroundColor="grays.4"
+            backgroundColor="grays.3"
             paddingX={2}
             paddingY={1}
             borderTopRightRadius={1}
