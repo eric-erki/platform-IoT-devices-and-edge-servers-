@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Column } from './core';
 
 const Overlay = styled(Column)`
-  position: absolute;
+  position: fixed;
   z-index: 9999999;
   top: 0;
   left: 0;

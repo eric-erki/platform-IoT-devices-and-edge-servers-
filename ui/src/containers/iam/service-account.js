@@ -194,31 +194,55 @@ const ServiceAccountAccessKeys = ({ projectId, serviceAccount }) => {
   const [accessKeys, setAccessKeys] = useState([]);
   const [newAccessKey, setNewAccessKey] = useState();
   const [backendError, setBackendError] = useState();
+  const [keyToDelete, setKeyToDelete] = useState();
 
   const columns = useMemo(
     () => [
-      { Header: 'Access Key ID', accessor: 'id', style: { flex: 3 } },
+      { Header: 'Access Key ID', accessor: 'id', style: { flex: 2 } },
       {
         Header: 'Created At',
         accessor: 'createdAt',
+        style: {},
       },
       {
         Header: ' ',
-        Cell: ({ row }) => (
-          <Button
-            title={<Icon name="trash" size={18} color={theme.colors.white} />}
-            variant="icon"
-            onClick={() => deleteAccessKey(row.original.id)}
-          />
-        ),
-        cellStyle: {
-          flex: 1,
-          display: 'flex',
+        Cell: ({ row }) =>
+          keyToDelete === row.original.id ? (
+            <>
+              <Button
+                title={
+                  <Icon
+                    icon="tick-circle"
+                    size={18}
+                    color={theme.colors.primary}
+                  />
+                }
+                variant="icon"
+                marginRight={4}
+                onClick={() => deleteAccessKey(keyToDelete)}
+              />
+              <Button
+                title={
+                  <Icon icon="cross" size={18} color={theme.colors.grays[5]} />
+                }
+                variant="icon"
+                onClick={() => setKeyToDelete(null)}
+              />
+            </>
+          ) : (
+            <Button
+              title={<Icon icon="trash" size={18} color={theme.colors.white} />}
+              variant="icon"
+              onClick={() => setKeyToDelete(row.original.id)}
+            />
+          ),
+        style: {
           justifyContent: 'flex-end',
+          flex: '0 0 100px',
         },
       },
     ],
-    []
+    [keyToDelete]
   );
   const tableData = useMemo(() => accessKeys, [accessKeys]);
 
@@ -264,11 +288,13 @@ const ServiceAccountAccessKeys = ({ projectId, serviceAccount }) => {
         accessKeyId: id,
       });
       toaster.success('Access key deleted successfully.');
-      fetchAccessKeys();
+      await fetchAccessKeys();
+      setKeyToDelete(null);
     } catch (error) {
       setBackendError(utils.parseError(error));
       toaster.danger('Access key was not deleted.');
       console.log(error);
+      setKeyToDelete(null);
     }
   };
 
@@ -282,7 +308,7 @@ const ServiceAccountAccessKeys = ({ projectId, serviceAccount }) => {
       <Alert
         show={!!newAccessKey}
         title="Access Key Created"
-        description="Save the info above! This is the only time you'll be able to use it. If you lose it, you'll need to create a new access key."
+        description="Save this key! This is the only time you'll be able to view it. If you lose it, you'll need to create a new access key."
       >
         <Label>Access Key</Label>
         <Row>
