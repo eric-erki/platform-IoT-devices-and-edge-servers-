@@ -1,13 +1,6 @@
 // @ts-nocheck
 
-import React, { useState, useMemo } from 'react';
-import {
-  TextDropdownButton,
-  Menu,
-  Position,
-  Popover,
-  // @ts-ignore
-} from 'evergreen-ui';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigation } from 'react-navi';
 
 import api from '../api.js';
@@ -51,6 +44,14 @@ const Devices = ({ route }) => {
   const [orderedColumn, setOrderedColumn] = useState();
   const [order, setOrder] = useState();
   const [labelColorMap, setLabelColorMap] = useState({});
+
+  useEffect(() => {
+    queryDevices();
+  }, [filterQuery]);
+
+  useEffect(() => {
+    parseQueryString();
+  }, []);
 
   const columns = useMemo(
     () => [
@@ -105,19 +106,17 @@ const Devices = ({ route }) => {
   );
   const tableData = useMemo(() => devices, [devices]);
 
-  const fetchDevices = (queryString: string) => {
-    return api
-      .devices({ projectId: route.data.params.project, queryString })
-      .then(({ data }) => {
-        const labelColorMap = buildLabelColorMap(
-          labelColorMap,
-          labelColors,
-          devices
-        );
-        setDevices(data);
-        setLabelColorMap(labelColorMap);
-      })
-      .catch(console.log);
+  const fetchDevices = async (queryString: string) => {
+    try {
+      const { data } = await api.devices({
+        projectId: route.data.params.project,
+        queryString,
+      });
+      setDevices(data);
+      setLabelColorMap(buildLabelColorMap(labelColorMap, labelColors, devices));
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const queryDevices = () => {
@@ -144,20 +143,17 @@ const Devices = ({ route }) => {
   const removeFilter = (index: number) => {
     setPage(0);
     setFilterQuery(filterQuery.filter((_, i) => i !== index));
-    queryDevices();
   };
 
   const addFilter = (filter: Filter) => {
     setPage(0);
     setShowFilterDialog(false);
     setFilterQuery([...filterQuery, filter]);
-    queryDevices();
   };
 
   const clearFilters = () => {
     setPage(0);
     setFilterQuery([]);
-    queryDevices();
   };
 
   const buildFiltersQuery = (): string[] =>
@@ -167,75 +163,71 @@ const Devices = ({ route }) => {
     );
 
   const parseQueryString = () => {
-    return new Promise(resolve => {
-      if (!window.location.search || window.location.search.length < 1) {
-        resolve();
+    if (!window.location.search || window.location.search.length < 1) {
+      return;
+    }
+
+    var builtQuery: Query = [];
+    var page = 0;
+    var orderedColumn = undefined;
+    var order = undefined;
+
+    let queryParams = window.location.search.substr(1).split('&');
+    queryParams.forEach(queryParam => {
+      const parts = queryParam.split('=');
+      if (parts.length < 2) {
         return;
       }
 
-      var builtQuery: Query = [];
-      var page = 0;
-      var orderedColumn = undefined;
-      var order = undefined;
+      switch (parts[0]) {
+        case Params.Filter: {
+          let encodedFilter = parts[1];
+          if (encodedFilter) {
+            try {
+              const filter = JSON.parse(
+                atob(decodeURIComponent(encodedFilter))
+              );
 
-      let queryParams = window.location.search.substr(1).split('&');
-      queryParams.forEach(queryParam => {
-        const parts = queryParam.split('=');
-        if (parts.length < 2) {
-          return;
-        }
+              const validFilter = filter.filter((c: Condition) => {
+                return typeCheckers['Condition'].strictTest(c);
+              });
 
-        switch (parts[0]) {
-          case Params.Filter: {
-            let encodedFilter = parts[1];
-            if (encodedFilter) {
-              try {
-                const filter = JSON.parse(
-                  atob(decodeURIComponent(encodedFilter))
-                );
-
-                const validFilter = filter.filter((c: Condition) => {
-                  return typeCheckers['Condition'].strictTest(c);
-                });
-
-                if (validFilter.length) {
-                  builtQuery.push(validFilter);
-                }
-              } catch (e) {
-                console.log('Error parsing filters:', e);
+              if (validFilter.length) {
+                builtQuery.push(validFilter);
               }
+            } catch (e) {
+              console.log('Error parsing filters:', e);
             }
-            break;
           }
-          case Params.Page: {
-            let p = Number(parts[1]);
-            if (!isNaN(p)) {
-              page = p;
-            }
-            break;
-          }
-          case Params.OrderedColumn: {
-            let p = parts[1];
-            if (p) {
-              orderedColumn = p;
-            }
-            break;
-          }
-          case Params.OrderDirection: {
-            let p = parts[1];
-            if (p) {
-              order = p;
-            }
-            break;
-          }
+          break;
         }
-      });
-      setPage(page);
-      setOrderedColumn(orderedColumn);
-      setOrder(order);
-      setFilterQuery([...filterQuery, ...builtQuery]);
-      resolve();
+        case Params.Page: {
+          let p = Number(parts[1]);
+          if (!isNaN(p)) {
+            page = p;
+          }
+          break;
+        }
+        case Params.OrderedColumn: {
+          let p = parts[1];
+          if (p) {
+            orderedColumn = p;
+          }
+          break;
+        }
+        case Params.OrderDirection: {
+          let p = parts[1];
+          if (p) {
+            order = p;
+          }
+          break;
+        }
+      }
     });
+    setPage(page);
+    setOrderedColumn(orderedColumn);
+    setOrder(order);
+    setFilterQuery([...filterQuery, ...builtQuery]);
   };
 
   const getIconForOrder = (order?: string) => {
@@ -249,46 +241,8 @@ const Devices = ({ route }) => {
     }
   };
 
-  const renderOrderedTableHeader = (title: string, jsonName: string) => (
-    <Popover
-      position={Position.BOTTOM_LEFT}
-      content={({ close }: any) => (
-        <Menu>
-          <Menu.OptionsGroup
-            title="Order"
-            options={[
-              { label: 'Ascending', value: Order.ASC },
-              { label: 'Descending', value: Order.DESC },
-            ]}
-            selected={orderedColumn === jsonName ? order : ''}
-            onChange={(value: string) => {
-              setOrderedColumn(jsonName);
-              setOrder(value);
-              queryDevices();
-
-              // Close the popover when you select a value.
-              close();
-            }}
-          />
-        </Menu>
-      )}
-    >
-      <TextDropdownButton
-        icon={
-          orderedColumn === jsonName ? getIconForOrder(order) : 'caret-down'
-        }
-        color="white"
-      >
-        {title}
-      </TextDropdownButton>
-    </Popover>
-  );
-
   return (
-    // @ts-ignore
     <Layout title="Devices">
-      {/* 
-  // @ts-ignore */}
       <Card
         title="Devices"
         size="full"
