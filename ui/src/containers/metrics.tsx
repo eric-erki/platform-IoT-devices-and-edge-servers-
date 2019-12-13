@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import React, { Fragment, Component } from 'react';
 import axios from 'axios';
 import {
@@ -14,7 +16,6 @@ import {
   Text,
   withTheme,
   Popover,
-  // @ts-ignore
 } from 'evergreen-ui';
 
 import { Link } from 'react-router-dom';
