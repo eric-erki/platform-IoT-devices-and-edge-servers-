@@ -67,11 +67,11 @@ const Input = forwardRef((props, ref) => {
   return (
     <Container>
       <StyledInput
-        {...props}
         type={type}
         ref={ref}
         padding={3}
         paddingRight={props.type === 'password' ? 6 : 3}
+        {...props}
       />
       {props.type === 'password' && (
         <Icon

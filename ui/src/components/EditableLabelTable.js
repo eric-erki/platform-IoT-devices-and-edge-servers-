@@ -13,14 +13,15 @@ const CellInput = styled(Input)`
   flex: 1;
 `;
 
-CellInput.defaultProps = {
-  padding: 1,
-};
-
 const EditableCell = ({ mode, value, autoFocus, onChange }) => {
   if (mode === 'edit' || mode === 'new') {
     return (
-      <CellInput autoFocus={autoFocus} value={value} onChange={onChange} />
+      <CellInput
+        autoFocus={autoFocus}
+        value={value}
+        onChange={onChange}
+        padding={1}
+      />
     );
   }
   return (
