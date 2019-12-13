@@ -15,9 +15,16 @@ const deepClone = object => {
   return JSON.parse(JSON.stringify(object));
 };
 
-const parseError = ({ response: { status, data } }) => {
-  if (data) {
-    return capitalize(data);
+const parseError = error => {
+  if (error) {
+    if (typeof error === 'object') {
+      const {
+        response: { data },
+      } = error;
+      if (data && typeof data === 'string') {
+        return capitalize(data);
+      }
+    }
   }
 
   return null;
