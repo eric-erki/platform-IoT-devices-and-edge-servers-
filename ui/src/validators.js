@@ -21,7 +21,6 @@ export default {
     .min(8)
     .max(64)
     .matches(passwordRegex, {
-      message:
-        'Password length must be at least 8, contain a lower case letter, a upper case letter, and no spaces.',
+      message: 'Password does not satisfy requirements.',
     }),
 };
