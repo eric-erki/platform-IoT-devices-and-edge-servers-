@@ -43,7 +43,9 @@ const Devices = ({ route }) => {
   const [page, setPage] = useState(0);
   const [orderedColumn, setOrderedColumn] = useState();
   const [order, setOrder] = useState();
-  const [labelColorMap, setLabelColorMap] = useState({});
+  const [labelColorMap, setLabelColorMap] = useState(
+    buildLabelColorMap({}, labelColors, devices)
+  );
 
   useEffect(() => {
     queryDevices();
@@ -113,7 +115,7 @@ const Devices = ({ route }) => {
         queryString,
       });
       setDevices(data);
-      setLabelColorMap(buildLabelColorMap(labelColorMap, labelColors, devices));
+      setLabelColorMap(buildLabelColorMap(labelColorMap, labelColors, data));
     } catch (error) {
       console.log(error);
     }

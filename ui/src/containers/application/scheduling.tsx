@@ -129,12 +129,7 @@ const Scheduling = ({
         onClose={() => setShowFilterDialog(false)}
         onSubmit={addFilter}
       />
-      <Button
-        title="Set Scheduling Rule"
-        marginTop={6}
-        onClick={submit}
-        disabled={!schedulingRule.length}
-      />
+      <Button title="Set Scheduling Rule" marginTop={6} onClick={submit} />
     </Card>
   );
 };
