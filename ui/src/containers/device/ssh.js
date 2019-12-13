@@ -85,7 +85,7 @@ const DeviceSsh = ({
 
     conn.connect({
       sock: ws(
-        `${config.wsEndpoint}/projects/${params.projectName}/devices/${device.id}/ssh`,
+        `${config.wsEndpoint}/projects/${params.project}/devices/${device.id}/ssh`,
         ['binary']
       ),
       username: '',
@@ -95,7 +95,7 @@ const DeviceSsh = ({
   return (
     <Card size="xlarge">
       <Terminal bg="grays.0">
-        <Column id="terminal" />
+        <Column id="terminal" flex={1} />
       </Terminal>
     </Card>
   );
