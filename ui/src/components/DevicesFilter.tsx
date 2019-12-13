@@ -328,7 +328,13 @@ export class DevicesFilter extends Component<Props, State> {
     const selectClassName: string = utils.randomClassName();
 
     return (
-      <Popup show={show} onClose={onClose}>
+      <Popup
+        show={show}
+        onClose={() => {
+          onClose();
+          this.resetFilter();
+        }}
+      >
         <Card
           border
           size="xlarge"
