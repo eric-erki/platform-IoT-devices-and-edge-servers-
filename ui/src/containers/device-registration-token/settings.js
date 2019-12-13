@@ -16,7 +16,10 @@ import { Text, Button, Form } from '../../components/core';
 const validationSchema = yup.object().shape({
   name: validators.name.required(),
   description: yup.string(),
-  maxRegistrations: yup.number().max(10000000),
+  maxRegistrations: yup
+    .mixed()
+    .notRequired()
+    .nullable(),
 });
 
 const DeviceRegistrationTokenSettings = ({
