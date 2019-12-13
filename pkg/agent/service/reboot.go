@@ -4,13 +4,9 @@ import (
 	"context"
 	"net/http"
 	"os/exec"
-
-	"github.com/deviceplane/deviceplane/pkg/agent/server/conncontext"
 )
 
 func (s *Service) reboot(w http.ResponseWriter, r *http.Request) {
-	conn := conncontext.GetConn(r)
-
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
 
@@ -21,6 +17,5 @@ func (s *Service) reboot(w http.ResponseWriter, r *http.Request) {
 
 	w.Write([]byte("Scheduling reboot"))
 	w.WriteHeader(200)
-	conn.Close()
 	return
 }

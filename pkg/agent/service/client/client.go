@@ -75,7 +75,11 @@ func InitiateSSH(deviceConn net.Conn) error {
 }
 
 func InitiateReboot(deviceConn net.Conn) (*http.Response, error) {
-	req, _ := http.NewRequest("POST", "/reboot", nil)
+	req, _ := http.NewRequest(
+		"POST",
+		"/reboot",
+		nil,
+	)
 
 	if err := req.Write(deviceConn); err != nil {
 		return nil, err
