@@ -94,6 +94,7 @@ const PasswordRecovery = ({
             name="password"
             ref={register}
             errors={errors.password}
+            hint="Password length must be at least 8, contain a lower case letter, a upper case letter, and no spaces."
           />
           <Button title="Submit" type="submit" />
         </Form>

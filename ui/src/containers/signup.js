@@ -106,6 +106,7 @@ const Signup = () => {
             name="password"
             ref={register}
             errors={errors.password}
+            hint="Password length must be at least 8, contain a lower case letter, a upper case letter, and no spaces."
             maxLength={64}
           />
           <Button title="Sign up" justifyContent="center" />
