@@ -31,27 +31,25 @@ const ConditionComp = ({ type, params }) => {
     case LabelValueCondition:
       return (
         <>
-          <Text fontWeight={3} marginRight={2} color="black">
+          <Text fontWeight={3} marginRight={2}>
             {params.key}
           </Text>
 
-          <Text fontWeight={2} marginRight={2} color="black">
+          <Text fontWeight={2} marginRight={2}>
             {params.operator}
           </Text>
 
-          <Text fontWeight={3} color="black">
-            {params.value}
-          </Text>
+          <Text fontWeight={3}>{params.value}</Text>
         </>
       );
     case LabelExistenceCondition:
       return (
         <>
-          <Text fontWeight={3} marginRight={2} color="black">
+          <Text fontWeight={3} marginRight={2}>
             {params.key}
           </Text>
 
-          <Text fontWeight={2} marginRight={2} color="black">
+          <Text fontWeight={2} marginRight={2}>
             {params.operator}
           </Text>
         </>
@@ -62,21 +60,16 @@ const ConditionComp = ({ type, params }) => {
           <Text
             fontWeight={3}
             marginRight={2}
-            color="black"
             css={{ textTransform: 'capitalize' }}
           >
             {params.property}
           </Text>
 
-          <Text fontWeight={2} marginRight={2} color="black">
+          <Text fontWeight={2} marginRight={2}>
             {params.operator}
           </Text>
 
-          <Text
-            style={{ textTransform: 'capitalize' }}
-            fontWeight={3}
-            color="black"
-          >
+          <Text style={{ textTransform: 'capitalize' }} fontWeight={3}>
             {params.value}
           </Text>
         </>
@@ -113,7 +106,7 @@ export const DevicesFilterButtons = ({
           >
             {filter.map((condition, i) => (
               <React.Fragment key={i}>
-                <Badge>
+                <Badge bg="grays.3">
                   <ConditionComp {...condition} />
                 </Badge>
 
