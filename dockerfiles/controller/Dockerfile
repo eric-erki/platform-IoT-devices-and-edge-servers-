@@ -4,8 +4,8 @@ RUN apk --update add ca-certificates
 FROM node:10
 WORKDIR /app
 COPY ./ ./
-RUN npm install --prefix ./ui
-RUN npm run build --prefix ./ui
+RUN yarn install --prefix ./ui
+RUN yarn run build --prefix ./ui
 
 FROM golang:1.13
 ARG version
