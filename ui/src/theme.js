@@ -5,7 +5,7 @@ const colors = {
 
   black: '#000',
   white: '#E6E6E6',
-  green: '#48E5C2',
+  green: '#9EE493',
   red: '#D7263D',
 
   transparent: 'transparent',
@@ -85,9 +85,11 @@ export const labelColors = [
   '#A682FF',
   '#EB8258',
   '#FFD131',
+  '#FB62F6',
   '#BAD4AA',
   '#9DFFF9',
   '#F2BEFC',
+  '#FCFF6C',
   '#BFD7EA',
   '#D741A7',
 ];

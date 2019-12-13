@@ -53,8 +53,10 @@ const ServiceAccount = ({
   });
   const navigation = useNavigation();
   const [showDeletePopup, setShowDeletePopup] = useState();
+  const [backendError, setBackendError] = useState();
 
   const submit = async data => {
+    setBackendError(null);
     let error = false;
 
     try {
@@ -108,6 +110,7 @@ const ServiceAccount = ({
   };
 
   const submitDelete = async () => {
+    setBackendError(null);
     try {
       await api.deleteServiceAccount({
         projectId: params.project,
@@ -116,6 +119,7 @@ const ServiceAccount = ({
       toaster.success('Successfully deleted service account.');
       navigation.navigate(`/${params.project}/iam/service-accounts`);
     } catch (error) {
+      setBackendError(utils.parseError(error));
       toaster.danger('Service account was not deleted.');
       console.log(error);
     }
@@ -137,6 +141,7 @@ const ServiceAccount = ({
         ]}
         marginBottom={6}
       >
+        <Alert variant="error" show={backendError} description={backendError} />
         <Form onSubmit={handleSubmit(submit)}>
           <Field label="Name" name="name" ref={register} errors={errors.name} />
           <Field
