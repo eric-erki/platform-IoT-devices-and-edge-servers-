@@ -57,11 +57,7 @@ const ConditionComp = ({ type, params }) => {
     case DevicePropertyCondition:
       return (
         <>
-          <Text
-            fontWeight={3}
-            marginRight={2}
-            css={{ textTransform: 'capitalize' }}
-          >
+          <Text fontWeight={3} marginRight={2}>
             {params.property}
           </Text>
 
@@ -69,19 +65,12 @@ const ConditionComp = ({ type, params }) => {
             {params.operator}
           </Text>
 
-          <Text style={{ textTransform: 'capitalize' }} fontWeight={3}>
-            {params.value}
-          </Text>
+          <Text fontWeight={3}>{params.value}</Text>
         </>
       );
     default:
       return (
-        <Text
-          fontWeight={2}
-          marginRight={2}
-          color="black"
-          style={{ textTransform: 'capitalize' }}
-        >
+        <Text fontWeight={2} marginRight={2}>
           Error rendering label.
         </Text>
       );

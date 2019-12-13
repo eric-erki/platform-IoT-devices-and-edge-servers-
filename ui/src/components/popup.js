@@ -45,13 +45,13 @@ const CloseButton = styled.button`
   border-radius: 999px;
   z-index: 9999999;
   cursor: pointer;
-  border: 1px solid ${props => props.theme.colors.white};
+  border: 2px solid ${props => props.theme.colors.white};
 
   transition: background-color 200ms;
-  background-color: transparent;
+  background-color: white;
 
   &:hover {
-    background-color: ${props => props.theme.colors.white};
+    background-color: ${props => props.theme.colors.black};
   }
 
   & svg {
@@ -59,7 +59,7 @@ const CloseButton = styled.button`
   }
 
   &:hover svg {
-    fill: ${props => props.theme.colors.black} !important;
+    fill: ${props => props.theme.colors.white} !important;
   }
 `;
 
@@ -105,7 +105,7 @@ const Popup = ({ children, show, onClose }) => {
           <Overlay>
             <Container ref={node}>
               <CloseButton onClick={onClose}>
-                <Icon icon="cross" size={20} color="white" />
+                <Icon icon="cross" size={20} color="black" />
               </CloseButton>
               <motion.div
                 initial={{ opacity: 1, y: 150, scale: 0.75 }}
