@@ -82,14 +82,17 @@ const Popup = ({ children, show, onClose }) => {
     if (show) {
       document.addEventListener('keydown', handleKeyDown);
       document.addEventListener('mousedown', handleClick);
+      document.body.style.overflow = 'hidden';
     } else {
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('mousedown', handleClick);
+      document.body.style.overflow = 'initial';
     }
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('mousedown', handleClick);
+      document.body.style.overflow = 'initial';
     };
   }, [show]);
 
