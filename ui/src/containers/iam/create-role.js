@@ -32,7 +32,6 @@ const CreateRole = ({
   const [backendError, setBackendError] = useState();
 
   const submit = async data => {
-    setBackendError(null);
     try {
       await api.createRole({ projectId: params.project, data });
       toaster.success('Role created successfully.');
@@ -47,7 +46,12 @@ const CreateRole = ({
   return (
     <Card title="Create Role">
       <Alert show={backendError} variant="error" description={backendError} />
-      <Form onSubmit={handleSubmit(submit)}>
+      <Form
+        onSubmit={e => {
+          setBackendError(null);
+          handleSubmit(submit)(e);
+        }}
+      >
         <Field
           required
           autoFocus

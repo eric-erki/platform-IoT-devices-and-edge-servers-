@@ -27,7 +27,6 @@ const CreateServiceAccount = ({
   const [backendError, setBackendError] = useState();
 
   const submit = async data => {
-    setBackendError(null);
     try {
       await api.createServiceAccount({ projectId: params.project, data });
       toaster.success('Service acccount created successfully.');
@@ -42,7 +41,12 @@ const CreateServiceAccount = ({
   return (
     <Card title="Create Service Account" size="medium">
       <Alert show={backendError} variant="error" description={backendError} />
-      <Form onSubmit={handleSubmit(submit)}>
+      <Form
+        onSubmit={e => {
+          setBackendError(null);
+          handleSubmit(submit)(e);
+        }}
+      >
         <Field
           required
           autoFocus

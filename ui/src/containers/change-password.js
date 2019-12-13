@@ -21,7 +21,6 @@ const ChangePassword = ({ close }) => {
   const [backendError, setBackendError] = useState();
 
   const submit = async data => {
-    setBackendError(null);
     try {
       await api.updateUser(data);
       toaster.success('Password updated successfully.');
@@ -36,7 +35,12 @@ const ChangePassword = ({ close }) => {
   return (
     <Card title="Change Password" border>
       <Alert show={backendError} variant="error" description={backendError} />
-      <Form onSubmit={handleSubmit(submit)}>
+      <Form
+        onSubmit={e => {
+          setBackendError(null);
+          handleSubmit(submit)(e);
+        }}
+      >
         <Field
           required
           autoFocus

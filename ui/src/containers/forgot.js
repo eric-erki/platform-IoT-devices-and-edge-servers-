@@ -49,7 +49,12 @@ const PasswordReset = () => {
         <Text marginBottom={3}>
           You will receive an email with a link to reset your password.
         </Text>
-        <Form onSubmit={handleSubmit(submit)}>
+        <Form
+          onSubmit={e => {
+            setBackendError(null);
+            handleSubmit(submit)(e);
+          }}
+        >
           <Field
             autoFocus
             autoComplete="on"

@@ -36,7 +36,6 @@ const ApplicationSettings = ({
   const navigation = useNavigation();
 
   const submit = async data => {
-    setBackendError(null);
     try {
       await api.updateApplication({
         projectId: params.project,
@@ -53,6 +52,7 @@ const ApplicationSettings = ({
   };
 
   const submitDelete = async () => {
+    setBackendError(null);
     try {
       await api.deleteApplication({
         projectId: params.project,
@@ -82,7 +82,12 @@ const ApplicationSettings = ({
         ]}
       >
         <Alert show={backendError} variant="error" description={backendError} />
-        <Form onSubmit={handleSubmit(submit)}>
+        <Form
+          onSubmit={e => {
+            setBackendError(null);
+            handleSubmit(submit)(e);
+          }}
+        >
           <Field
             autoFocus
             required

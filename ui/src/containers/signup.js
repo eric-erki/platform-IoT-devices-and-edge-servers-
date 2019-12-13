@@ -35,7 +35,6 @@ const Signup = () => {
   const [backendError, setBackendError] = useState();
 
   const submit = async data => {
-    setBackendError(null);
     try {
       await api.signup(data);
       navigation.navigate('/login');
@@ -58,7 +57,12 @@ const Signup = () => {
         actions={[{ href: '/login', title: 'Log in', variant: 'secondary' }]}
       >
         <Alert show={backendError} variant="error" description={backendError} />
-        <Form onSubmit={handleSubmit(submit)}>
+        <Form
+          onSubmit={e => {
+            setBackendError(null);
+            handleSubmit(submit)(e);
+          }}
+        >
           <Field
             required
             autoFocus

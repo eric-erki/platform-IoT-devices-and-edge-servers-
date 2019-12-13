@@ -40,7 +40,6 @@ const Profile = ({ close }) => {
   const [backendError, setBackendError] = useState();
 
   const submit = async data => {
-    setBackendError(null);
     try {
       await api.updateUser(data);
       setCurrentUser({ ...currentUser, ...data });
@@ -56,7 +55,12 @@ const Profile = ({ close }) => {
   return (
     <Card title="Profile" border>
       <Alert show={backendError} variant="error" description={backendError} />
-      <Form onSubmit={handleSubmit(submit)}>
+      <Form
+        onSubmit={e => {
+          setBackendError(null);
+          handleSubmit(submit)(e);
+        }}
+      >
         <Field
           required
           label="First Name"

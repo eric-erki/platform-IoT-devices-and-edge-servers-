@@ -41,7 +41,6 @@ const DeviceRegistrationTokenSettings = ({
   const [backendError, setBackendError] = useState();
 
   const submit = async data => {
-    setBackendError(null);
     try {
       await api.updateDeviceRegistrationToken({
         projectId: params.project,
@@ -89,7 +88,12 @@ const DeviceRegistrationTokenSettings = ({
       ]}
     >
       <Alert show={backendError} variant="error" description={backendError} />
-      <Form onSubmit={handleSubmit(submit)}>
+      <Form
+        onSubmit={e => {
+          setBackendError(null);
+          handleSubmit(submit)(e);
+        }}
+      >
         <Field label="Name" name="name" ref={register} errors={errors.name} />
         <Field
           type="textarea"

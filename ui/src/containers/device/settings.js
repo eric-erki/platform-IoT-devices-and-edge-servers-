@@ -43,7 +43,6 @@ const DeviceSettings = ({
   const [showPopup, setShowPopup] = useState();
 
   const submit = async data => {
-    setBackendError(null);
     try {
       await api.updateDevice({
         projectId: params.project,
@@ -103,7 +102,12 @@ const DeviceSettings = ({
           <Value>{device.id}</Value>
         </Column>
 
-        <Form onSubmit={handleSubmit(submit)}>
+        <Form
+          onSubmit={e => {
+            setBackendError(null);
+            handleSubmit(submit)(e);
+          }}
+        >
           <Field
             required
             label="Name"

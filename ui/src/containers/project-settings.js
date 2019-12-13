@@ -38,7 +38,6 @@ const ProjectSettings = ({
   const [backendError, setBackendError] = React.useState();
 
   const submit = async data => {
-    setBackendError(null);
     try {
       await api.updateProject({ projectId: project.name, data });
       toaster.success('Project updated successfully.');
@@ -84,7 +83,12 @@ const ProjectSettings = ({
             variant="error"
             description={backendError}
           />
-          <Form onSubmit={handleSubmit(submit)}>
+          <Form
+            onSubmit={e => {
+              setBackendError(null);
+              handleSubmit(submit)(e);
+            }}
+          >
             <Field
               required
               label="Name"

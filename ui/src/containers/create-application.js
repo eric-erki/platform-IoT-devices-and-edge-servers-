@@ -46,7 +46,12 @@ const CreateApplication = ({
     <Layout alignItems="center">
       <Card title="Create Application">
         <Alert show={backendError} variant="error" description={backendError} />
-        <Form onSubmit={handleSubmit(submit)}>
+        <Form
+          onSubmit={e => {
+            setBackendError(null);
+            handleSubmit(submit)(e);
+          }}
+        >
           <Field
             required
             autoFocus

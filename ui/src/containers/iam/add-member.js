@@ -25,7 +25,6 @@ const AddMember = ({
   const [backendError, setBackendError] = useState();
 
   const submit = async data => {
-    setBackendError(null);
     try {
       const {
         data: { userId },
@@ -72,7 +71,12 @@ const AddMember = ({
   return (
     <Card title="Add Member">
       <Alert show={backendError} variant="error" description={backendError} />
-      <Form onSubmit={handleSubmit(submit)}>
+      <Form
+        onSubmit={e => {
+          setBackendError(null);
+          handleSubmit(submit)(e);
+        }}
+      >
         <Field
           autoFocus
           required

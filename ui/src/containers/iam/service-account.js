@@ -56,7 +56,6 @@ const ServiceAccount = ({
   const [backendError, setBackendError] = useState();
 
   const submit = async data => {
-    setBackendError(null);
     let error = false;
 
     try {
@@ -142,7 +141,12 @@ const ServiceAccount = ({
         marginBottom={6}
       >
         <Alert variant="error" show={backendError} description={backendError} />
-        <Form onSubmit={handleSubmit(submit)}>
+        <Form
+          onSubmit={e => {
+            setBackendError(null);
+            handleSubmit(submit)(e);
+          }}
+        >
           <Field label="Name" name="name" ref={register} errors={errors.name} />
           <Field
             type="textarea"

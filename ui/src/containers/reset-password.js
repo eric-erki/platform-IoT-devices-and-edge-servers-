@@ -49,7 +49,6 @@ const PasswordRecovery = ({
   }, []);
 
   const submit = async ({ password }) => {
-    setBackendError(null);
     try {
       await api.updatePassword({ password, token });
       toaster.success('Password changed successfully.');
@@ -82,7 +81,12 @@ const PasswordRecovery = ({
     <Column flex={1} alignItems="center" paddingTop={9} paddingBottom={6}>
       <Card title="Recover Password" logo>
         <Alert show={backendError} variant="error" description={backendError} />
-        <Form onSubmit={handleSubmit(submit)}>
+        <Form
+          onSubmit={e => {
+            setBackendError(null);
+            handleSubmit(submit)(e);
+          }}
+        >
           <Field
             required
             type="password"

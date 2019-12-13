@@ -33,7 +33,6 @@ const CreateRelease = ({
   const [backendError, setBackendError] = useState();
 
   const submit = async data => {
-    setBackendError(null);
     try {
       await api.createRelease({
         projectId: params.project,
@@ -53,7 +52,12 @@ const CreateRelease = ({
   return (
     <Card title="Create Release">
       <Alert show={backendError} variant="error" description={backendError} />
-      <Form onSubmit={handleSubmit(submit)}>
+      <Form
+        onSubmit={e => {
+          setBackendError(null);
+          handleSubmit(submit)(e);
+        }}
+      >
         <Field
           as={<Editor width="100%" height="300px" />}
           label="Config"

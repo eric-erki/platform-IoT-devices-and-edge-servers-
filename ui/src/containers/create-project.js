@@ -26,7 +26,6 @@ const ProjectCreate = () => {
   const [backendError, setBackendError] = useState();
 
   const submit = async data => {
-    setBackendError(null);
     try {
       await api.createProject(data);
       navigation.navigate(`/${data.name}`);
@@ -41,7 +40,12 @@ const ProjectCreate = () => {
     <Layout alignItems="center">
       <Card width={10} title="Create Project">
         <Alert show={backendError} variant="error" description={backendError} />
-        <Form onSubmit={handleSubmit(submit)}>
+        <Form
+          onSubmit={e => {
+            setBackendError(null);
+            handleSubmit(submit)(e);
+          }}
+        >
           <Field
             required
             autoFocus

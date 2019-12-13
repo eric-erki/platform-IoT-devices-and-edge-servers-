@@ -39,7 +39,6 @@ const Role = ({
   const [showDeletePopup, setShowDeletePopup] = useState();
 
   const submit = async data => {
-    setBackendError(null);
     try {
       await api.updateRole({
         projectId: params.project,
@@ -81,12 +80,13 @@ const Role = ({
           },
         ]}
       >
-        <Form onSubmit={handleSubmit(submit)}>
-          <Alert
-            show={backendError}
-            variant="error"
-            description={backendError}
-          />
+        <Alert show={backendError} variant="error" description={backendError} />
+        <Form
+          onSubmit={e => {
+            setBackendError(null);
+            handleSubmit(submit)(e);
+          }}
+        >
           <Field
             autoFocus
             required

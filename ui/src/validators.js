@@ -1,7 +1,7 @@
 import * as yup from 'yup';
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?!.*\s).{8,100}$/;
-const nameRegex = /^[a-z0-9-]+$/;
+const nameRegex = /^[a-zA-Z0-9-]+$/;
 //const noSpacesRegex = /^(?!.*\s).{1,100}$/;
 //const usernameRegex = /^[a-zA-Z]+$/;
 
@@ -10,7 +10,7 @@ export default {
     .string()
     .max(100)
     .matches(nameRegex, {
-      message: 'Must be only lowercase letters, numbers and -',
+      message: 'Can only include letters, numbers, and -.',
     }),
   email: yup
     .string()
