@@ -29,7 +29,6 @@ const StyledInput = styled.input`
   border: 1px solid ${props => props.theme.colors.grays[0]};
   outline: none;
   margin: 0;
-  padding: 10px;
   transition: border-color 200ms;
   width: 100%;
 
@@ -57,7 +56,6 @@ const StyledInput = styled.input`
 StyledInput.defaultProps = {
   color: 'grays.11',
   bg: 'grays.0',
-  padding: 3,
   borderRadius: 1,
   fontWeight: 2,
   boxShadow: 0,
@@ -68,7 +66,13 @@ const Input = forwardRef((props, ref) => {
   const [type, setType] = useState(props.type);
   return (
     <Container>
-      <StyledInput {...props} type={type} ref={ref} />
+      <StyledInput
+        {...props}
+        type={type}
+        ref={ref}
+        padding={3}
+        paddingRight={props.type === 'password' ? 6 : 3}
+      />
       {props.type === 'password' && (
         <Icon
           size={14}
