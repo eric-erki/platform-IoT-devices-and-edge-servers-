@@ -51,6 +51,11 @@ const Scheduling = ({
       await api.updateApplication({
         projectId: params.project,
         applicationId: application.name,
+        data: {
+          name: application.name,
+          description: application.description,
+          schedulingRule,
+        },
       });
 
       toaster.success('Scheduling rule updated successfully.');
