@@ -64,8 +64,8 @@ const DeviceSsh = ({
             .stderr.on('data', function(data) {
               term.write(data.toString());
             });
-          term.on('key', function(key, kev) {
-            stream.write(key);
+          term.on('data', function(data) {
+            stream.write(data);
           });
           term.on('resize', function(rev) {
             stream.setWindow(rev.rows, rev.cols, 480, 640);
