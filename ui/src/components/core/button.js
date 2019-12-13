@@ -67,6 +67,7 @@ const defaultProps = {
   variant: 'primary',
   fontSize: 1,
   fontWeight: 2,
+  padding: 3,
   borderRadius: 1,
   boxShadow: 0,
   display: 'flex',
@@ -83,7 +84,6 @@ export const Btn = styled.button`
   cursor: pointer;
   text-transform: capitalize;
   transition: all 250ms;
-  padding: 10px 12px;
   transform: translateZ(0);
   backface-visibility: hidden;
 
