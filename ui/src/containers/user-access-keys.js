@@ -39,9 +39,7 @@ const UserAccessKeys = () => {
             onClick={() => deleteAccessKey(row.original.id)}
           />
         ),
-        cellStyle: {
-          flex: 1,
-          display: 'flex',
+        style: {
           justifyContent: 'flex-end',
         },
       },

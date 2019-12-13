@@ -14,6 +14,7 @@ import theme from '../../theme';
 
 const Container = styled.div`
   display: flex;
+  flex: 1;
   align-items: center;
   position: relative;
 

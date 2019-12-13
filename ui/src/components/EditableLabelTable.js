@@ -66,13 +66,8 @@ const EditableLabelTable = ({ data, onAdd, onRemove }) => {
         ),
         style: {
           flex: 3,
-        },
-        cellStyle: {
-          flex: 1,
-          height: 32,
-          display: 'flex',
+          minHeight: '56px',
           alignItems: 'center',
-          overflow: 'hidden',
         },
       },
       {
@@ -86,12 +81,8 @@ const EditableLabelTable = ({ data, onAdd, onRemove }) => {
         ),
         style: {
           flex: 3,
-        },
-        cellStyle: {
-          flex: 1,
-          display: 'flex',
           alignItems: 'center',
-          height: 32,
+          minHeight: '56px',
         },
       },
       {
@@ -147,12 +138,9 @@ const EditableLabelTable = ({ data, onAdd, onRemove }) => {
             </Row>
           );
         },
-        cellStyle: {
-          display: 'flex',
-          flex: 1,
-          justifyContent: 'flex-end',
+        style: {
           alignItems: 'center',
-          height: 32,
+          minHeight: '56px',
         },
       },
     ],
