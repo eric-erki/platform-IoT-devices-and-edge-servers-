@@ -95,8 +95,8 @@ func (c *Client) ListDevices(ctx context.Context, filters []models.Filter, proje
 			return nil, err
 		}
 
-		b64bytes := base64.StdEncoding.EncodeToString(bytes)
-		urlValues["filter"] = append(urlValues["filter"], b64bytes)
+		b64Filter := base64.StdEncoding.EncodeToString(bytes)
+		urlValues.Add("filter", b64Filter)
 	}
 
 	var queryString string
