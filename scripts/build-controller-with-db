@@ -7,3 +7,16 @@ if [ -z "$CONTROLLER_WITH_DB_VERSION" ]; then
 fi
 
 docker build -t deviceplane/deviceplane-with-db:${CONTROLLER_WITH_DB_VERSION} -f dockerfiles/controller-with-db/Dockerfile --build-arg version=${CONTROLLER_WITH_DB_VERSION} .
+
+docker build -t deviceplane/deviceplane-with-db:amd64-${CONTROLLER_WITH_DB_VERSION} -f dockerfiles/controller-with-db/amd64/Dockerfile --build-arg version=${CONTROLLER_WITH_DB_VERSION} .
+docker build -t deviceplane/deviceplane-with-db:arm32v6-${CONTROLLER_WITH_DB_VERSION} -f dockerfiles/controller-with-db/arm32v6/Dockerfile --build-arg version=${CONTROLLER_WITH_DB_VERSION} .
+docker build -t deviceplane/deviceplane-with-db:arm64v8-${CONTROLLER_WITH_DB_VERSION} -f dockerfiles/controller-with-db/arm64v8/Dockerfile --build-arg version=${CONTROLLER_WITH_DB_VERSION} .
+
+docker push deviceplane/deviceplane-with-db:amd64-${CONTROLLER_WITH_DB_VERSION}
+docker push deviceplane/deviceplane-with-db:arm32v6-${CONTROLLER_WITH_DB_VERSION}
+docker push deviceplane/deviceplane-with-db:arm64v8-${CONTROLLER_WITH_DB_VERSION}
+
+docker manifest create deviceplane/deviceplane-with-db:${CONTROLLER_WITH_DB_VERSION} deviceplane/deviceplane-with-db:amd64-${CONTROLLER_WITH_DB_VERSION} deviceplane/deviceplane-with-db:arm32v6-${CONTROLLER_WITH_DB_VERSION} deviceplane/deviceplane-with-db:arm64v8-${CONTROLLER_WITH_DB_VERSION}
+docker manifest annotate deviceplane/deviceplane-with-db:${CONTROLLER_WITH_DB_VERSION} deviceplane/deviceplane-with-db:arm32v6-${CONTROLLER_WITH_DB_VERSION} --os linux --arch arm
+docker manifest annotate deviceplane/deviceplane-with-db:${CONTROLLER_WITH_DB_VERSION} deviceplane/deviceplane-with-db:arm64v8-${CONTROLLER_WITH_DB_VERSION} --os linux --arch arm64
+

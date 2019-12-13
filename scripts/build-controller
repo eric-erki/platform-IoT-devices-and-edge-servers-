@@ -7,3 +7,16 @@ if [ -z "$CONTROLLER_VERSION" ]; then
 fi
 
 docker build -t deviceplane/deviceplane:${CONTROLLER_VERSION} -f dockerfiles/controller/Dockerfile --build-arg version=${CONTROLLER_VERSION} .
+
+docker build -t deviceplane/deviceplane:amd64-${CONTROLLER_VERSION} -f dockerfiles/controller/amd64/Dockerfile --build-arg version=${CONTROLLER_VERSION} .
+docker build -t deviceplane/deviceplane:arm32v6-${CONTROLLER_VERSION} -f dockerfiles/controller/arm32v6/Dockerfile --build-arg version=${CONTROLLER_VERSION} .
+docker build -t deviceplane/deviceplane:arm64v8-${CONTROLLER_VERSION} -f dockerfiles/controller/arm64v8/Dockerfile --build-arg version=${CONTROLLER_VERSION} .
+
+docker push deviceplane/deviceplane:amd64-${CONTROLLER_VERSION}
+docker push deviceplane/deviceplane:arm32v6-${CONTROLLER_VERSION}
+docker push deviceplane/deviceplane:arm64v8-${CONTROLLER_VERSION}
+
+docker manifest create deviceplane/deviceplane:${CONTROLLER_VERSION} deviceplane/deviceplane:amd64-${CONTROLLER_VERSION} deviceplane/deviceplane:arm32v6-${CONTROLLER_VERSION} deviceplane/deviceplane:arm64v8-${CONTROLLER_VERSION}
+docker manifest annotate deviceplane/deviceplane:${CONTROLLER_VERSION} deviceplane/deviceplane:arm32v6-${CONTROLLER_VERSION} --os linux --arch arm
+docker manifest annotate deviceplane/deviceplane:${CONTROLLER_VERSION} deviceplane/deviceplane:arm64v8-${CONTROLLER_VERSION} --os linux --arch arm64
+
