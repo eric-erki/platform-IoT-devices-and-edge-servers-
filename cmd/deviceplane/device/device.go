@@ -74,26 +74,6 @@ func deviceInspectAction(c *kingpin.ParseContext) error {
 	return cliutils.PrintWithFormat(device, *deviceOutputFlag)
 }
 
-func deviceHostMetricsAction(c *kingpin.ParseContext) error {
-	metrics, err := config.APIClient.GetDeviceHostMetrics(context.TODO(), *config.Flags.Project, *deviceArg)
-	if err != nil {
-		return err
-	}
-
-	fmt.Println(*metrics)
-	return nil
-}
-
-func deviceServiceMetricsAction(c *kingpin.ParseContext) error {
-	metrics, err := config.APIClient.GetDeviceServiceMetrics(context.TODO(), *config.Flags.Project, *deviceArg, *deviceMetricsApplicationArg, *deviceMetricsServiceArg)
-	if err != nil {
-		return err
-	}
-
-	fmt.Println(*metrics)
-	return nil
-}
-
 func deviceSSHAction(c *kingpin.ParseContext) error {
 	conn, err := config.APIClient.InitiateSSH(context.TODO(), *config.Flags.Project, *deviceArg)
 	if err != nil {
