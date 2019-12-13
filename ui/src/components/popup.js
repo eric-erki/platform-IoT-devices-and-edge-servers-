@@ -100,7 +100,7 @@ const Popup = ({ children, show, onClose }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.15 }}
+          transition={{ duration: 0.1 }}
         >
           <Overlay>
             <Container ref={node}>
@@ -108,10 +108,10 @@ const Popup = ({ children, show, onClose }) => {
                 <Icon icon="cross" size={20} color="black" />
               </CloseButton>
               <motion.div
-                initial={{ opacity: 1, y: 150, scale: 0.75 }}
+                initial={{ opacity: 0, y: 150, scale: 0.75 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -150, scale: 0.5 }}
-                transition={{ duration: 0.2 }}
+                transition={{ duration: 0.2, delay: 0.1 }}
               >
                 <Content>{children}</Content>
               </motion.div>

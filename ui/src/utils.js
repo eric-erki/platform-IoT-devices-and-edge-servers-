@@ -15,6 +15,8 @@ const deepClone = object => {
   return JSON.parse(JSON.stringify(object));
 };
 
+const deepEqual = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+
 const parseError = error => {
   if (
     error &&
@@ -33,6 +35,7 @@ const parseError = error => {
 export default {
   randomClassName,
   deepClone,
+  deepEqual,
   capitalize,
   parseError,
 };
