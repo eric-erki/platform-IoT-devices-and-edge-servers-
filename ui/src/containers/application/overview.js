@@ -14,7 +14,7 @@ const ApplicationOverview = ({
   },
 }) => {
   return (
-    <Card title={name} subtitle={description}>
+    <Card title={name} subtitle={description} size="xlarge">
       <Group>
         <Label>Scheduling Rule</Label>
         {schedulingRule.length ? (

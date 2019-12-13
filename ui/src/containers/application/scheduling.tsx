@@ -87,7 +87,14 @@ const Scheduling = ({
   return (
     <Card
       title="Scheduling"
+      size="xlarge"
       actions={[
+        {
+          title: 'Clear Filters',
+          onClick: clearFilters,
+          show: !!schedulingRule.length,
+          variant: 'text',
+        },
         {
           title: 'Add Filter',
           onClick: () => setShowFilterDialog(true),

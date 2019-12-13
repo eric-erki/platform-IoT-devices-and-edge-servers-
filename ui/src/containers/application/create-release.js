@@ -50,7 +50,7 @@ const CreateRelease = ({
   };
 
   return (
-    <Card title="Create Release">
+    <Card title="Create Release" size="xlarge">
       <Alert show={backendError} variant="error" description={backendError} />
       <Form
         onSubmit={e => {
