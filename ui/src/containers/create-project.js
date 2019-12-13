@@ -29,7 +29,7 @@ const ProjectCreate = () => {
     setBackendError(null);
     try {
       await api.createProject(data);
-      navigation.navigate(`/`);
+      navigation.navigate(`/${data.name}`);
     } catch (error) {
       setBackendError(utils.parseError(error));
       toaster.danger('Project was not created.');

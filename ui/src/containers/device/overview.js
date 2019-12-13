@@ -1,7 +1,15 @@
 import React, { useMemo } from 'react';
 
 import api from '../../api';
-import { Row, Column, Value, Badge, Link, Label } from '../../components/core';
+import {
+  Row,
+  Column,
+  Value,
+  Badge,
+  Link,
+  Label,
+  Text,
+} from '../../components/core';
 import Card from '../../components/card';
 import Table from '../../components/table';
 import EditableLabelTable from '../../components/EditableLabelTable';
@@ -57,11 +65,17 @@ const DeviceServices = ({ project, applicationStatusInfo }) => {
     [applicationStatusInfo]
   );
 
-  if (!checkServices(applicationStatusInfo)) {
-    return null;
-  }
-
-  return <Table columns={columns} data={tableData} />;
+  return (
+    <Table
+      columns={columns}
+      data={tableData}
+      placeholder={
+        <Text>
+          There are no <strong>Services</strong>.
+        </Text>
+      }
+    />
+  );
 };
 
 const DeviceOverview = ({
