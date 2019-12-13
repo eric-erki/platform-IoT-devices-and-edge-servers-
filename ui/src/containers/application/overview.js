@@ -45,7 +45,7 @@ const ApplicationOverview = ({
           </Group>
 
           <Group>
-            <Label>Current Release Config</Label>
+            <Label>Current Config</Label>
             <Editor
               width="100%"
               height="150px"
