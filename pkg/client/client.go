@@ -88,24 +88,23 @@ func (c *Client) ListApplications(ctx context.Context, project string) ([]models
 func (c *Client) ListDevices(ctx context.Context, filters []models.Filter, project string) ([]models.Device, error) {
 	var devices []models.Device
 
-	var filterQuery string
-	if len(filters) != 0 {
-		filterQuery = "?filter="
-
-		var encodedFilters []string
-		for _, filter := range filters {
-			bytes, err := json.Marshal(filter)
-			if err != nil {
-				return nil, err
-			}
-
-			b64bytes := base64.StdEncoding.EncodeToString(bytes)
-			encodedFilters = append(encodedFilters, b64bytes)
+	urlValues := url.Values{}
+	for _, filter := range filters {
+		bytes, err := json.Marshal(filter)
+		if err != nil {
+			return nil, err
 		}
-		filterQuery += strings.Join(encodedFilters, "&filter=")
+
+		b64bytes := base64.StdEncoding.EncodeToString(bytes)
+		urlValues["filter"] = append(urlValues["filter"], b64bytes)
 	}
 
-	if err := c.get(ctx, &devices, projectsURL, project, devicesURL+filterQuery); err != nil {
+	var queryString string
+	if encoded := urlValues.Encode(); encoded != "" {
+		queryString = "?" + encoded
+	}
+
+	if err := c.get(ctx, &devices, projectsURL, project, devicesURL+queryString); err != nil {
 		return nil, err
 	}
 	return devices, nil
