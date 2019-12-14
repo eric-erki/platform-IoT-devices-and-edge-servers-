@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"os/exec"
 	"time"
+
+	"github.com/apex/log"
 )
 
 func (s *Service) reboot(w http.ResponseWriter, r *http.Request) {
@@ -17,11 +19,13 @@ func (s *Service) reboot(w http.ResponseWriter, r *http.Request) {
 	cmd := exec.CommandContext(ctx, "/sbin/reboot")
 	go func() {
 		fmt.Println("Sleeping")
-		time.Sleep(1000)
+		time.Sleep(2000)
 		fmt.Println("Rebooting")
-		cmd.Run()
+		err := cmd.Run()
+		if err != nil {
+			log.WithError(err).Error("failed to reboot")
+		}
 		fmt.Println("Done Rebooting?")
-		w.WriteHeader(600)
 	}()
 
 	w.Write([]byte("Scheduling reboot"))
