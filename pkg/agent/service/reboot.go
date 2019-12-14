@@ -1,7 +1,6 @@
 package service
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"os/exec"
@@ -13,19 +12,13 @@ import (
 func (s *Service) reboot(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("HIT REBOOT")
 
-	ctx, cancel := context.WithCancel(r.Context())
-	defer cancel()
-
-	cmd := exec.CommandContext(ctx, "/sbin/reboot")
+	cmd := exec.Command("/sbin/reboot")
 	go func() {
-		fmt.Println("Sleeping")
-		time.Sleep(2000)
-		fmt.Println("Rebooting")
+		time.Sleep(1000)
 		err := cmd.Run()
 		if err != nil {
 			log.WithError(err).Error("failed to reboot")
 		}
-		fmt.Println("Done Rebooting?")
 	}()
 
 	w.Write([]byte("Scheduling reboot"))
