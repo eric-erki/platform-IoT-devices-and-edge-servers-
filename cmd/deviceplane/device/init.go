@@ -51,9 +51,11 @@ func Initialize(c *global.Config) {
 	)
 	deviceInspectCmd.Action(deviceInspectAction)
 
-	deviceRebootCmd := deviceCmd.Command("reboot", "Reboot a device.")
-	addDeviceArg(deviceRebootCmd)
-	deviceRebootCmd.Action(deviceRebootAction)
+	cliutils.GlobalAndCategorizedCmd(config.App, deviceCmd, func(attachmentPoint cliutils.HasCommand) {
+		deviceRebootCmd := attachmentPoint.Command("reboot", "Reboot a device.")
+		addDeviceArg(deviceRebootCmd)
+		deviceRebootCmd.Action(deviceRebootAction)
+	})
 }
 
 func addDeviceArg(cmd *kingpin.CmdClause) *kingpin.ArgClause {
