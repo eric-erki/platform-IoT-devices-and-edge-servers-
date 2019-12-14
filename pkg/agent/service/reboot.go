@@ -18,7 +18,6 @@ func (s *Service) reboot(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	w.Write([]byte("Scheduling reboot"))
 	w.WriteHeader(200)
 	return
 }

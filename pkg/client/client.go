@@ -161,12 +161,11 @@ func (c *Client) CreateRelease(ctx context.Context, project, application, yamlCo
 	return &release, nil
 }
 
-func (c *Client) RebootDevice(ctx context.Context, project, device string) (*string, error) {
-	var status string
-	if err := c.post(ctx, []byte{}, &status, projectsURL, project, devicesURL, device, rebootURL); err != nil {
-		return nil, err
+func (c *Client) RebootDevice(ctx context.Context, project, device string) error {
+	if err := c.post(ctx, []byte{}, nil, projectsURL, project, devicesURL, device, rebootURL); err != nil {
+		return err
 	}
-	return &status, nil
+	return nil
 }
 
 func (c *Client) Execute(ctx context.Context, project, deviceID, command string) (*models.ExecuteResponse, error) {

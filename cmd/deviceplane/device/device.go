@@ -66,12 +66,12 @@ func deviceListAction(c *kingpin.ParseContext) error {
 }
 
 func deviceRebootAction(c *kingpin.ParseContext) error {
-	status, err := config.APIClient.RebootDevice(context.TODO(), *config.Flags.Project, *deviceArg)
+	err := config.APIClient.RebootDevice(context.TODO(), *config.Flags.Project, *deviceArg)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(*status)
+	fmt.Println("Successfully initiated reboot")
 	return nil
 }
 
