@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"net/http"
 	"os/exec"
 	"time"
@@ -10,8 +9,6 @@ import (
 )
 
 func (s *Service) reboot(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("HIT REBOOT")
-
 	cmd := exec.Command("/sbin/reboot")
 	go func() {
 		time.Sleep(1000)
