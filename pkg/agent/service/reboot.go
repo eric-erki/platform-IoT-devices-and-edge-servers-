@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os/exec"
+	"time"
 )
 
 func (s *Service) reboot(w http.ResponseWriter, r *http.Request) {
@@ -13,14 +14,17 @@ func (s *Service) reboot(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
 
-	// TODO: /sbin/reboot
-	command := []string{"/bin/sleep", "1", "&&", "/bin/echo", "rebooting", "&&", "/bin/echo rebooting > /tmp-rebooting"}
-	cmd := exec.CommandContext(ctx, command[0], command[1:]...)
-	defer cmd.Run()
+	cmd := exec.CommandContext(ctx, "/sbin/reboot")
+	defer func() {
+		fmt.Println("Sleeping")
+		time.Sleep(1000)
+		fmt.Println("Rebooting")
+		cmd.Run()
+		fmt.Println("Done Rebooting?")
+		w.WriteHeader(600)
+	}()
 
 	w.Write([]byte("Scheduling reboot"))
 	w.WriteHeader(200)
-
-	fmt.Println("WRITE RESPONSE")
 	return
 }
