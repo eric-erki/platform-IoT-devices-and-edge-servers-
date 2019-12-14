@@ -8,10 +8,10 @@ import (
 )
 
 func (s *Service) reboot(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("HIT REBOOT")
+
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
-
-	fmt.Println("HIT REBOOT")
 
 	// TODO: /sbin/reboot
 	command := []string{"/bin/sleep", "1", "&&", "/bin/echo", "rebooting", "&&", "/bin/echo rebooting > /tmp-rebooting"}
@@ -20,5 +20,7 @@ func (s *Service) reboot(w http.ResponseWriter, r *http.Request) {
 
 	w.Write([]byte("Scheduling reboot"))
 	w.WriteHeader(200)
+
+	fmt.Println("WRITE RESPONSE")
 	return
 }
