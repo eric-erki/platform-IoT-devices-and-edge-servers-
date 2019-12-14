@@ -183,7 +183,6 @@ func (a *Agent) register() error {
 }
 
 func (a *Agent) Run() {
-	fmt.Println("NEW VERSION")
 	go a.runBundleApplier()
 	go a.runInfoReporter()
 	go a.runRemoteServer()

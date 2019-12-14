@@ -125,6 +125,9 @@ func (s *Service) withHijackedWebSocketConnection(w http.ResponseWriter, r *http
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	// We should set conn.CloseHandler() here
+
 	f(wsconnadapter.New(conn))
 }
 

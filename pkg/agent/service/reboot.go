@@ -15,7 +15,7 @@ func (s *Service) reboot(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 
 	cmd := exec.CommandContext(ctx, "/sbin/reboot")
-	defer func() {
+	go func() {
 		fmt.Println("Sleeping")
 		time.Sleep(1000)
 		fmt.Println("Rebooting")
