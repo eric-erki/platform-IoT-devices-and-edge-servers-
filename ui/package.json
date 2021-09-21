@@ -21,7 +21,7 @@
     "react-spinners": "^0.6.1",
     "react-spring": "^8.0.27",
     "react-table": "^7.0.0-rc.5",
-    "ssh2": "^0.5.3",
+    "ssh2": "^1.4.0",
     "styled-components": "^4.4.1",
     "styled-system": "^5.1.2",
     "title": "^3.4.1",
