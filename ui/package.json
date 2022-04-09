@@ -8,7 +8,7 @@
     "axios": "^0.18.0",
     "evergreen-ui": "^4.12.0",
     "framer-motion": "^1.6.17",
-    "moment": "^2.22.2",
+    "moment": "^2.29.2",
     "navi": "^0.13.6",
     "react": "^16.8.2",
     "react-ace": "^6.2.0",
